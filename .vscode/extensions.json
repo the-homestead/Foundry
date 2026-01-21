@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "biomejs.biome",
+        "oderwat.indent-rainbow",
+        "linbudu.pnpm-vscode-helper",
+        "inlang.vs-code-extension",
+        "nguyenngoclong.terminal-keeper",
+        "gruntfuggly.todo-tree",
+        "wayou.vscode-todo-highlight",
+        "shardulm94.trailing-spaces"
+    ]
+}

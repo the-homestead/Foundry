@@ -1,0 +1,15 @@
+{
+    "name": "@foundry/desktop",
+    "version": "1.0.0",
+    "description": "Foundry's ",
+    "author": "ItzDabbzz",
+    "license": "ISC",
+    "packageManager": "pnpm@10.28.0",
+    "type": "module",
+    "engines": {
+        "node": ">=25.2.1"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    }
+}

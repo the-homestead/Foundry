@@ -1,0 +1,43 @@
+{
+    "name": "@foundry/ui",
+    "version": "1.0.0",
+    "description": "Foundry's ",
+    "author": "ItzDabbzz",
+    "license": "ISC",
+    "packageManager": "pnpm@10.28.0",
+    "type": "module",
+    "private": true,
+    "engines": {
+        "node": ">=25.2.1"
+    },
+    "scripts": {
+        "ui": "pnpm dlx shadcn@latest",
+        "check-types": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@radix-ui/react-slot": "catalog:",
+        "@tailwindcss/postcss": "catalog:",
+        "class-variance-authority": "catalog:",
+        "clsx": "catalog:",
+        "lucide-react": "catalog:",
+        "react": "catalog:",
+        "postcss": "catalog:",
+        "tailwind-merge": "catalog:",
+        "tailwindcss": "catalog:",
+        "tw-animate-css": "catalog:"
+    },
+    "devDependencies": {
+        "@types/react": "catalog:",
+        "@foundry/config_ts": "workspace:*"
+    },
+    "exports": {
+        "./global.css": "./src/styles/global/global.css",
+        "./postcss.config": "./postcss.config.mjs",
+        "./lib/*": "./src/lib/*.ts",
+        "./hooks/*": [
+            "./src/hooks/*.ts",
+            "./src/hooks/*.tsx"
+        ],
+        "./components/*": "./src/components/*.tsx"
+    }
+}

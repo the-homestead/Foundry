@@ -1,0 +1,21 @@
+{
+    "name": "@foundry/database",
+    "version": "0.0.0",
+    "private": true,
+    "main": "dist/index.js",
+    "scripts": {
+        "dev": "tsc --watch",
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "@foundry/config_ts": "workspace:*",
+        "@foundry/types": "workspace:*",
+        "@types/node": "catalog:",
+        "drizzle-kit": "catalog:",
+        "typescript": "catalog:"
+    },
+    "dependencies": {
+        "drizzle-orm": "catalog:",
+        "pg": "catalog:"
+    }
+}

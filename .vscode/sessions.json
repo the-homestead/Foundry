@@ -1,0 +1,121 @@
+{
+    "$schema": "https://cdn.statically.io/gh/nguyenngoclongdev/cdn/main/schema/v11/terminal-keeper.json",
+    "theme": "tribe",
+    "active": "default",
+    "activateOnStartup": true,
+    "keepExistingTerminals": false,
+    "sessions": {
+        "default": [
+            {
+                "name": "Root Shell",
+                "autoExecuteCommands": false,
+                "icon": "terminal",
+                "color": "terminal.ansiWhite",
+                "commands": ["pwd"]
+            }
+        ],
+
+        "Dev": [
+            {
+                "name": "Turbo Dev",
+                "autoExecuteCommands": true,
+                "icon": "rocket",
+                "color": "terminal.ansiRed",
+                "commands": ["pnpm turbo dev"]
+            },
+            {
+                "name": "Web",
+                "autoExecuteCommands": false,
+                "icon": "globe",
+                "color": "terminal.ansiBlue",
+                "commands": ["cd apps/web", "pnpm dev"]
+            },
+            {
+                "name": "Desktop",
+                "autoExecuteCommands": false,
+                "icon": "device-desktop",
+                "color": "terminal.ansiCyan",
+                "commands": ["cd apps/desktop", "pnpm dev"]
+            },
+            {
+                "name": "Backend",
+                "autoExecuteCommands": false,
+                "icon": "server",
+                "color": "terminal.ansiGreen",
+                "commands": ["cd services/backend", "pnpm dev"]
+            },
+            {
+                "name": "Discord",
+                "autoExecuteCommands": false,
+                "icon": "comment",
+                "color": "terminal.ansiMagenta",
+                "commands": ["cd services/discord", "pnpm dev"]
+            }
+        ],
+
+        "Packages": [
+            {
+                "name": "UI Package",
+                "autoExecuteCommands": false,
+                "icon": "paintcan",
+                "color": "terminal.ansiYellow",
+                "commands": ["cd packages/ui", "pnpm dev"]
+            },
+            {
+                "name": "Types Package",
+                "autoExecuteCommands": false,
+                "icon": "symbol-keyword",
+                "color": "terminal.ansiWhite",
+                "commands": ["cd packages/types", "pnpm build --watch"]
+            },
+            {
+                "name": "Config TS",
+                "autoExecuteCommands": false,
+                "icon": "settings-gear",
+                "color": "terminal.ansiBrightBlack",
+                "commands": ["cd packages/config_ts", "pnpm build --watch"]
+            }
+        ],
+
+        "Quality": [
+            {
+                "name": "Chech (Ultracite)",
+                "autoExecuteCommands": false,
+                "icon": "checklist",
+                "color": "terminal.ansiGreen",
+                "commands": ["pnpm turbo check"]
+            },
+            {
+                "name": "Lint (Ultracite)",
+                "autoExecuteCommands": false,
+                "icon": "check",
+                "color": "terminal.ansiGreen",
+                "commands": ["pnpm turbo lint"]
+            },
+            {
+                "name": "Format (Biome)",
+                "autoExecuteCommands": false,
+                "icon": "lightbulb-autofix",
+                "color": "terminal.ansiBlue",
+                "commands": ["pnpm biome check . --write"]
+            },
+            {
+                "name": "Typecheck",
+                "autoExecuteCommands": false,
+                "icon": "symbol-class",
+                "color": "terminal.ansiYellow",
+                "commands": ["pnpm turbo typecheck"]
+            }
+        ],
+
+        "Test": [
+            {
+                "name": "Turbo Test",
+                "autoExecuteCommands": false,
+                "icon": "beaker",
+                "color": "terminal.ansiMagenta",
+                "commands": ["pnpm turbo test"]
+            }
+        ]
+    }
+}

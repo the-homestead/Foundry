@@ -1,0 +1,21 @@
+{
+    "$schema": "https://ui.shadcn.com/schema.json",
+    "style": "new-york",
+    "rsc": true,
+    "tsx": true,
+    "tailwind": {
+        "config": "",
+        "css": "src/styles/global/shadcn.css",
+        "baseColor": "zinc",
+        "cssVariables": true,
+        "prefix": ""
+    },
+    "aliases": {
+        "components": "@foundry/ui/components",
+        "utils": "@foundry/ui/lib/utils",
+        "ui": "@foundry/ui/primitives",
+        "lib": "@foundry/ui/lib",
+        "hooks": "@foundry/ui/hooks"
+    },
+    "iconLibrary": "lucide"
+}

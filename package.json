@@ -1,0 +1,27 @@
+{
+    "name": "@foundry/root",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "check": "ultracite check",
+        "fix": "ultracite fix",
+        "prepare": "lefthook install"
+    },
+    "author": "ItzDabbzz",
+    "workspaces": [
+        "packages/*",
+        "apps/*",
+        "services/*"
+    ],
+    "packageManager": "pnpm@10.28.0",
+    "type": "module",
+    "engines": {
+        "node": ">=25.2.1"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "catalog:",
+        "lefthook": "catalog:",
+        "turbo": "catalog:",
+        "ultracite": "catalog:"
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "name": "@foundry/web",
+    "version": "0.1.0",
+    "description": "Foundry's ",
+    "author": "ItzDabbzz",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "check-types": "tsc --noEmit"
+    },
+    "dependencies": {
+        "next": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:"
+    },
+    "devDependencies": {
+        "@tailwindcss/postcss": "catalog:",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "tailwindcss": "catalog:",
+        "typescript": "catalog:"
+    }
+}
