@@ -13,6 +13,9 @@
 > Back-end services live here.
 
 
+## TODO
+- [ ] Ad's by Aditude https://www.aditude.com/
+
 ## Useful Libs
 
 - [Day.JS](https://day.js.org/en/) Time Lib

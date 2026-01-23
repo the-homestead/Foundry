@@ -43,7 +43,8 @@
             "!!**/.expo-shared",
             "!!**/android/build",
             "!!**/ios/build",
-            "!!**/DerivedData/**/*"
+            "!!**/DerivedData/**/*",
+            "!!**/primitives/**/*"
         ]
     },
     "formatter": {

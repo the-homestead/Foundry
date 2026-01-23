@@ -5,7 +5,10 @@
     "scripts": {
         "check": "ultracite check",
         "fix": "ultracite fix",
-        "prepare": "lefthook install"
+        "prepare": "lefthook install",
+        "db:check": "turbo run db:check",
+        "db:auth": "turbo run db:auth",
+        "ui:add": "turbo run ui:add"
     },
     "author": "ItzDabbzz",
     "workspaces": [

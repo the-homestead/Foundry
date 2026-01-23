@@ -1,8 +1,16 @@
 {
     "extends": "@foundry/config_ts/base.json",
     "compilerOptions": {
-        "outDir": "dist"
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "baseUrl": ".",
+        "paths": { "@foundry/database/": ["./src/"] },
+        "declaration": true,
+        "module": "CommonJS",
+        "target": "ES2020",
+        "esModuleInterop": true,
+        "moduleResolution": "node"
     },
-    "include": ["src"],
+    "include": ["./src/**/*"],
     "exclude": ["node_modules", "dist"]
 }

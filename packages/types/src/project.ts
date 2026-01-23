@@ -1,5 +1,5 @@
-import type { Game } from "./Games/Game";
-import type { MinecraftVersion } from "./Games/Minecraft";
+import type { Game } from "./Games/game";
+import type { MinecraftVersion } from "./Games/minecraft";
 
 export interface Project {
     /**

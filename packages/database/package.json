@@ -3,19 +3,34 @@
     "version": "0.0.0",
     "private": true,
     "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "scripts": {
         "dev": "tsc --watch",
-        "build": "tsc"
+        "build": "tsc",
+        "check-types": "tsc --noEmit",
+        "db:check": "drizzle-kit check",
+        "db:migrate": "drizzle-kit migrate",
+        "db:pull": "drizzle-kit pull",
+        "db:generate": "drizzle-kit generate"
     },
     "devDependencies": {
         "@foundry/config_ts": "workspace:*",
         "@foundry/types": "workspace:*",
         "@types/node": "catalog:",
+        "@types/pg": "^8.16.0",
         "drizzle-kit": "catalog:",
         "typescript": "catalog:"
     },
     "dependencies": {
+        "dotenv": "^17.2.3",
+        "dotenv-mono": "^1.5.1",
         "drizzle-orm": "catalog:",
         "pg": "catalog:"
+    },
+    "exports": {
+        ".": "./dist/index.js",
+        "./schemas": "./dist/schemas/index.js",
+        "./schemas/*": "./dist/schemas/*.js",
+        "./utils/*": "./dist/utils/*.js"
     }
 }

@@ -8,19 +8,31 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "check-types": "tsc --noEmit"
+        "check-types": "tsc --noEmit",
+        "db:auth": "node --loader tsx/cjs ./src/lib/auth-db.ts"
     },
     "dependencies": {
+        "@foundry/config_ts": "workspace:*",
+        "@foundry/database": "workspace:*",
+        "@foundry/ui": "workspace:*",
+        "better-auth": "^1.4.17",
+        "lucide-react": "catalog:",
         "next": "catalog:",
+        "next-themes": "^0.4.6",
         "react": "catalog:",
-        "react-dom": "catalog:"
+        "react-dom": "catalog:",
+        "recharts": "2.15.4"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "catalog:",
         "@types/node": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
+        "cross-env": "^10.1.0",
+        "npm-run-path": "^6.0.0",
         "tailwindcss": "catalog:",
-        "typescript": "catalog:"
+        "tsx": "catalog:",
+        "typescript": "catalog:",
+        "unicorn-magic": "0.3.0"
     }
 }

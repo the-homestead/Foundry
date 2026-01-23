@@ -1,10 +1,10 @@
-import { Hono } from "hono";
+import { createRouter } from "@foundry/backend/lib/create-app.js";
 import { describeRoute, resolver, validator as zValidator } from "hono-openapi";
-import { querySchema, responseSchema } from "../schemas";
+import { querySchema, responseSchema } from "../schemas/index.js";
 
-const app = new Hono();
+const router = createRouter();
 
-app.get(
+router.get(
     "/",
     describeRoute({
         responses: {
@@ -25,4 +25,4 @@ app.get(
     }
 );
 
-export default app;
+export default router;

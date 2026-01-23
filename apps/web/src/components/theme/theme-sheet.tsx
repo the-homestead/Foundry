@@ -1,0 +1,197 @@
+"use client";
+
+import { PaintBrushIcon } from "@foundry/ui/icons";
+import { type AccentColor, type BaseTheme, THEMES } from "@foundry/ui/lib/theme-config";
+import { cn } from "@foundry/ui/lib/utils";
+import { Button } from "@foundry/ui/primitives/button";
+import { Card, CardContent } from "@foundry/ui/primitives/card";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@foundry/ui/primitives/sheet";
+import { SidebarMenuButton, SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
+import { Check, Monitor, Moon, Palette, Sun } from "lucide-react";
+import { useTheme } from "../../providers/theme-provider";
+
+function getThemeIcon(key: string) {
+    switch (key) {
+        case "light":
+            return <Sun className="h-4 w-4" />;
+        case "dark":
+            return <Moon className="h-4 w-4" />;
+        case "system":
+            return <Monitor className="h-4 w-4" />;
+        default:
+            return (
+                <div
+                    className={cn(
+                        "h-4 w-4 rounded-full border-2",
+                        key.startsWith("latte") && "bg-gradient-to-br from-blue-200 to-blue-400",
+                        key.startsWith("mocha") && "bg-gradient-to-br from-gray-800 to-gray-600",
+                        key.startsWith("frappe") && "bg-gradient-to-br from-slate-700 to-slate-500",
+                        key.startsWith("macchiato") && "bg-gradient-to-br from-indigo-800 to-indigo-600"
+                    )}
+                />
+            );
+    }
+}
+
+function getThemeDescription(key: string) {
+    switch (key) {
+        case "light":
+            return "Clean and bright interface";
+        case "dark":
+            return "Easy on the eyes at night";
+        case "system":
+            return "Follows your OS preference";
+        case "latte":
+            return "Warm and inviting coffee theme";
+        case "mocha":
+            return "Rich dark chocolate tones";
+        case "frappe":
+            return "Cool and sophisticated";
+        case "macchiato":
+            return "Bold espresso layers";
+        default:
+            return "";
+    }
+}
+
+export function ThemeSheet() {
+    const { theme, color, setTheme, setColor } = useTheme();
+    const activeTheme = THEMES[theme];
+
+    return (
+        <Sheet>
+            <SheetTrigger asChild>
+                <SidebarMenuItem key="theme">
+                    <SidebarMenuButton asChild size="sm">
+                        <div>
+                            <PaintBrushIcon size={20} />
+                            <span>Theme</span>
+                        </div>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SheetTrigger>
+
+            <SheetContent className="w-[480px] overflow-y-auto" side="right">
+                <SheetHeader className="pb-6">
+                    <SheetTitle className="flex items-center gap-2">
+                        <Palette className="h-5 w-5" />
+                        Theme Customization
+                    </SheetTitle>
+                    <SheetDescription>Personalize your interface appearance.</SheetDescription>
+                </SheetHeader>
+
+                <div className="space-y-8 p-6">
+                    {/* Standard themes */}
+                    <Card>
+                        <CardContent className="p-4">
+                            <div className="space-y-3">
+                                <h3 className="font-medium text-sm">Standard Themes</h3>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {["light", "dark", "system"].map((key) => (
+                                        <Button
+                                            className={cn("h-auto justify-start p-3 transition-all", theme === key && "ring-2 ring-primary ring-offset-2")}
+                                            key={key}
+                                            onClick={() => setTheme(key as BaseTheme)}
+                                            type="button"
+                                            variant={theme === key ? "default" : "outline"}
+                                        >
+                                            <div className="flex w-full items-center gap-3">
+                                                {getThemeIcon(key)}
+                                                <div className="flex-1 text-left">
+                                                    <div className={cn("font-medium text-sm", theme === key && "text-primary-foreground")}>{THEMES[key as BaseTheme].label}</div>
+                                                    <div className={cn("text-xs", theme === key ? "text-primary-foreground/80" : "text-muted-foreground")}>
+                                                        {getThemeDescription(key)}
+                                                    </div>
+                                                </div>
+                                                {theme === key && <Check className="h-4 w-4" />}
+                                            </div>
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Catppuccin themes */}
+                    <Card>
+                        <CardContent className="p-4">
+                            <div className="space-y-3">
+                                <h3 className="font-medium text-sm">Catppuccin Themes</h3>
+                                <div className="grid grid-cols-1 gap-2">
+                                    {["latte", "mocha", "frappe", "macchiato"].map((key) => (
+                                        <Button
+                                            className={cn("h-auto justify-start p-3 transition-all", theme === key && "ring-2 ring-primary ring-offset-2")}
+                                            key={key}
+                                            onClick={() => setTheme(key as BaseTheme)}
+                                            type="button"
+                                            variant={theme === key ? "default" : "outline"}
+                                        >
+                                            <div className="flex w-full items-center gap-3">
+                                                {getThemeIcon(key)}
+                                                <div className="min-w-0 flex-1 text-left">
+                                                    <div className={cn("truncate font-medium text-sm", theme === key && "text-primary-foreground")}>
+                                                        {THEMES[key as BaseTheme].label}
+                                                    </div>
+                                                    <div className={cn("truncate text-xs", theme === key ? "text-primary-foreground/80" : "text-muted-foreground")}>
+                                                        {getThemeDescription(key)}
+                                                    </div>
+                                                </div>
+                                                {theme === key && <Check className="h-4 w-4 flex-shrink-0" />}
+                                            </div>
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Accent colors */}
+                    {activeTheme?.colors && (
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="font-medium text-sm">Accent Color</h3>
+                                        <div className="ml-2 truncate text-muted-foreground text-xs">{activeTheme.colors[color]?.label} selected</div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {Object.entries(activeTheme.colors).map(([key, c]) => (
+                                                <button
+                                                    className={cn(
+                                                        "group relative h-12 w-full rounded-lg border-2 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                                                        color === key ? "border-primary ring-2 ring-primary ring-offset-2" : "border-border hover:border-primary/50"
+                                                    )}
+                                                    key={key}
+                                                    onClick={() => setColor(key as AccentColor)}
+                                                    style={{ backgroundColor: c.preview }}
+                                                    title={c.label}
+                                                    type="button"
+                                                >
+                                                    {color === key && (
+                                                        <div className="absolute inset-0 flex items-center justify-center">
+                                                            <div className="rounded-full bg-background/90 p-0.5">
+                                                                <Check className="h-2.5 w-2.5 text-foreground" />
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <div className="grid grid-cols-4 gap-2 text-muted-foreground text-xs">
+                                            {Object.entries(activeTheme.colors).map(([key, c]) => (
+                                                <div className="truncate text-center" key={key}>
+                                                    {c.label}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
+            </SheetContent>
+        </Sheet>
+    );
+}

@@ -1,123 +1,156 @@
-# Ultracite Code Standards
+# Foundry Project Agent Guidelines
 
-This project uses **Ultracite**, a zero-config preset that enforces strict code quality standards through automated formatting and linting.
+This monorepo uses **Turborepo** with **pnpm workspaces** and **Ultracite** for code quality standards.
 
-## Quick Reference
+## Project Structure
 
-- **Format code**: `pnpm dlx ultracite fix`
-- **Check for issues**: `pnpm dlx ultracite check`
-- **Diagnose setup**: `pnpm dlx ultracite doctor`
+- `apps/` - Frontend applications (web, desktop)
+- `packages/` - Shared libraries (ui, database, types, configs)
+- `services/` - Backend services
+- Uses workspace dependencies with `workspace:*` protocol
 
-Biome (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
+## Build & Development Commands
 
----
+### Root Level Commands
+```bash
+# Development (runs all packages)
+pnpm dev
 
-## Core Principles
+# Build all packages
+pnpm build
 
-Write code that is **accessible, performant, type-safe, and maintainable**. Focus on clarity and explicit intent over brevity.
+# Type checking across all packages
+pnpm check-types
 
-### Type Safety & Explicitness
+# Code quality (Ultracite)
+pnpm check      # Lint and format check
+pnpm fix        # Auto-fix linting and formatting issues
 
-- Use explicit types for function parameters and return values when they enhance clarity
-- Prefer `unknown` over `any` when the type is genuinely unknown
-- Use const assertions (`as const`) for immutable values and literal types
-- Leverage TypeScript's type narrowing instead of type assertions
-- Use meaningful variable names instead of magic numbers - extract constants with descriptive names
+# Database operations
+pnpm db:check   # Database health checks
+pnpm db:auth    # Database authentication setup
+```
 
-### Modern JavaScript/TypeScript
+### Package-Specific Commands
+```bash
+# Run commands in specific workspace
+pnpm --filter @foundry/web dev
+pnpm --filter @foundry/backend dev
+pnpm --filter @foundry/ui ui:add
 
+# Build specific package
+pnpm --filter @foundry/web build
+```
+
+### Testing
+Currently no test framework is configured. When adding tests:
+- Use Vitest or Jest as appropriate
+- Place test files alongside source files with `.test.ts` suffix
+- Run single test: `pnpm --filter <package> test <path-to-test>`
+
+## Code Style & Standards
+
+This project enforces **Ultracite** standards (Biome-based) with custom configuration in `biome.jsonc`:
+
+### Quick Reference
+- **Format**: `pnpm dlx ultracite fix`
+- **Check**: `pnpm dlx ultracite check`
+- **Diagnose**: `pnpm dlx ultracite doctor`
+
+### TypeScript & JavaScript
+- Use explicit types for function parameters/returns when clarity is needed
+- Prefer `unknown` over `any`
+- Use `const` by default, `let` only for reassignment
 - Use arrow functions for callbacks and short functions
-- Prefer `for...of` loops over `.forEach()` and indexed `for` loops
-- Use optional chaining (`?.`) and nullish coalescing (`??`) for safer property access
-- Prefer template literals over string concatenation
-- Use destructuring for object and array assignments
-- Use `const` by default, `let` only when reassignment is needed, never `var`
-
-### Async & Promises
-
-- Always `await` promises in async functions - don't forget to use the return value
-- Use `async/await` syntax instead of promise chains for better readability
-- Handle errors appropriately in async code with try-catch blocks
-- Don't use async functions as Promise executors
+- Prefer `for...of` loops over `.forEach()`
+- Use optional chaining (`?.`) and nullish coalescing (`??`)
+- Use template literals over string concatenation
+- Destructure objects and arrays when helpful
 
 ### React & JSX
-
-- Use function components over class components
-- Call hooks at the top level only, never conditionally
-- Specify all dependencies in hook dependency arrays correctly
-- Use the `key` prop for elements in iterables (prefer unique IDs over array indices)
-- Nest children between opening and closing tags instead of passing as props
+- Function components only (no classes)
+- Hooks at top level, never conditional
+- Correct dependency arrays in hooks
+- Use `key` prop for iterables (prefer unique IDs)
+- Nest children between tags, not as props
 - Don't define components inside other components
-- Use semantic HTML and ARIA attributes for accessibility:
-  - Provide meaningful alt text for images
-  - Use proper heading hierarchy
-  - Add labels for form inputs
-  - Include keyboard event handlers alongside mouse events
-  - Use semantic elements (`<button>`, `<nav>`, etc.) instead of divs with roles
+- Use semantic HTML and ARIA attributes
 
-### Error Handling & Debugging
+### Async Code
+- Always `await` promises in async functions
+- Use `async/await` over promise chains
+- Handle errors with try-catch blocks
+- Don't use async functions as Promise executors
 
-- Remove `console.log`, `debugger`, and `alert` statements from production code
-- Throw `Error` objects with descriptive messages, not strings or other values
-- Use `try-catch` blocks meaningfully - don't catch errors just to rethrow them
-- Prefer early returns over nested conditionals for error cases
+### Imports & Exports
+- Prefer specific imports over namespace imports
+- Avoid barrel files (index re-exports)
+- Use ES modules (`import`/`export`)
+- Workspace imports use `workspace:*` in package.json
 
-### Code Organization
+### Error Handling
+- Throw `Error` objects with descriptive messages
+- Use `try-catch` meaningfully, don't just rethrow
+- Prefer early returns for error cases
+- Remove `console.log`, `debugger`, `alert` from production
 
-- Keep functions focused and under reasonable cognitive complexity limits
-- Extract complex conditions into well-named boolean variables
-- Use early returns to reduce nesting
-- Prefer simple conditionals over nested ternary operators
-- Group related code together and separate concerns
-
-### Security
-
-- Add `rel="noopener"` when using `target="_blank"` on links
-- Avoid `dangerouslySetInnerHTML` unless absolutely necessary
-- Don't use `eval()` or assign directly to `document.cookie`
+### Performance & Security
+- Add `rel="noopener"` for `target="_blank"` links
+- Avoid `dangerouslySetInnerHTML`
+- Don't use `eval()` or direct `document.cookie` assignment
+- Use Next.js `<Image>` component, not `<img>`
 - Validate and sanitize user input
 
-### Performance
+### Framework-Specific
 
-- Avoid spread syntax in accumulators within loops
-- Use top-level regex literals instead of creating them in loops
-- Prefer specific imports over namespace imports
-- Avoid barrel files (index files that re-export everything)
-- Use proper image components (e.g., Next.js `<Image>`) over `<img>` tags
-
-### Framework-Specific Guidance
-
-**Next.js:**
-- Use Next.js `<Image>` component for images
-- Use `next/head` or App Router metadata API for head elements
-- Use Server Components for async data fetching instead of async Client Components
+**Next.js (web app):**
+- Use Server Components for async data fetching
+- Use App Router metadata API for head elements
+- Proper image optimization with `<Image>`
 
 **React 19+:**
-- Use ref as a prop instead of `React.forwardRef`
+- Use `ref` as prop instead of `React.forwardRef`
 
-**Solid/Svelte/Vue/Qwik:**
-- Use `class` and `for` attributes (not `className` or `htmlFor`)
+**Hono (backend):**
+- Follow Hono patterns for middleware and routes
+- Use standard validators for request/response validation
 
----
+## Development Workflow
 
-## Testing
+1. Install dependencies: `pnpm install`
+2. Start development: `pnpm dev`
+3. Make changes following Ultracite standards
+4. Run `pnpm fix` before committing
+5. Use `pnpm check` to verify code quality
 
-- Write assertions inside `it()` or `test()` blocks
-- Avoid done callbacks in async tests - use async/await instead
-- Don't use `.only` or `.skip` in committed code
-- Keep test suites reasonably flat - avoid excessive `describe` nesting
+## Package Management
 
-## When Biome Can't Help
+- **Package manager**: pnpm@10.28.0
+- **Node version**: >=25.2.1
+- **Workspace config**: pnpm-workspace.yaml
+- **Build orchestrator**: Turborepo
+- **Code quality**: Ultracite (Biome)
 
-Biome's linter will catch most issues automatically. Focus your attention on:
+## Environment Variables
 
-1. **Business logic correctness** - Biome can't validate your algorithms
-2. **Meaningful naming** - Use descriptive names for functions, variables, and types
-3. **Architecture decisions** - Component structure, data flow, and API design
-4. **Edge cases** - Handle boundary conditions and error states
-5. **User experience** - Accessibility, performance, and usability considerations
-6. **Documentation** - Add comments for complex logic, but prefer self-documenting code
+Key environment variables (defined in turbo.json):
+- `NEXT_PUBLIC_APP_URL`, `NEXT_SERVER_APP_URL`
+- `DATABASE_URL`
+- `AUTH_SECRET`, `AUTH_*_ID`, `AUTH_*_SECRET` (OAuth providers)
 
----
+## Adding New Packages
 
-Most formatting and common issues are automatically fixed by Biome. Run `pnpm dlx ultracite fix` before committing to ensure compliance.
+1. Create package in appropriate directory (`apps/`, `packages/`, `services/`)
+2. Add to pnpm-workspace.yaml if needed
+3. Use `workspace:*` for internal dependencies
+4. Add build/dev scripts to package.json
+5. Configure in turbo.json if needed
+
+## UI Components
+
+- Uses shadcn/ui components in `@foundry/ui` package
+- Add components: `pnpm --filter @foundry/ui ui:add <component>`
+- Follow Radix UI patterns for accessibility
+- Uses Tailwind CSS for styling
+
+Most formatting and linting issues are automatically fixed by Ultracite. Run `pnpm fix` before committing to ensure compliance.
