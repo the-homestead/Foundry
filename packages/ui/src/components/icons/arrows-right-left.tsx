@@ -1,6 +1,7 @@
-/** biome-ignore-all lint/a11y/noNoninteractiveElementInteractions: Default
- biome-ignore-all lint/a11y/noSvgWithoutTitle: Default
- biome-ignore-all lint/a11y/noStaticElementInteractions: Default */
+/** biome-ignore-all lint/a11y/noNoninteractiveElementInteractions: Default */
+/** biome-ignore-all lint/a11y/noSvgWithoutTitle: Default */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: Default */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: Default */
 "use client";
 
 import { cn } from "@foundry/ui/lib/utils";
@@ -55,7 +56,9 @@ const ArrowsRightLeftIcon = forwardRef<ArrowsRightLeftIconHandle, ArrowsRightLef
 
     const handleMouseEnter = useCallback(
         (e: React.MouseEvent<HTMLDivElement>) => {
-            if (!isControlledRef.current) controls.start("animate");
+            if (!isControlledRef.current) {
+                controls.start("animate");
+            }
             onMouseEnter?.(e);
         },
         [controls, onMouseEnter]

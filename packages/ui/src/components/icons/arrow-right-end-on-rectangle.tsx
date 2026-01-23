@@ -45,7 +45,9 @@ const ArrowRightEndOnRectangleIcon = forwardRef<ArrowRightEndOnRectangleIconHand
 
         const handleMouseEnter = useCallback(
             (e: React.MouseEvent<HTMLDivElement>) => {
-                if (!isControlledRef.current) controls.start("animate");
+                if (!isControlledRef.current) {
+                    controls.start("animate");
+                }
                 onMouseEnter?.(e);
             },
             [controls, onMouseEnter]
