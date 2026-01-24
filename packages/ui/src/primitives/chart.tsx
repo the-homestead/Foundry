@@ -92,6 +92,29 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
+type ChartPayloadItem = {
+    type?: string;
+    dataKey?: string | number;
+    name?: string;
+    value?: number | string;
+    payload?: Record<string, unknown>;
+    color?: string;
+    fill?: string;
+};
+
+type ChartTooltipContentProps = Omit<React.ComponentProps<typeof RechartsPrimitive.Tooltip>, "payload" | "label"> &
+    Omit<React.ComponentProps<"div">, "label"> & {
+        hideLabel?: boolean;
+        hideIndicator?: boolean;
+        indicator?: "line" | "dot" | "dashed";
+        nameKey?: string;
+        labelKey?: string;
+        payload?: ChartPayloadItem[];
+        label?: string | number;
+        labelFormatter?: (value: unknown, payload: ChartPayloadItem[]) => React.ReactNode;
+        formatter?: (value: unknown, name: string, item: ChartPayloadItem, index: number, payload: ChartPayloadItem[]) => React.ReactNode;
+    };
+
 function ChartTooltipContent({
     active,
     payload,
@@ -106,14 +129,7 @@ function ChartTooltipContent({
     color,
     nameKey,
     labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-    React.ComponentProps<"div"> & {
-        hideLabel?: boolean;
-        hideIndicator?: boolean;
-        indicator?: "line" | "dot" | "dashed";
-        nameKey?: string;
-        labelKey?: string;
-    }) {
+}: ChartTooltipContentProps) {
     const { config } = useChart();
 
     const tooltipLabel = React.useMemo(() => {
@@ -127,7 +143,7 @@ function ChartTooltipContent({
         const value = !labelKey && typeof label === "string" ? config[label as keyof typeof config]?.label || label : itemConfig?.label;
 
         if (labelFormatter) {
-            return <div className={cn("font-medium", labelClassName)}>{labelFormatter(value, payload)}</div>;
+            return <div className={cn("font-medium", labelClassName)}>{labelFormatter(value, payload as ChartPayloadItem[])}</div>;
         }
 
         if (!value) {
@@ -144,15 +160,16 @@ function ChartTooltipContent({
     const nestLabel = payload.length === 1 && indicator !== "dot";
 
     return (
-        <div className={cn("grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl", className)}>
+        <div className={cn("grid min-w-32 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl", className)}>
             {nestLabel ? null : tooltipLabel}
             <div className="grid gap-1.5">
                 {payload
                     .filter((item) => item.type !== "none")
-                    .map((item, index) => {
+                    .map((item: ChartPayloadItem, index: number) => {
                         const key = `${nameKey || item.name || item.dataKey || "value"}`;
                         const itemConfig = getPayloadConfigFromPayload(config, item, key);
-                        const indicatorColor = color || item.payload.fill || item.color;
+                        const payloadFill = typeof item.payload === "object" && item.payload !== null && "fill" in item.payload ? (item.payload.fill as string) : undefined;
+                        const indicatorColor = color || payloadFill || item.color;
 
                         return (
                             <div
@@ -163,7 +180,7 @@ function ChartTooltipContent({
                                 key={item.dataKey}
                             >
                                 {formatter && item?.value !== undefined && item.name ? (
-                                    formatter(item.value, item.name, item, index, item.payload)
+                                    formatter(item.value, item.name, item, index, payload as ChartPayloadItem[])
                                 ) : (
                                     <>
                                         {itemConfig?.icon ? (
@@ -171,7 +188,7 @@ function ChartTooltipContent({
                                         ) : (
                                             !hideIndicator && (
                                                 <div
-                                                    className={cn("shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)", {
+                                                    className={cn("shrink-0 rounded-xs border-(--color-border) bg-(--color-bg)", {
                                                         "h-2.5 w-2.5": indicator === "dot",
                                                         "w-1": indicator === "line",
                                                         "w-0 border-[1.5px] border-dashed bg-transparent": indicator === "dashed",
@@ -205,17 +222,20 @@ function ChartTooltipContent({
 
 const ChartLegend = RechartsPrimitive.Legend;
 
+type ChartLegendContentProps = Omit<React.ComponentProps<"div">, "payload"> & {
+    hideIcon?: boolean;
+    nameKey?: string;
+    payload?: ChartPayloadItem[];
+    verticalAlign?: "top" | "bottom";
+};
+
 function ChartLegendContent({
     className,
     hideIcon = false,
     payload,
     verticalAlign = "bottom",
     nameKey,
-}: React.ComponentProps<"div"> &
-    Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
-        hideIcon?: boolean;
-        nameKey?: string;
-    }) {
+}: ChartLegendContentProps) {
     const { config } = useChart();
 
     if (!payload?.length) {
@@ -225,8 +245,8 @@ function ChartLegendContent({
     return (
         <div className={cn("flex items-center justify-center gap-4", verticalAlign === "top" ? "pb-3" : "pt-3", className)}>
             {payload
-                .filter((item) => item.type !== "none")
-                .map((item) => {
+                .filter((item: ChartPayloadItem) => item.type !== "none")
+                .map((item: ChartPayloadItem) => {
                     const key = `${nameKey || item.dataKey || "value"}`;
                     const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
@@ -236,7 +256,7 @@ function ChartLegendContent({
                                 <itemConfig.icon />
                             ) : (
                                 <div
-                                    className="h-2 w-2 shrink-0 rounded-[2px]"
+                                    className="h-2 w-2 shrink-0 rounded-xs"
                                     style={{
                                         backgroundColor: item.color,
                                     }}

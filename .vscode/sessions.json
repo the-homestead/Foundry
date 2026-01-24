@@ -18,49 +18,49 @@
                 "autoExecuteCommands": true,
                 "icon": "terminal",
                 "color": "terminal.ansiWhite",
-                "commands": ["cd ./apps/web", "clear"]
+                "commands": ["cd ./apps/web"]
             },
             {
                 "name": "Desktop Shell",
                 "autoExecuteCommands": true,
                 "icon": "terminal",
                 "color": "terminal.ansiWhite",
-                "commands": ["cd ./apps/desktop", "clear"]
+                "commands": ["cd ./apps/desktop"]
             },
             {
                 "name": "Backend Shell",
                 "autoExecuteCommands": true,
                 "icon": "terminal",
                 "color": "terminal.ansiWhite",
-                "commands": ["cd ./services/backend", "clear"]
+                "commands": ["cd ./services/backend"]
             },
             {
                 "name": "UI Package Shell",
                 "autoExecuteCommands": true,
                 "icon": "terminal",
                 "color": "terminal.ansiWhite",
-                "commands": ["cd ./packages/ui", "clear"]
+                "commands": ["cd ./packages/ui"]
             },
             {
                 "name": "Database Shell",
                 "autoExecuteCommands": true,
                 "icon": "database",
                 "color": "terminal.ansiWhite",
-                "commands": ["cd ./services/database", "clear"]
+                "commands": ["cd ./services/database"]
             },
             {
                 "name": "Types Package Shell",
                 "autoExecuteCommands": true,
                 "icon": "terminal",
                 "color": "terminal.ansiWhite",
-                "commands": ["cd ./packages/types", "clear"]
+                "commands": ["cd ./packages/types"]
             },
             {
                 "name": "Discord Shell",
                 "autoExecuteCommands": true,
                 "icon": "terminal",
                 "color": "terminal.ansiWhite",
-                "commands": ["cd ./services/discord", "clear"]
+                "commands": ["cd ./services/discord"]
             }
         ],
 

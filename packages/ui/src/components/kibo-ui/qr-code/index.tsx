@@ -22,9 +22,9 @@ const getOklch = (color: string, fallback: [number, number, number]) => {
     }
 
     return {
-        l: Number.parseFloat(oklchMatch[1]),
-        c: Number.parseFloat(oklchMatch[2]),
-        h: Number.parseFloat(oklchMatch[3]),
+        l: Number.parseFloat(oklchMatch[1] as string),
+        c: Number.parseFloat(oklchMatch[2] as string),
+        h: Number.parseFloat(oklchMatch[3] as string),
     };
 };
 

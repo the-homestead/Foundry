@@ -45,7 +45,7 @@ function ButtonGroupText({
 function ButtonGroupSeparator({ className, orientation = "vertical", ...props }: React.ComponentProps<typeof Separator>) {
     return (
         <Separator
-            className={cn("!m-0 relative self-stretch bg-input data-[orientation=vertical]:h-auto", className)}
+            className={cn("m-0! relative self-stretch bg-input data-[orientation=vertical]:h-auto", className)}
             data-slot="button-group-separator"
             orientation={orientation}
             {...props}
