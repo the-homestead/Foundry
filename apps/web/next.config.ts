@@ -22,10 +22,6 @@ const nextConfig: NextConfig = {
     experimental: {
         inlineCss: true,
         typedEnv: true,
-        // Enable filesystem caching for `next dev`
-        turbopackFileSystemCacheForDev: true,
-        // Enable filesystem caching for `next build`
-        turbopackFileSystemCacheForBuild: true,
         mdxRs: true,
     },
     images: {
