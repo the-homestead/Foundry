@@ -1,33 +1,33 @@
-"area: web":
+area: web:
   - "apps/web/**"
 
-"area: desktop":
+area: desktop:
   - "apps/desktop/**"
 
-"area: backend":
+area: backend:
   - "services/backend/**"
 
-"area: discord":
+area: discord:
   - "services/discord/**"
 
-"area: ui":
+area: ui:
   - "packages/ui/**"
 
-"area: database":
+area: database:
   - "packages/database/**"
 
-"area: types":
+area: types:
   - "packages/types/**"
 
-"area: configs":
+area: configs:
   - "packages/configs/**"
   - "packages/config_ts/**"
 
-"area: docs":
+area: docs:
   - "**/*.md"
   - ".github/**"
 
-"area: tooling":
+area: tooling:
   - "biome.jsonc"
   - "lefthook.yml"
   - "package.json"
