@@ -39,6 +39,6 @@
         "tailwindcss": "catalog:",
         "tsx": "catalog:",
         "typescript": "catalog:",
-        "unicorn-magic": "0.3.0"
+        "unicorn-magic": "0.4.0"
     }
 }
