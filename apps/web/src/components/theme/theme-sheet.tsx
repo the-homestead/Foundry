@@ -63,10 +63,10 @@ export function ThemeSheet() {
             <SheetTrigger asChild>
                 <SidebarMenuItem key="theme">
                     <SidebarMenuButton asChild size="sm">
-                        <div>
+                        <button className="flex w-full items-center gap-2 text-left" type="button">
                             <PaintBrushIcon size={20} />
                             <span>Theme</span>
-                        </div>
+                        </button>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SheetTrigger>
