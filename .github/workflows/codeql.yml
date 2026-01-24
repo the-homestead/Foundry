@@ -1,12 +1,17 @@
 name: CodeQL
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+    paths:
+      - '**.ts'
+      - '**.tsx'
+      - '**.js'
+      - '**.jsx'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
   schedule:
-    - cron: "23 3 * * 1"
+    - cron: "23 3 * * 1"  # Weekly comprehensive scan
 
 permissions:
   contents: read

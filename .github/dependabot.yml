@@ -1,88 +1,42 @@
 version: 2
 updates:
+  # GitHub Actions - monthly updates only
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "monday"
-      time: "06:00"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
+  # Single npm update for monorepo root (pnpm workspace)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/apps/web"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/apps/desktop"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/services/backend"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/services/discord"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/packages/ui"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/packages/database"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/packages/types"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/packages/configs"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/packages/config_ts"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "06:00"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
+    groups:
+      # Group all dev dependencies together
+      development:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group all production minor/patch updates
+      production-non-breaking:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+    # Auto-approve and merge low-risk updates
+    labels:
+      - "dependencies"
+      - "automated"
+    ignore:
+      # Ignore major version bumps (review manually)
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
