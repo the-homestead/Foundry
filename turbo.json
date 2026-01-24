@@ -1,9 +1,10 @@
 {
     "$schema": "https://turborepo.dev/schema.json",
+    "ui": "tui",
     "tasks": {
         "build": {
             "dependsOn": ["^build"],
-            "outputs": [".next/**", "!.next/cache/**"],
+            "outputs": [".next/**", "!.next/cache/**", "dist/**"],
             "env": [
                 "NEXT_PUBLIC_APP_URL",
                 "NEXT_SERVER_APP_URL",
@@ -22,6 +23,7 @@
         "dev": {
             "persistent": true,
             "cache": false,
+            "dependsOn": ["^build"],
             "env": [
                 "NEXT_PUBLIC_APP_URL",
                 "NEXT_SERVER_APP_URL",
@@ -39,6 +41,9 @@
         },
         "check-types": {
             "dependsOn": ["^check-types"]
+        },
+        "start": {
+            "persistent": true
         },
         "//#check": {},
         "//#fix": {
