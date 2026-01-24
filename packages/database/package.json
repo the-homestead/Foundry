@@ -17,13 +17,13 @@
         "@foundry/config_ts": "workspace:*",
         "@foundry/types": "workspace:*",
         "@types/node": "catalog:",
-        "@types/pg": "^8.16.0",
+        "@types/pg": "catalog:",
         "drizzle-kit": "catalog:",
         "typescript": "catalog:"
     },
     "dependencies": {
-        "dotenv": "^17.2.3",
-        "dotenv-mono": "^1.5.1",
+        "dotenv": "catalog:",
+        "dotenv-mono": "catalog:",
         "drizzle-orm": "catalog:",
         "pg": "catalog:"
     },
