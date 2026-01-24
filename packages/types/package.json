@@ -1,9 +1,31 @@
 {
     "name": "@foundry/types",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./games/game": {
+            "types": "./dist/games/game.d.ts",
+            "default": "./dist/games/game.js"
+        },
+        "./games/minecraft": {
+            "types": "./dist/games/minecraft.d.ts",
+            "default": "./dist/games/minecraft.js"
+        },
+        "./permissions/api-key": {
+            "types": "./dist/permissions/api-key.d.ts",
+            "default": "./dist/permissions/api-key.js"
+        },
+        "./project": {
+            "types": "./dist/project.d.ts",
+            "default": "./dist/project.js"
+        }
+    },
     "scripts": {
         "build": "tsc",
         "check-types": "tsc --noEmit"

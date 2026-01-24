@@ -1,0 +1,2 @@
+ALTER TABLE "user" ADD COLUMN "username" text NOT NULL;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN "display_username" text NOT NULL;

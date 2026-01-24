@@ -50,72 +50,131 @@ Currently no test framework is configured. When adding tests:
 
 ## Code Style & Standards
 
-This project enforces **Ultracite** standards (Biome-based) with custom configuration in `biome.jsonc`:
+### Ultracite Code Standards
 
-### Quick Reference
-- **Format**: `pnpm dlx ultracite fix`
-- **Check**: `pnpm dlx ultracite check`
-- **Diagnose**: `pnpm dlx ultracite doctor`
+This project uses **Ultracite**, a zero-config preset that enforces strict code quality standards through automated formatting and linting.
 
-### TypeScript & JavaScript
-- Use explicit types for function parameters/returns when clarity is needed
-- Prefer `unknown` over `any`
-- Use `const` by default, `let` only for reassignment
+#### Quick Reference
+
+- **Format code**: `pnpm dlx ultracite fix`
+- **Check for issues**: `pnpm dlx ultracite check`
+- **Diagnose setup**: `pnpm dlx ultracite doctor`
+
+Biome (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
+
+---
+
+#### Core Principles
+
+Write code that is **accessible, performant, type-safe, and maintainable**. Focus on clarity and explicit intent over brevity.
+
+##### Type Safety & Explicitness
+
+- Use explicit types for function parameters and return values when they enhance clarity
+- Prefer `unknown` over `any` when the type is genuinely unknown
+- Use const assertions (`as const`) for immutable values and literal types
+- Leverage TypeScript's type narrowing instead of type assertions
+- Use meaningful variable names instead of magic numbers - extract constants with descriptive names
+
+##### Modern JavaScript/TypeScript
+
 - Use arrow functions for callbacks and short functions
-- Prefer `for...of` loops over `.forEach()`
-- Use optional chaining (`?.`) and nullish coalescing (`??`)
-- Use template literals over string concatenation
-- Destructure objects and arrays when helpful
+- Prefer `for...of` loops over `.forEach()` and indexed `for` loops
+- Use optional chaining (`?.`) and nullish coalescing (`??`) for safer property access
+- Prefer template literals over string concatenation
+- Use destructuring for object and array assignments
+- Use `const` by default, `let` only when reassignment is needed, never `var`
 
-### React & JSX
-- Function components only (no classes)
-- Hooks at top level, never conditional
-- Correct dependency arrays in hooks
-- Use `key` prop for iterables (prefer unique IDs)
-- Nest children between tags, not as props
-- Don't define components inside other components
-- Use semantic HTML and ARIA attributes
+##### Async & Promises
 
-### Async Code
-- Always `await` promises in async functions
-- Use `async/await` over promise chains
-- Handle errors with try-catch blocks
+- Always `await` promises in async functions - don't forget to use the return value
+- Use `async/await` syntax instead of promise chains for better readability
+- Handle errors appropriately in async code with try-catch blocks
 - Don't use async functions as Promise executors
 
-### Imports & Exports
-- Prefer specific imports over namespace imports
-- Avoid barrel files (index re-exports)
-- Use ES modules (`import`/`export`)
-- Workspace imports use `workspace:*` in package.json
+##### React & JSX
 
-### Error Handling
-- Throw `Error` objects with descriptive messages
-- Use `try-catch` meaningfully, don't just rethrow
-- Prefer early returns for error cases
-- Remove `console.log`, `debugger`, `alert` from production
+- Use function components over class components
+- Call hooks at the top level only, never conditionally
+- Specify all dependencies in hook dependency arrays correctly
+- Use the `key` prop for elements in iterables (prefer unique IDs over array indices)
+- Nest children between opening and closing tags instead of passing as props
+- Don't define components inside other components
+- Use semantic HTML and ARIA attributes for accessibility:
+  - Provide meaningful alt text for images
+  - Use proper heading hierarchy
+  - Add labels for form inputs
+  - Include keyboard event handlers alongside mouse events
+  - Use semantic elements (`<button>`, `<nav>`, etc.) instead of divs with roles
 
-### Performance & Security
-- Add `rel="noopener"` for `target="_blank"` links
-- Avoid `dangerouslySetInnerHTML`
-- Don't use `eval()` or direct `document.cookie` assignment
-- Use Next.js `<Image>` component, not `<img>`
+##### Error Handling & Debugging
+
+- Remove `console.log`, `debugger`, and `alert` statements from production code
+- Throw `Error` objects with descriptive messages, not strings or other values
+- Use `try-catch` blocks meaningfully - don't catch errors just to rethrow them
+- Prefer early returns over nested conditionals for error cases
+
+##### Code Organization
+
+- Keep functions focused and under reasonable cognitive complexity limits
+- Extract complex conditions into well-named boolean variables
+- Use early returns to reduce nesting
+- Prefer simple conditionals over nested ternary operators
+- Group related code together and separate concerns
+
+##### Security
+
+- Add `rel="noopener"` when using `target="_blank"` on links
+- Avoid `dangerouslySetInnerHTML` unless absolutely necessary
+- Don't use `eval()` or assign directly to `document.cookie`
 - Validate and sanitize user input
 
-### Framework-Specific
+##### Performance
 
-**Next.js (web app):**
-- Use Server Components for async data fetching
-- Use App Router metadata API for head elements
-- Proper image optimization with `<Image>`
+- Avoid spread syntax in accumulators within loops
+- Use top-level regex literals instead of creating them in loops
+- Prefer specific imports over namespace imports
+- Avoid barrel files (index files that re-export everything)
+- Use proper image components (e.g., Next.js `<Image>`) over `<img>` tags
+
+##### Framework-Specific Guidance
+
+**Next.js:**
+- Use Next.js `<Image>` component for images
+- Use `next/head` or App Router metadata API for head elements
+- Use Server Components for async data fetching instead of async Client Components
 
 **React 19+:**
-- Use `ref` as prop instead of `React.forwardRef`
+- Use ref as a prop instead of `React.forwardRef`
 
-**Hono (backend):**
-- Follow Hono patterns for middleware and routes
-- Use standard validators for request/response validation
+**Solid/Svelte/Vue/Qwik:**
+- Use `class` and `for` attributes (not `className` or `htmlFor`)
 
-## Development Workflow
+---
+
+### Testing
+
+- Write assertions inside `it()` or `test()` blocks
+- Avoid done callbacks in async tests - use async/await instead
+- Don't use `.only` or `.skip` in committed code
+- Keep test suites reasonably flat - avoid excessive `describe` nesting
+
+### When Biome Can't Help
+
+Biome's linter will catch most issues automatically. Focus your attention on:
+
+1. **Business logic correctness** - Biome can't validate your algorithms
+2. **Meaningful naming** - Use descriptive names for functions, variables, and types
+3. **Architecture decisions** - Component structure, data flow, and API design
+4. **Edge cases** - Handle boundary conditions and error states
+5. **User experience** - Accessibility, performance, and usability considerations
+6. **Documentation** - Add comments for complex logic, but prefer self-documenting code
+
+---
+
+Most formatting and common issues are automatically fixed by Biome. Run `pnpm dlx ultracite fix` before committing to ensure compliance.
+
+### Development Workflow
 
 1. Install dependencies: `pnpm install`
 2. Start development: `pnpm dev`
@@ -123,7 +182,7 @@ This project enforces **Ultracite** standards (Biome-based) with custom configur
 4. Run `pnpm fix` before committing
 5. Use `pnpm check` to verify code quality
 
-## Package Management
+### Package Management
 
 - **Package manager**: pnpm@10.28.0
 - **Node version**: >=25.2.1
@@ -131,14 +190,14 @@ This project enforces **Ultracite** standards (Biome-based) with custom configur
 - **Build orchestrator**: Turborepo
 - **Code quality**: Ultracite (Biome)
 
-## Environment Variables
+### Environment Variables
 
 Key environment variables (defined in turbo.json):
 - `NEXT_PUBLIC_APP_URL`, `NEXT_SERVER_APP_URL`
 - `DATABASE_URL`
 - `AUTH_SECRET`, `AUTH_*_ID`, `AUTH_*_SECRET` (OAuth providers)
 
-## Adding New Packages
+### Adding New Packages
 
 1. Create package in appropriate directory (`apps/`, `packages/`, `services/`)
 2. Add to pnpm-workspace.yaml if needed
@@ -146,7 +205,7 @@ Key environment variables (defined in turbo.json):
 4. Add build/dev scripts to package.json
 5. Configure in turbo.json if needed
 
-## UI Components
+### UI Components
 
 - Uses shadcn/ui components in `@foundry/ui` package
 - Add components: `pnpm --filter @foundry/ui ui:add <component>`

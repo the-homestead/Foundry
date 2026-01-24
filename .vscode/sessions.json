@@ -11,7 +11,56 @@
                 "autoExecuteCommands": false,
                 "icon": "terminal",
                 "color": "terminal.ansiWhite",
-                "commands": ["pwd"]
+                "commands": [""]
+            },
+            {
+                "name": "Web Shell",
+                "autoExecuteCommands": true,
+                "icon": "terminal",
+                "color": "terminal.ansiWhite",
+                "commands": ["cd ./apps/web", "clear"]
+            },
+            {
+                "name": "Desktop Shell",
+                "autoExecuteCommands": true,
+                "icon": "terminal",
+                "color": "terminal.ansiWhite",
+                "commands": ["cd ./apps/desktop", "clear"]
+            },
+            {
+                "name": "Backend Shell",
+                "autoExecuteCommands": true,
+                "icon": "terminal",
+                "color": "terminal.ansiWhite",
+                "commands": ["cd ./services/backend", "clear"]
+            },
+            {
+                "name": "UI Package Shell",
+                "autoExecuteCommands": true,
+                "icon": "terminal",
+                "color": "terminal.ansiWhite",
+                "commands": ["cd ./packages/ui", "clear"]
+            },
+            {
+                "name": "Database Shell",
+                "autoExecuteCommands": true,
+                "icon": "database",
+                "color": "terminal.ansiWhite",
+                "commands": ["cd ./services/database", "clear"]
+            },
+            {
+                "name": "Types Package Shell",
+                "autoExecuteCommands": true,
+                "icon": "terminal",
+                "color": "terminal.ansiWhite",
+                "commands": ["cd ./packages/types", "clear"]
+            },
+            {
+                "name": "Discord Shell",
+                "autoExecuteCommands": true,
+                "icon": "terminal",
+                "color": "terminal.ansiWhite",
+                "commands": ["cd ./services/discord", "clear"]
             }
         ],
 

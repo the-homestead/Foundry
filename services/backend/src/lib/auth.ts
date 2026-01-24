@@ -1,8 +1,10 @@
+import { passkey } from "@better-auth/passkey";
 import { SYSTEM_CONFIG } from "@foundry/configs";
-import { db } from "@foundry/database";
+import { db, schema } from "@foundry/database";
+import { LAUNCHER_FREE, toApiKeyPermissions } from "@foundry/types/permissions/api-key";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { twoFactor } from "better-auth/plugins";
+import { apiKey, haveIBeenPwned, lastLoginMethod, twoFactor, username } from "better-auth/plugins";
 
 interface GitHubProfile {
     [key: string]: unknown;
@@ -17,11 +19,18 @@ interface GoogleProfile {
     given_name?: string;
 }
 
+interface DiscordProfile {
+    [key: string]: unknown;
+    email?: string;
+    global_name?: string;
+    username?: string;
+}
+
 interface SocialProviderConfig {
     [key: string]: unknown;
     clientId: string;
     clientSecret: string;
-    mapProfileToUser: (profile: GitHubProfile | GoogleProfile) => Record<string, unknown>;
+    mapProfileToUser: (profile: GitHubProfile | GoogleProfile | DiscordProfile) => Record<string, unknown>;
     redirectURI?: string;
     scope: string[];
 }
@@ -29,6 +38,13 @@ interface SocialProviderConfig {
 const hasGithubCredentials = process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET && process.env.AUTH_GITHUB_ID.length > 0 && process.env.AUTH_GITHUB_SECRET.length > 0;
 
 const hasGoogleCredentials = process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET && process.env.AUTH_GOOGLE_ID.length > 0 && process.env.AUTH_GOOGLE_SECRET.length > 0;
+
+const hasDiscordCredentials =
+    process.env.AUTH_DISCORD_ID && process.env.AUTH_DISCORD_SECRET && process.env.AUTH_DISCORD_ID.length > 0 && process.env.AUTH_DISCORD_SECRET.length > 0;
+
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_SERVER_APP_URL ?? "http://localhost:3000";
+const appOrigin = new URL(appUrl).origin;
+const rpID = new URL(appUrl).hostname;
 
 // Build social providers configuration
 const socialProviders: Record<string, SocialProviderConfig> = {};
@@ -70,7 +86,25 @@ if (hasGoogleCredentials) {
     };
 }
 
-export const auth = betterAuth({
+if (hasDiscordCredentials) {
+    socialProviders.discord = {
+        clientId: process.env.AUTH_DISCORD_ID ?? "",
+        clientSecret: process.env.AUTH_DISCORD_SECRET ?? "",
+        mapProfileToUser: (profile: DiscordProfile) => {
+            const displayName = profile.global_name ?? profile.username ?? "";
+            const [firstName, ...rest] = displayName.split(" ");
+            return {
+                age: null,
+                firstName: firstName ?? "",
+                lastName: rest.join(" "),
+            };
+        },
+        scope: ["identify", "email"],
+    };
+}
+
+export const auth: ReturnType<typeof betterAuth> = betterAuth({
+    appName: "Foundry",
     account: {
         accountLinking: {
             allowDifferentEmails: false,
@@ -85,17 +119,18 @@ export const auth = betterAuth({
         },
     },
 
-    baseURL: process.env.NEXT_SERVER_APP_URL,
+    baseURL: process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_SERVER_APP_URL,
 
     database: drizzleAdapter(db, {
         provider: "pg",
-        schema: {},
+        schema,
     }),
 
     emailAndPassword: {
         enabled: true,
     },
 
+    experimental: { joins: true },
     // Configure OAuth behavior
     oauth: {
         // Default redirect URL after successful login
@@ -106,7 +141,30 @@ export const auth = betterAuth({
         linkAccountsByEmail: true,
     },
 
-    plugins: [twoFactor()],
+    plugins: [
+        apiKey({
+            enableSessionForAPIKeys: true,
+            enableMetadata: true,
+            permissions: {
+                defaultPermissions: toApiKeyPermissions(LAUNCHER_FREE),
+            },
+        }),
+        haveIBeenPwned({
+            customPasswordCompromisedMessage: "Please choose a more secure password.",
+        }),
+        lastLoginMethod({
+            storeInDatabase: true,
+        }),
+        passkey({
+            origin: appOrigin,
+            rpID,
+            rpName: "Foundry",
+        }),
+        twoFactor({
+            issuer: "Foundry",
+        }),
+        username(),
+    ],
 
     secret: process.env.AUTH_SECRET,
 

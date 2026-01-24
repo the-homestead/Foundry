@@ -23,8 +23,11 @@
     },
     "devDependencies": {
         "@biomejs/biome": "catalog:",
+        "@types/node": "catalog:",
         "lefthook": "catalog:",
+        "shadcn": "^3.7.0",
         "turbo": "catalog:",
+        "typescript": "catalog:",
         "ultracite": "catalog:"
     }
 }

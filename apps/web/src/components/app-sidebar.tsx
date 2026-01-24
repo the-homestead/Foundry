@@ -2,6 +2,7 @@
 "use client";
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
+import { useSession } from "@foundry/web/lib/auth-client";
 import { BookOpen, Bot, Command, Frame, LifeBuoy, Map, PieChart, Send, Settings2, SquareTerminal } from "lucide-react";
 import type * as React from "react";
 import { NavMain } from "./nav/nav-main";
@@ -9,7 +10,7 @@ import { NavProjects } from "./nav/nav-projects";
 import { NavSecondary } from "./nav/nav-secondary";
 import { NavUser } from "./nav/nav-user";
 
-const data = {
+const dataMock = {
     user: {
         name: "shadcn",
         email: "m@example.com",
@@ -134,6 +135,20 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const { data, isPending } = useSession();
+    const sessionUser = data?.user;
+    const user = sessionUser
+        ? {
+              name: sessionUser.name ?? sessionUser.username ?? "User",
+              email: sessionUser.email ?? "",
+              avatar: sessionUser.image ?? "",
+          }
+        : {
+              name: isPending ? "Loading..." : "Guest",
+              email: "",
+              avatar: "",
+          };
+
     return (
         <Sidebar variant="inset" {...props}>
             <SidebarHeader>
@@ -154,12 +169,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
-                <NavProjects projects={data.projects} />
-                <NavSecondary className="mt-auto" items={data.navSecondary} />
+                <NavMain items={dataMock.navMain} />
+                <NavProjects projects={dataMock.projects} />
+                <NavSecondary className="mt-auto" items={dataMock.navSecondary} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser user={user} />
             </SidebarFooter>
         </Sidebar>
     );

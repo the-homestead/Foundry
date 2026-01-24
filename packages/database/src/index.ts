@@ -1,10 +1,27 @@
+/** biome-ignore-all lint/performance/noNamespaceImport: Def */
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
-// biome-ignore lint/performance/noNamespaceImport: Needed for db
-import * as schema from "./schemas";
 
-// biome-ignore lint/performance/noBarrelFile: Needed for db
+// biome-ignore lint/performance/noBarrelFile: Def
+export { eq, sql } from "drizzle-orm";
+
+import { Pool } from "pg";
+import * as schemaModules from "./schemas";
+import { accountTable, apikeyTable, sessionTable, twoFactorTable, userTable, verificationTable } from "./schemas/users/tables";
+
 export * from "./schemas";
+
+const schema = {
+    ...schemaModules,
+    user: userTable,
+    session: sessionTable,
+    account: accountTable,
+    verification: verificationTable,
+    twofactor: twoFactorTable,
+    apikey: apikeyTable,
+    passkey: schemaModules.passkeyTable,
+} as const;
+
+export { schema };
 
 const { Dotenv } = require("dotenv-mono");
 const dotenv = new Dotenv(/* config */);

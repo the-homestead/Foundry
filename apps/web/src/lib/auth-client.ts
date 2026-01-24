@@ -1,12 +1,23 @@
-import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins";
+import { passkeyClient } from "@better-auth/passkey/client";
+import { apiKeyClient, inferAdditionalFields, lastLoginMethodClient, twoFactorClient, usernameClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+// reuse a single regex instance at module scope to avoid recreating it on every call
+const TRAILING_SLASH_RE = /\/$/;
+
 // Create and export the auth client
 export const authClient = createAuthClient({
     baseURL: process.env.NEXT_SERVER_APP_URL,
+    fetchOptions: {
+        credentials: "include",
+    },
     plugins: [
+        apiKeyClient(),
+        lastLoginMethodClient(),
+        passkeyClient(),
+        usernameClient(),
         twoFactorClient({
             onTwoFactorRedirect: () => {
                 // Redirect to the two-factor page
@@ -15,6 +26,18 @@ export const authClient = createAuthClient({
         }),
         inferAdditionalFields({
             user: {
+                age: {
+                    type: "number",
+                },
+                firstName: {
+                    type: "string",
+                },
+                lastName: {
+                    type: "string",
+                },
+                lastLoginMethod: {
+                    type: "string",
+                },
                 roles: {
                     type: "string[]",
                 },
@@ -25,6 +48,20 @@ export const authClient = createAuthClient({
 
 // Auth methods
 export const { signIn, signOut, signUp, useSession } = authClient;
+
+/**
+ * Helper to start a provider OAuth flow by redirecting to the backend OAuth endpoint.
+ * Uses `NEXT_SERVER_APP_URL` if available, otherwise redirects to a relative `/auth/oauth/:provider`.
+ */
+export function signInWithProvider(provider: string) {
+    const target = `${process.env.NEXT_SERVER_APP_URL}/api/auth/oauth/${provider}`;
+    window.location.href = target.replace(TRAILING_SLASH_RE, "");
+}
+
+export function signUpWithProvider(provider: string) {
+    // many providers use the same endpoint for sign-in/sign-up, redirect to the same path
+    signInWithProvider(provider);
+}
 
 // Two-factor methods
 export const twoFactor = authClient.twoFactor;

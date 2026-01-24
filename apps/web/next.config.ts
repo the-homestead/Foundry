@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
+require("dotenv-mono").load({
+    path: "./.env",
+});
 const nextConfig: NextConfig = {
     images: {
         formats: ["image/avif", "image/webp"],

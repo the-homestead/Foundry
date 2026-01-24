@@ -19,6 +19,8 @@
         "hooks": "@foundry/ui/hooks"
     },
     "registries": {
-        "@heroicons-animated": "https://www.heroicons-animated.com/r/{name}.json"
+        "@heroicons-animated": "https://www.heroicons-animated.com/r/{name}.json",
+        "@aceternity": "https://ui.aceternity.com/registry/{name}.json",
+        "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json"
     }
 }

@@ -5,7 +5,12 @@
             {
                 "name": "next"
             }
-        ]
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "@foundry/web/*": ["./src/*"],
+            "@foundry/types/*": ["../../packages/types/src/*"]
+        }
     },
     "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", "next.config.js", ".next/types/**/*.ts", "../../services/backend/src/lib/auth-db.ts"],
     "exclude": ["node_modules"]
