@@ -16,6 +16,7 @@
         "strict": true,
         "target": "ES2022",
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "tsBuildInfoFile": ".tsbuildinfo"
     }
 }

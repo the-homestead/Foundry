@@ -1,0 +1,16 @@
+changelog:
+  sections:
+    - title: "Enhancements"
+      labels: ["enhancement", "feature", "feat", "enhance"]
+    - title: "Fixes"
+      labels: ["bug", "fix"]
+    - title: "Documentation"
+      labels: ["docs", "documentation"]
+    - title: "Refactors"
+      labels: ["refactor"]
+    - title: "Chore"
+      labels: ["chore", "maintenance", "deps"]
+    - title: "Security"
+      labels: ["security"]
+  exclude:
+    labels: ["skip-changelog", "no-changelog"]

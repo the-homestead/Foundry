@@ -1,0 +1,36 @@
+"area: web":
+  - "apps/web/**"
+
+"area: desktop":
+  - "apps/desktop/**"
+
+"area: backend":
+  - "services/backend/**"
+
+"area: discord":
+  - "services/discord/**"
+
+"area: ui":
+  - "packages/ui/**"
+
+"area: database":
+  - "packages/database/**"
+
+"area: types":
+  - "packages/types/**"
+
+"area: configs":
+  - "packages/configs/**"
+  - "packages/config_ts/**"
+
+"area: docs":
+  - "**/*.md"
+  - ".github/**"
+
+"area: tooling":
+  - "biome.jsonc"
+  - "lefthook.yml"
+  - "package.json"
+  - "pnpm-lock.yaml"
+  - "pnpm-workspace.yaml"
+  - "turbo.json"
