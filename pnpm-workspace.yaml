@@ -10,7 +10,7 @@ catalog:
   '@hono/standard-validator': ^0.2.2
   '@radix-ui/react-slot': 1.2.4
   '@tailwindcss/postcss': ^4.1.18
-  '@types/node': ^24.10.9
+  '@types/node': ^25.0.10
   '@types/react': ^19
   '@types/react-dom': ^19.2.3
   class-variance-authority: 0.7.1
