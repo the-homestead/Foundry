@@ -118,7 +118,8 @@ export function AccountPageClient() {
             }
             const params = new URLSearchParams(searchParams.toString());
             params.set("tab", nextTab);
-            router.push(`${pathname}?${params.toString()}`);
+            const nextUrl = `${pathname}?${params.toString()}`;
+            router.push(nextUrl as never);
         },
         [activeTab, pathname, router, searchParams]
     );

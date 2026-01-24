@@ -1,6 +1,8 @@
 import { auth } from "@foundry/backend/lib/auth.js";
 import { createRouter } from "@foundry/backend/lib/create-app.js";
 import { CLI_PUBLIC_KEY, LAUNCHER_FREE, LAUNCHER_PREMIUM, ORG_CI_KEY, toApiKeyPermissions } from "@foundry/types/permissions/api-key";
+import { APIError } from "../lib/errors.js";
+import { createApiKeyService } from "../lib/services/api-keys.js";
 
 const router = createRouter();
 
@@ -29,41 +31,27 @@ const parseExpiresIn = (value: unknown) => {
 };
 
 router.post("/", async (c) => {
-    try {
-        const sessionResult = await auth.api.getSession({
-            headers: c.req.raw.headers,
-        });
+    const sessionResult = await auth.api.getSession({
+        headers: c.req.raw.headers,
+    });
 
-        if (!sessionResult?.user) {
-            return c.json({ error: "unauthorized" }, 401);
-        }
-
-        const body = await c.req.json().catch(() => ({}));
-        const bodyRecord = typeof body === "object" && body !== null ? (body as Record<string, unknown>) : {};
-        const name = typeof bodyRecord.name === "string" ? bodyRecord.name.trim() : undefined;
-        const prefix = typeof bodyRecord.prefix === "string" ? bodyRecord.prefix.trim() : undefined;
-        const profileId: ProfileId = isProfileId(bodyRecord.profileId) ? bodyRecord.profileId : "launcher-free";
-        const expiresIn = parseExpiresIn(bodyRecord.expiresIn);
-
-        const permissions = toApiKeyPermissions(PROFILE_MAP[profileId]);
-        const metadata = { profile: profileId };
-
-        const result = await auth.api.createApiKey({
-            body: {
-                name: name || undefined,
-                prefix: prefix || undefined,
-                expiresIn,
-                userId: sessionResult.user.id,
-                permissions,
-                metadata,
-            },
-        });
-
-        return c.json(result);
-    } catch (error) {
-        const message = error instanceof Error ? error.message : "Failed to create API key.";
-        return c.json({ error: message }, 400);
+    if (!sessionResult?.user) {
+        throw new APIError("UNAUTHORIZED", "Authentication required", "client", 401);
     }
+
+    const body = await c.req.json().catch(() => ({}));
+    const bodyRecord = typeof body === "object" && body !== null ? (body as Record<string, unknown>) : {};
+    const name = typeof bodyRecord.name === "string" ? bodyRecord.name.trim() : undefined;
+    const prefix = typeof bodyRecord.prefix === "string" ? bodyRecord.prefix.trim() : undefined;
+    const profileId: ProfileId = isProfileId(bodyRecord.profileId) ? bodyRecord.profileId : "launcher-free";
+    const expiresIn = parseExpiresIn(bodyRecord.expiresIn);
+
+    const permissions = toApiKeyPermissions(PROFILE_MAP[profileId]);
+    const metadata = { profile: profileId };
+
+    const result = await createApiKeyService(sessionResult.user.id, name, prefix, expiresIn, permissions, metadata);
+
+    return c.json(result);
 });
 
 export default router;

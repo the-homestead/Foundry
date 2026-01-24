@@ -4,6 +4,7 @@
     "scripts": {
         "dev": "tsx watch src/index.ts",
         "build": "tsc",
+        "te": "node --import ./instrument.mjs src/index.ts",
         "start": "node dist/index.js",
         "db:auth": "node --loader tsx/cjs ./src/lib/auth-db.ts"
     },
@@ -14,6 +15,10 @@
         "@foundry/types": "workspace:*",
         "@hono/node-server": "catalog:",
         "@hono/standard-validator": "catalog:",
+        "@hono/swagger-ui": "^0.5.3",
+        "@hono/zod-openapi": "^1.2.0",
+        "@sentry/node": "^10.36.0",
+        "@sentry/profiling-node": "^10.36.0",
         "bcryptjs": "catalog:",
         "better-auth": "catalog:",
         "dotenv-mono": "catalog:",

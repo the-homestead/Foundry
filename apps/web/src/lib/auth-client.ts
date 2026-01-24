@@ -90,12 +90,12 @@ export const useCurrentUserOrRedirect = (forbiddenUrl = "/auth/sign-in", okUrl =
             if (!data?.user) {
                 // redirect to forbidden url unless explicitly ignored
                 if (!ignoreForbidden) {
-                    router.push(forbiddenUrl);
+                    router.push(forbiddenUrl as never);
                 }
                 // if ignoreforbidden is true, we do nothing and let the hook return the null user
             } else if (okUrl) {
                 // if user is found and an okurl is provided, redirect there
-                router.push(okUrl);
+                router.push(okUrl as never);
             }
         }
         // depend on loading state, user data, router instance, and redirect urls

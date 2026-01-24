@@ -17,6 +17,7 @@
         "@foundry/database": "workspace:*",
         "@foundry/types": "workspace:*",
         "@foundry/ui": "workspace:*",
+        "@sentry/nextjs": "^10.36.0",
         "@tanstack/react-form": "catalog:",
         "better-auth": "catalog:",
         "dotenv-mono": "catalog:",

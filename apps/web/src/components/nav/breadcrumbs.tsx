@@ -35,7 +35,7 @@ export const Breadcrumbs = ({ className, rootLabel = "Home", labelMap, showRootO
                 href,
                 label,
                 isLast: index === segments.length - 1,
-            } as const;
+            };
         });
     }, [labelMap, pathname]);
 
@@ -67,7 +67,7 @@ export const Breadcrumbs = ({ className, rootLabel = "Home", labelMap, showRootO
                                 <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                             ) : (
                                 <BreadcrumbLink asChild>
-                                    <Link href={crumb.href}>{crumb.label}</Link>
+                                    <Link href={crumb.href as never}>{crumb.label}</Link>
                                 </BreadcrumbLink>
                             )}
                         </BreadcrumbItem>
