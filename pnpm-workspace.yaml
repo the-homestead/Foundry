@@ -78,7 +78,7 @@ catalog:
   embla-carousel-react: ^8.6.0
   execa: ^9.6.1
   fs-extra: ^11.3.3
-  hono: ^4.11.4
+  hono: ^4.11.5
   hono-openapi: ^1.1.2
   hono-rate-limiter: ^0.5.3
   input-otp: ^1.4.2
