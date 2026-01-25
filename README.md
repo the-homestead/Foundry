@@ -94,7 +94,7 @@ pnpm turbo build
 These appear in `turbo.json` and are used across the monorepo:
 
 - `NEXT_PUBLIC_APP_URL` — public URL (client)
-- `NEXT_SERVER_APP_URL` — server base URL (backend & auth)
+- `NEXT_PUBLIC_SERVER_APP_URL` — server base URL (backend & auth)
 - `DATABASE_URL` — Postgres connection string (required)
 - `AUTH_SECRET` — better-auth secret
 - OAuth (optional): `AUTH_GOOGLE_ID/SECRET`, `AUTH_GITHUB_ID/SECRET`, `AUTH_DISCORD_ID/SECRET`

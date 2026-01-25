@@ -5,9 +5,9 @@
     "author": "ItzDabbzz",
     "private": true,
     "scripts": {
-        "dev": "next dev --port 3200",
-        "build": "next build",
-        "start": "next start --port 3200",
+        "dev": "dotenv-mono -- next dev --port 3200",
+        "build": "dotenv-mono -- next build",
+        "start": "dotenv-mono -- next start --port 3200",
         "check-types": "tsc --noEmit"
     },
     "dependencies": {

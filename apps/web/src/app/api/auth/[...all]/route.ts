@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
 const HOP_BY_HOP_HEADERS = new Set(["connection", "keep-alive", "proxy-authenticate", "proxy-authorization", "te", "trailers", "transfer-encoding", "upgrade"]);
+const STRIP_API_AUTH_RE = /\/api\/auth\/?$/i;
+const TRAILING_SLASH_RE = /\/$/;
 
 const buildForwardHeaders = (request: Request) => {
     const headers = new Headers();
@@ -15,7 +17,11 @@ const buildForwardHeaders = (request: Request) => {
 };
 
 const forwardRequest = async (request: Request) => {
-    const backend = process.env.NEXT_SERVER_APP_URL ?? "";
+    const backendRaw = process.env.NEXT_PUBLIC_SERVER_APP_URL ?? "";
+    // Allow NEXT_PUBLIC_SERVER_APP_URL to include or omit the `/api/auth` suffix.
+    // Normalize it to the host-only form so we don't accidentally double up paths
+    // when proxying (e.g. avoid .../api/auth/api/auth/...).
+    const backend = backendRaw.replace(STRIP_API_AUTH_RE, "").replace(TRAILING_SLASH_RE, "");
     if (!backend) {
         return NextResponse.json({ error: "Missing backend URL" }, { status: 500 });
     }

@@ -193,7 +193,7 @@ Most formatting and common issues are automatically fixed by Biome. Run `pnpm dl
 ### Environment Variables
 
 Key environment variables (defined in turbo.json):
-- `NEXT_PUBLIC_APP_URL`, `NEXT_SERVER_APP_URL`
+- `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SERVER_APP_URL`
 - `DATABASE_URL`
 - `AUTH_SECRET`, `AUTH_*_ID`, `AUTH_*_SECRET` (OAuth providers)
 

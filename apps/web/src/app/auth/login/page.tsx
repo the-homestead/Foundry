@@ -11,7 +11,6 @@ export default function LoginPage() {
     const handleSocial = async (provider: string) => {
         await authClient.signIn.social({ provider });
     };
-
     const handlePasskey = async () => {
         const result = await authClient.signIn.passkey({
             autoFill: false,

@@ -7,9 +7,15 @@ import { useEffect } from "react";
 // reuse a single regex instance at module scope to avoid recreating it on every call
 const TRAILING_SLASH_RE = /\/$/;
 
+// Normalize the configured server URL so callers can provide either the root host
+// (e.g. https://node.homestead.systems) or the full auth path
+// (e.g. https://node.homestead.systems/api/auth). We prefer the host-only form
+// and strip an optional trailing `/api/auth` to avoid duplicated paths.
+const _SERVER_URL = (process.env.NEXT_PUBLIC_SERVER_APP_URL ?? "https://node.homestead.systems").replace(/\/api\/auth\/?$/i, "").replace(/\/$/, "");
+
 // Create and export the auth client
 export const authClient = createAuthClient({
-    baseURL: process.env.NEXT_SERVER_APP_URL,
+    baseURL: _SERVER_URL,
     fetchOptions: {
         credentials: "include",
     },
@@ -51,10 +57,10 @@ export const { signIn, signOut, signUp, useSession } = authClient;
 
 /**
  * Helper to start a provider OAuth flow by redirecting to the backend OAuth endpoint.
- * Uses `NEXT_SERVER_APP_URL` if available, otherwise redirects to a relative `/auth/oauth/:provider`.
+ * Uses `NEXT_PUBLIC_SERVER_APP_URL` if available, otherwise redirects to a relative `/auth/oauth/:provider`.
  */
 export function signInWithProvider(provider: string) {
-    const target = `${process.env.NEXT_SERVER_APP_URL}/api/auth/oauth/${provider}`;
+    const target = `${_SERVER_URL}/api/auth/oauth/${provider}`;
     window.location.href = target.replace(TRAILING_SLASH_RE, "");
 }
 
