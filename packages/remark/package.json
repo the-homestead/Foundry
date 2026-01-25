@@ -1,0 +1,50 @@
+{
+    "name": "@foundry/remark",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "type": "module",
+    "scripts": {
+        "build": "tsc",
+        "typecheck": "tsc --noEmit",
+        "typecheck:coverage": "type-coverage --strict --detail --min=100"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "packageManager": "pnpm@10.28.0",
+    "engines": {
+        "node": ">=25.2.1"
+    },
+    "devDependencies": {
+        "@foundry/config_ts": "workspace:*",
+        "@foundry/types": "workspace:*",
+        "@types/node": "catalog:",
+        "unified": "^11.0.5",
+        "rehype-minify-whitespace": "^6.0.0",
+        "rehype-parse": "^9.0.1",
+        "rehype-stringify": "^10.0.0",
+        "remark-directive": "^4.0.0",
+        "remark-imgattr": "^1.0.5",
+        "remark-parse": "^11.0.0",
+        "remark-rehype": "^11.1.2",
+        "rehype": "^13.0.2",
+        "remark": "^15.0.1",
+        "typescript": "catalog:"
+    },
+    "files": [
+        "dist"
+    ],
+    "peerDependencies": {
+        "remark-directive": "^4.0.0"
+    },
+    "dependencies": {
+        "@types/hast": "^3.0.4",
+        "@types/mdast": "^4.0.4",
+        "hastscript": "^9.0.1",
+        "mdast-util-directive": "^3.1.0",
+        "mdast-util-to-hast": "^13.2.1",
+        "unist-util-visit": "^5.1.0"
+    }
+}

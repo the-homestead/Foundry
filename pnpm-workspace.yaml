@@ -123,14 +123,21 @@ catalog:
   vaul: ^1.1.2
   zod: ^4.3.6
 
+cleanupUnusedCatalogs: true
+
 configDependencies:
   '@pnpm/plugin-types-fixer': 0.1.0+sha512-bLww63gRHi7siYTqFJb5qNdcXadU0jv20Et6z5AryMZ7FlLolbEJOrXLpg8+amQZNHHNW1dfFUBGVw/9ezQbFg==
+
+linkWorkspacePackages: true
 
 onlyBuiltDependencies:
   - '@sentry-internal/node-cpu-profiler'
   - '@sentry/cli'
   - '@tsparticles/engine'
+  - core-js
   - esbuild
   - lefthook
   - msw
   - sharp
+
+preferWorkspacePackages: true

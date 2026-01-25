@@ -127,6 +127,10 @@
             "./src/components/*.tsx"
         ],
         "./components/auth/*": "./src/components/auth/*.tsx",
-        "./primitives/*": "./src/primitives/*.tsx"
+        "./primitives/*": "./src/primitives/*.tsx",
+        "./typography/*": [
+            "./src/typography/*.ts",
+            "./src/typography/*.tsx"
+        ]
     }
 }
