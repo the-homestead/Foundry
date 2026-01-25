@@ -1,6 +1,6 @@
 import type * as z from "zod";
-import { API_KEY_PROFILES } from "./constants";
-import type { FieldErrorMap } from "./types";
+import { API_KEY_PROFILES } from "./types/constants";
+import type { FieldErrorMap } from "./types/types";
 
 export const buildErrorMap = (issues: z.ZodIssue[]): FieldErrorMap => {
     const map: FieldErrorMap = {};

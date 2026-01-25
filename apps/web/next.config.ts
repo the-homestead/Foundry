@@ -24,11 +24,15 @@ const nextConfig: NextConfig = {
         mdxRs: true,
     },
     images: {
-        loader: "custom",
-        loaderFile: "./scripts/image-loader.ts",
+        // loader: "custom",
+        // loaderFile: "./scripts/image-loader.ts",
         formats: ["image/avif", "image/webp"],
         remotePatterns: [
             { hostname: "**.githubassets.com", protocol: "https" },
+            { hostname: "**.github.com", protocol: "https" },
+            { hostname: "github.com", protocol: "https" },
+            { hostname: "icons.duckduckgo.com", protocol: "https" },
+            { hostname: "images.pexels.com", protocol: "https" },
             { hostname: "**.githubusercontent.com", protocol: "https" },
             { hostname: "**.googleusercontent.com", protocol: "https" },
             { hostname: "**.ufs.sh", protocol: "https" },

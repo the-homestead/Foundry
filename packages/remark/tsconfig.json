@@ -1,0 +1,19 @@
+{
+    "extends": "@foundry/config_ts/base.json",
+    "compilerOptions": {
+        "target": "es2022",
+        "lib": ["es2022", "dom"],
+        "module": "nodenext",
+        "outDir": "dist",
+        "declaration": true,
+        "declarationMap": false,
+        "declarationDir": "dist",
+        "emitDeclarationOnly": false,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipDefaultLibCheck": false,
+        "rootDir": "./src",
+        "baseUrl": ".",
+        "paths": { "@foundry/remark/": ["./src/*"] }
+    }
+}

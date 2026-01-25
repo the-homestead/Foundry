@@ -10,11 +10,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type * as z from "zod";
 
 import { ApiKeysTab } from "./api-keys-tab";
-import { ACCOUNT_TABS, API_KEY_PROFILES, TAB_LABELS } from "./constants";
 import { ProfileTab } from "./profile-tab";
-import { accountSchema } from "./schema";
 import { SecurityTab } from "./security-tab";
-import type { AccountDefaults, AccountTab, ApiKeyEntry, FieldErrorMap, StatusMessage } from "./types";
+import { ACCOUNT_TABS, API_KEY_PROFILES, TAB_LABELS } from "./types/constants";
+import { accountSchema } from "./types/schema";
+import type { AccountDefaults, AccountTab, ApiKeyEntry, FieldErrorMap, StatusMessage } from "./types/types";
+
 import { buildErrorMap, parseAge, toSecondsFromDays } from "./utils";
 
 const createApiKeyOnServer = async (input: { name?: string; prefix?: string; expiresIn?: number; profileId?: string }) => {

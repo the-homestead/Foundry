@@ -332,7 +332,7 @@ export const CodeBlockFilename = ({ className, icon, value, children, ...props }
         return regex.test(children as string);
     })?.[1];
     const Icon = icon ?? defaultIcon;
-
+    console.log("CodeBlockFilename", value);
     if (value !== activeValue) {
         return null;
     }

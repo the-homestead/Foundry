@@ -7,10 +7,9 @@ import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet 
 import { Input } from "@foundry/ui/primitives/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@foundry/ui/primitives/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@foundry/ui/primitives/table";
-
-import { API_KEY_PROFILES } from "./constants";
 import { FieldHint } from "./field-hint";
-import type { ApiKeyEntry, StatusMessage } from "./types";
+import { API_KEY_PROFILES } from "./types/constants";
+import type { ApiKeyEntry, StatusMessage } from "./types/types";
 import { formatDate, getProfileLabel } from "./utils";
 
 interface ApiKeysTabProps {

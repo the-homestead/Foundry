@@ -166,3 +166,17 @@
 *::-webkit-scrollbar-thumb:hover {
     background-color: var(--muted-foreground);
 }
+
+.md-comment {
+    color: #888;
+    font-style: italic;
+    margin: 0.5em 0;
+    padding-left: 1em;
+    border-left: 2px solid #eee;
+}
+.md-comment--important {
+    color: #b71c1c;
+    font-weight: bold;
+    border-left: 2px solid #b71c1c;
+    background: #fff3f3;
+}

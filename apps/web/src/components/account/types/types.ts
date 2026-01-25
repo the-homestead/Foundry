@@ -2,7 +2,7 @@ import type { CLI_PUBLIC_KEY } from "@foundry/types/permissions/api-key";
 import type { FormAsyncValidateOrFn, FormValidateOrFn, ReactFormExtendedApi } from "@tanstack/react-form";
 import type * as z from "zod";
 
-import type { ACCOUNT_TABS } from "./constants";
+import type { ACCOUNT_TABS } from "../constants";
 import type { accountSchema } from "./schema";
 
 export interface FieldErrorMap {
