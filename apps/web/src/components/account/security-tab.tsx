@@ -6,7 +6,7 @@ import { FieldDescription } from "@foundry/ui/primitives/field";
 
 import { PasswordCard } from "./password-card";
 import { TwoFactorCard } from "./two-factor-card";
-import type { AccountForm, FieldErrorMap, StatusMessage } from "./types";
+import type { AccountForm, FieldErrorMap, StatusMessage } from "./types/types";
 
 interface SecurityTabProps {
     form: AccountForm;

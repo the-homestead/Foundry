@@ -10,7 +10,7 @@ import { Input } from "@foundry/ui/primitives/input";
 import { Label } from "@foundry/ui/primitives/label";
 
 import { FieldHint } from "./field-hint";
-import type { StatusMessage } from "./types";
+import type { StatusMessage } from "./types/types";
 
 interface TwoFactorCardProps {
     twoFactorEnabled: boolean;

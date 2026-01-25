@@ -9,7 +9,7 @@ import { Input } from "@foundry/ui/primitives/input";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@foundry/ui/primitives/input-group";
 
 import { FieldHint } from "./field-hint";
-import type { AccountForm, FieldErrorMap, StatusMessage } from "./types";
+import type { AccountForm, FieldErrorMap, StatusMessage } from "./types/types";
 
 interface ProfileTabProps {
     form: AccountForm;

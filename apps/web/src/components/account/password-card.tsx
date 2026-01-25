@@ -6,7 +6,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet 
 import { Input } from "@foundry/ui/primitives/input";
 
 import { FieldHint } from "./field-hint";
-import type { AccountForm, FieldErrorMap, StatusMessage } from "./types";
+import type { AccountForm, FieldErrorMap, StatusMessage } from "./types/types";
 
 interface PasswordCardProps {
     form: AccountForm;

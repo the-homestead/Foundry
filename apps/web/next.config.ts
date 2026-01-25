@@ -1,4 +1,3 @@
-import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const path = require("node:path");
@@ -25,11 +24,15 @@ const nextConfig: NextConfig = {
         mdxRs: true,
     },
     images: {
-        loader: "custom",
-        loaderFile: "./scripts/image-loader.ts",
+        // loader: "custom",
+        // loaderFile: "./scripts/image-loader.ts",
         formats: ["image/avif", "image/webp"],
         remotePatterns: [
             { hostname: "**.githubassets.com", protocol: "https" },
+            { hostname: "**.github.com", protocol: "https" },
+            { hostname: "github.com", protocol: "https" },
+            { hostname: "icons.duckduckgo.com", protocol: "https" },
+            { hostname: "images.pexels.com", protocol: "https" },
             { hostname: "**.githubusercontent.com", protocol: "https" },
             { hostname: "**.googleusercontent.com", protocol: "https" },
             { hostname: "**.ufs.sh", protocol: "https" },
@@ -40,41 +43,43 @@ const nextConfig: NextConfig = {
     },
 };
 
-export default withSentryConfig(nextConfig, {
-    // For all available options, see:
-    // https://www.npmjs.com/package/@sentry/webpack-plugin#options
+export default nextConfig;
 
-    org: "sentry",
+// export default withSentryConfig(nextConfig, {
+//     // For all available options, see:
+//     // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-    project: "foundry-web",
-    sentryUrl: "https://sentry.myhm.space/",
+//     org: "sentry",
 
-    // Only print logs for uploading source maps in CI
-    silent: !process.env.CI,
+//     project: "foundry-web",
+//     sentryUrl: "https://sentry.myhm.space/",
 
-    // For all available options, see:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+//     // Only print logs for uploading source maps in CI
+//     silent: !process.env.CI,
 
-    // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
+//     // For all available options, see:
+//     // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
-    // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-    // This can increase your server load as well as your hosting bill.
-    // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-    // side errors will fail.
-    tunnelRoute: "/monitoring",
+//     // Upload a larger set of source maps for prettier stack traces (increases build time)
+//     widenClientFileUpload: true,
 
-    webpack: {
-        // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-        // See the following for more information:
-        // https://docs.sentry.io/product/crons/
-        // https://vercel.com/docs/cron-jobs
-        automaticVercelMonitors: true,
+//     // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+//     // This can increase your server load as well as your hosting bill.
+//     // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
+//     // side errors will fail.
+//     //   tunnelRoute: "/monitoring",
 
-        // Tree-shaking options for reducing bundle size
-        treeshake: {
-            // Automatically tree-shake Sentry logger statements to reduce bundle size
-            removeDebugLogging: true,
-        },
-    },
-});
+//     webpack: {
+//         // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
+//         // See the following for more information:
+//         // https://docs.sentry.io/product/crons/
+//         // https://vercel.com/docs/cron-jobs
+//         automaticVercelMonitors: true,
+
+//         // Tree-shaking options for reducing bundle size
+//         treeshake: {
+//             // Automatically tree-shake Sentry logger statements to reduce bundle size
+//             removeDebugLogging: true,
+//         },
+//     },
+// });
