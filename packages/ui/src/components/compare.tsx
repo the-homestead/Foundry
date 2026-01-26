@@ -234,4 +234,5 @@ export const Compare = ({
 };
 
 const MemoizedSparklesCore = React.memo(SparklesCore);
-const MotionImage = motion(Image);
+// Create a Motion-enabled Image component with the new API
+const MotionImage = motion.create(Image);

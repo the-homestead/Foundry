@@ -1,42 +1,51 @@
 import { type NextRequest, NextResponse } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
 
-const allowedOrigins = ["https://sentry.myhm.space", "https://homestead.systems", "http://localhost:3200", "http://localhost:3100"];
+const nextIntlMiddleware = createMiddleware(routing);
+
+const allowedOrigins = ["https://sentry.myhm.space", "https://homestead.systems", "https://foundry.homestead.systems", "http://localhost:3200", "http://localhost:3100"];
 
 const corsOptions = {
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
-// Proxy function to handle CORS for API routes
-export function proxy(request: NextRequest) {
-    // Check the origin from the request
-    const origin = request.headers.get("origin") ?? "";
-    const isAllowedOrigin = allowedOrigins.includes(origin);
 
-    // Handle preflighted requests
-    const isPreflight = request.method === "OPTIONS";
+export default function middleware(request: NextRequest) {
+    const path = request.nextUrl.pathname;
 
-    if (isPreflight) {
-        const preflightHeaders = {
-            ...(isAllowedOrigin && { "Access-Control-Allow-Origin": origin }),
-            ...corsOptions,
-        };
-        return NextResponse.json({}, { headers: preflightHeaders });
+    // Handle API / trpc CORS first
+    if (path.startsWith("/api") || path.startsWith("/trpc")) {
+        const origin = request.headers.get("origin") ?? "";
+        const isAllowedOrigin = allowedOrigins.includes(origin);
+        const isPreflight = request.method === "OPTIONS";
+
+        if (isPreflight) {
+            const headers = {
+                ...(isAllowedOrigin && { "Access-Control-Allow-Origin": origin }),
+                ...corsOptions,
+            };
+            return NextResponse.json({}, { headers });
+        }
+
+        const res = NextResponse.next();
+        if (isAllowedOrigin) {
+            res.headers.set("Access-Control-Allow-Origin", origin);
+        }
+        for (const [k, v] of Object.entries(corsOptions)) {
+            res.headers.set(k, v);
+        }
+        return res;
     }
 
-    // Handle simple requests
-    const response = NextResponse.next();
-
-    if (isAllowedOrigin) {
-        response.headers.set("Access-Control-Allow-Origin", origin);
-    }
-
-    for (const [key, value] of Object.entries(corsOptions)) {
-        response.headers.set(key, value);
-    }
-
-    return response;
+    // Non-API: delegate to next-intl
+    return nextIntlMiddleware(request);
 }
 
 export const config = {
-    matcher: "/api/:path*",
+    matcher: [
+        "/api/:path*",
+        // next-intl matcher (everything except api|trpc|_next|_vercel|static files)
+        "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+    ],
 };

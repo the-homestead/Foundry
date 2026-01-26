@@ -1,0 +1,42 @@
+{
+    "HomePage": {
+        "title": "Foundry"
+    },
+    "AccountPage": {
+        "title": "Account settings",
+        "description": "Manage your profile, security, and API access.",
+        "heading": "Account settings",
+        "tabs": {
+            "profile": "Profile",
+            "security": "Security",
+            "api-keys": "API keys"
+        },
+        "save": "Save changes",
+        "saving": "Saving...",
+        "reset": "Reset",
+        "signOut": "Sign out",
+        "signInRequiredTitle": "Sign in required",
+        "signInRequiredDescription": "Please sign in to manage your account settings.",
+        "goToSignIn": "Go to sign in",
+        "apiKeyCreated": "API key created.",
+        "apiKeyDeleted": "API key deleted.",
+        "apiKeyCopied": "API key copied to clipboard.",
+        "apiKeyCopyFailed": "Unable to copy API key.",
+        "loading": "Loading your account details...",
+        "mustSignIn": "You must be signed in to update your account.",
+        "saveFailed": "Something went wrong while saving.",
+        "accountUpdated": "Account settings updated.",
+        "security": {
+            "title": "Security",
+            "description": "Manage your password and account protection.",
+            "passwordLegend": "Password",
+            "currentPassword": "Current password",
+            "currentPasswordHelp": "Required to update your password.",
+            "newPassword": "New password",
+            "newPasswordHelp": "Use a strong, unique password.",
+            "confirmPassword": "Confirm password",
+            "confirmPasswordHelp": "Leave blank if you are not changing your password.",
+            "changesSync": "Changes sync to your account immediately."
+        }
+    }
+}

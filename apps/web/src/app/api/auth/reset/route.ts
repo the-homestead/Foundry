@@ -1,18 +1,9 @@
 import { NextResponse } from "next/server";
 
-const STRIP_API_AUTH_RE = /\/api\/auth\/?$/i;
-const TRAILING_SLASH_RE = /\/$/;
-
 export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
-    const backendRaw = process.env.NEXT_PUBLIC_SERVER_APP_URL ?? "";
-    if (!backendRaw) {
-        return NextResponse.json({ error: "Missing backend URL" }, { status: 500 });
-    }
-
-    const backend = backendRaw.replace(STRIP_API_AUTH_RE, "").replace(TRAILING_SLASH_RE, "");
-
-    const res = await fetch(`${backend}/api/auth/reset`, {
+    // call local auth endpoint
+    const res = await fetch("/api/auth/reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

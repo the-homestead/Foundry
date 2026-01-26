@@ -4,7 +4,7 @@ import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@foundry/ui/primitives/field";
 import { Input } from "@foundry/ui/primitives/input";
-
+import { useTranslations } from "next-intl";
 import { FieldHint } from "./field-hint";
 import type { AccountForm, FieldErrorMap, StatusMessage } from "./types/types";
 
@@ -19,11 +19,12 @@ interface PasswordCardProps {
 }
 
 export function PasswordCard({ form, fieldErrors, formMessage, isSaving, clearFieldError, onReset, onSubmit }: PasswordCardProps) {
+    const t = useTranslations("AccountPage");
     return (
         <Card>
             <CardHeader className="text-center">
-                <CardTitle className="text-center">Security</CardTitle>
-                <CardDescription className="text-center">Manage your password and account protection.</CardDescription>
+                <CardTitle className="text-center">{t("security.title")}</CardTitle>
+                <CardDescription className="text-center">{t("security.description")}</CardDescription>
             </CardHeader>
             <CardContent>
                 <form
@@ -34,13 +35,13 @@ export function PasswordCard({ form, fieldErrors, formMessage, isSaving, clearFi
                 >
                     <div className="space-y-8">
                         <FieldSet>
-                            <FieldLegend>Password</FieldLegend>
+                            <FieldLegend>{t("security.passwordLegend")}</FieldLegend>
                             <FieldGroup>
                                 <div className="grid gap-6 lg:grid-cols-3">
                                     <Field>
                                         <FieldLabel className="w-full justify-center text-center" htmlFor="currentPassword">
-                                            Current password
-                                            <FieldHint label="Current password help" text="Required to update your password." />
+                                            {t("security.currentPassword")}
+                                            <FieldHint label={t("security.currentPassword")} text={t("security.currentPasswordHelp")} />
                                         </FieldLabel>
                                         <form.Field name="currentPassword">
                                             {(field) => (
@@ -57,8 +58,8 @@ export function PasswordCard({ form, fieldErrors, formMessage, isSaving, clearFi
                                     </Field>
                                     <Field>
                                         <FieldLabel className="w-full justify-center text-center" htmlFor="newPassword">
-                                            New password
-                                            <FieldHint label="New password help" text="Use a strong, unique password." />
+                                            {t("security.newPassword")}
+                                            <FieldHint label={t("security.newPassword")} text={t("security.newPasswordHelp")} />
                                         </FieldLabel>
                                         <form.Field name="newPassword">
                                             {(field) => (
@@ -75,8 +76,8 @@ export function PasswordCard({ form, fieldErrors, formMessage, isSaving, clearFi
                                     </Field>
                                     <Field>
                                         <FieldLabel className="w-full justify-center text-center" htmlFor="confirmPassword">
-                                            Confirm password
-                                            <FieldHint label="Confirm password help" text="Leave blank if you are not changing your password." />
+                                            {t("security.confirmPassword")}
+                                            <FieldHint label={t("security.confirmPassword")} text={t("security.confirmPasswordHelp")} />
                                         </FieldLabel>
                                         <form.Field name="confirmPassword">
                                             {(field) => (
@@ -108,13 +109,13 @@ export function PasswordCard({ form, fieldErrors, formMessage, isSaving, clearFi
                         <CardFooter className="flex flex-col items-start gap-3 border-t pt-6">
                             <div className="flex flex-wrap items-center gap-3">
                                 <Button disabled={isSaving} type="submit">
-                                    {isSaving ? "Saving..." : "Save changes"}
+                                    {isSaving ? t("saving") : t("save")}
                                 </Button>
                                 <Button disabled={isSaving} onClick={onReset} type="button" variant="outline">
-                                    Reset
+                                    {t("reset")}
                                 </Button>
                             </div>
-                            <FieldDescription>Changes sync to your account immediately.</FieldDescription>
+                            <FieldDescription>{t("security.changesSync")}</FieldDescription>
                         </CardFooter>
                     </div>
                 </form>

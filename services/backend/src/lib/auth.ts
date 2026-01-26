@@ -4,7 +4,8 @@ import { db, schema } from "@foundry/database";
 import { LAUNCHER_FREE, toApiKeyPermissions } from "@foundry/types/permissions/api-key";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { apiKey, haveIBeenPwned, lastLoginMethod, twoFactor, username } from "better-auth/plugins";
+import { nextCookies } from "better-auth/next-js";
+import { apiKey, haveIBeenPwned, lastLoginMethod, oAuthProxy, twoFactor, username } from "better-auth/plugins";
 
 interface GitHubProfile {
     [key: string]: unknown;
@@ -116,10 +117,18 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     advanced: {
         crossSubDomainCookies: {
             enabled: true,
+            // Ensure cookies are issued for the public hostname so the browser sends them to the frontend
+            domain: new URL(appUrl).hostname,
+        },
+        // Ensure cookies are accepted in cross-site OAuth flows
+        defaultCookieAttributes: {
+            sameSite: "none",
+            secure: true,
         },
     },
 
     baseURL: process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_SERVER_APP_URL,
+    trustedOrigins: [appUrl, process.env.NEXT_SERVER_APP_URL ?? appUrl],
 
     database: drizzleAdapter(db, {
         provider: "pg",
@@ -142,6 +151,13 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     },
 
     plugins: [
+        // Proxy OAuth flows so providers can redirect to the public frontend while the backend handles callbacks
+        oAuthProxy({
+            // Public-facing app URL (where providers will redirect)
+            productionURL: appUrl,
+            // Backend server URL (where better-auth is reachable)
+            currentURL: process.env.NEXT_SERVER_APP_URL ?? appUrl,
+        }),
         apiKey({
             enableSessionForAPIKeys: true,
             enableMetadata: true,
@@ -164,6 +180,8 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
             issuer: "Foundry",
         }),
         username(),
+        // Ensure Next.js sets cookies correctly when better-auth returns them
+        nextCookies(),
     ],
 
     secret: process.env.AUTH_SECRET,

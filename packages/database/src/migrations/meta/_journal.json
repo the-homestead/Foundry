@@ -36,6 +36,13 @@
             "when": 1769221476786,
             "tag": "0004_spooky_outlaw_kid",
             "breakpoints": true
+        },
+        {
+            "idx": 5,
+            "version": "7",
+            "when": 1769432573921,
+            "tag": "0005_red_orphan",
+            "breakpoints": true
         }
     ]
 }

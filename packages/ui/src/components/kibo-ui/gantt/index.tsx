@@ -25,7 +25,7 @@ import {
 } from "date-fns";
 import { atom, useAtom } from "jotai";
 import throttle from "lodash.throttle";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { ChevronDown, ChevronRight, PlusIcon, TrashIcon } from "lucide-react";
 import type { CSSProperties, FC, KeyboardEventHandler, MouseEventHandler, ReactNode, RefObject } from "react";
 import { createContext, memo, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
 
@@ -79,6 +79,7 @@ export interface GanttContextProps {
     timelineData: TimelineData;
     ref: RefObject<HTMLDivElement | null> | null;
     scrollToFeature?: (feature: GanttFeature) => void;
+    compact?: boolean;
 }
 
 const getsDaysIn = (range: Range) => {
@@ -652,11 +653,12 @@ export const GanttFeatureItemCard: FC<GanttFeatureItemCardProps> = ({ id, childr
     const [, setDragging] = useGanttDragging();
     const { attributes, listeners, setNodeRef } = useDraggable({ id });
     const isPressed = Boolean(attributes["aria-pressed"]);
+    const gantt = useContext(GanttContext);
 
     useEffect(() => setDragging(isPressed), [isPressed, setDragging]);
 
     return (
-        <Card className="h-full w-full rounded-md bg-background p-2 text-xs shadow-sm">
+        <Card className={cn("h-full w-full rounded-md bg-background shadow-sm", gantt?.compact ? "p-1 text-[11px]" : "p-2 text-xs")}>
             <div className={cn("flex h-full w-full items-center justify-between gap-2 text-left", isPressed && "cursor-grabbing")} {...attributes} {...listeners} ref={setNodeRef}>
                 {children}
             </div>
@@ -760,13 +762,31 @@ export const GanttFeatureItem: FC<GanttFeatureItemProps> = ({ onMove, children, 
 export interface GanttFeatureListGroupProps {
     children: ReactNode;
     className?: string;
+    name?: string;
 }
 
-export const GanttFeatureListGroup: FC<GanttFeatureListGroupProps> = ({ children, className }) => (
-    <div className={className} style={{ paddingTop: "var(--gantt-row-height)" }}>
-        {children}
-    </div>
-);
+export const GanttFeatureListGroup: FC<GanttFeatureListGroupProps> = ({ children, className, name }) => {
+    const [collapsed, setCollapsed] = useState(false);
+
+    return (
+        <div className={className} style={{ paddingTop: "var(--gantt-row-height)", marginBottom: "var(--gantt-group-gutter)" }}>
+            {name && (
+                <div className="flex items-center justify-between px-2">
+                    <button
+                        aria-expanded={!collapsed}
+                        className="inline-flex items-center gap-2 text-muted-foreground text-xs"
+                        onClick={() => setCollapsed((c) => !c)}
+                        type="button"
+                    >
+                        {collapsed ? <ChevronRight className="size-4" /> : <ChevronDown className="size-4" />}
+                        <span className="font-medium">{name}</span>
+                    </button>
+                </div>
+            )}
+            {!collapsed && <div className="pt-2">{children}</div>}
+        </div>
+    );
+};
 
 export interface GanttFeatureRowProps {
     features: GanttFeature[];
@@ -776,6 +796,8 @@ export interface GanttFeatureRowProps {
 }
 
 export const GanttFeatureRow: FC<GanttFeatureRowProps> = ({ features, onMove, children, className }) => {
+    const gantt = useContext(GanttContext);
+
     // Sort features by start date to handle potential overlaps
     const sortedFeatures = [...features].sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
 
@@ -805,7 +827,8 @@ export const GanttFeatureRow: FC<GanttFeatureRowProps> = ({ features, onMove, ch
     }
 
     const maxSubRows = Math.max(1, subRowEndTimes.length);
-    const subRowHeight = 36; // Base row height
+    // Use the gantt row height (with a minimum) to determine sub-row height so rows don't overlap
+    const subRowHeight = Math.max(36, Math.round((gantt?.rowHeight ?? 36) * 0.8));
 
     return (
         <div
@@ -902,16 +925,33 @@ export interface GanttProviderProps {
     onAddItem?: (date: Date) => void;
     children: ReactNode;
     className?: string;
+    /** Optional heights to control layout. Useful for demos/mock pages. */
+    headerHeight?: number;
+    rowHeight?: number;
+    /** Compact mode reduces padding and row density */
+    compact?: boolean;
+    /** When provided, the provider will attempt to auto-fit the timeline to these features on mount/update */
+    fitFeatures?: GanttFeature[];
 }
 
-export const GanttProvider: FC<GanttProviderProps> = ({ zoom = 100, range = "monthly", onAddItem, children, className }) => {
+export const GanttProvider: FC<GanttProviderProps> = ({
+    zoom = 100,
+    range = "monthly",
+    onAddItem,
+    children,
+    className,
+    headerHeight = 60,
+    rowHeight = 56,
+    compact = false,
+    fitFeatures,
+}) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [timelineData, setTimelineData] = useState<TimelineData>(createInitialTimelineData(new Date()));
     const [, setScrollX] = useGanttScrollX();
     const [sidebarWidth, setSidebarWidth] = useState(0);
 
-    const headerHeight = 60;
-    const rowHeight = 36;
+    // headerHeight and rowHeight can be provided via props for demos or layout tuning
+    // they are captured from function args
     let columnWidth = 50;
 
     if (range === "monthly") {
@@ -921,16 +961,20 @@ export const GanttProvider: FC<GanttProviderProps> = ({ zoom = 100, range = "mon
     }
 
     // Memoize CSS variables to prevent unnecessary re-renders
+    const [zoomState, setZoomState] = useState(zoom);
+
     const cssVariables = useMemo(
         () =>
             ({
-                "--gantt-zoom": `${zoom}`,
-                "--gantt-column-width": `${(zoom / 100) * columnWidth}px`,
+                "--gantt-zoom": `${zoomState}`,
+                "--gantt-column-width": `${(zoomState / 100) * columnWidth}px`,
                 "--gantt-header-height": `${headerHeight}px`,
                 "--gantt-row-height": `${rowHeight}px`,
                 "--gantt-sidebar-width": `${sidebarWidth}px`,
+                "--gantt-group-gutter": `${Math.round(rowHeight * 0.5)}px`,
+                "--gantt-compact": compact ? "1" : "0",
             }) as CSSProperties,
-        [zoom, columnWidth, sidebarWidth]
+        [zoomState, columnWidth, sidebarWidth, headerHeight, rowHeight, compact]
     );
 
     useEffect(() => {
@@ -1053,7 +1097,6 @@ export const GanttProvider: FC<GanttProviderProps> = ({ zoom = 100, range = "mon
             if (!scrollElement) {
                 return;
             }
-
             // Calculate timeline start date from timelineData
             const timelineStartYear = timelineData.at(0)?.year;
 
@@ -1064,8 +1107,8 @@ export const GanttProvider: FC<GanttProviderProps> = ({ zoom = 100, range = "mon
             const timelineStartDate = new Date(timelineStartYear, 0, 1);
 
             // Calculate the horizontal offset for the feature's start date
-            const offset = getOffset(feature.startAt, timelineStartDate, {
-                zoom,
+            const tempCtx: GanttContextProps = {
+                zoom: zoomState,
                 range,
                 columnWidth,
                 sidebarWidth,
@@ -1075,7 +1118,9 @@ export const GanttProvider: FC<GanttProviderProps> = ({ zoom = 100, range = "mon
                 placeholderLength: 2,
                 timelineData,
                 ref: scrollRef,
-            });
+            };
+
+            const offset = getOffset(feature.startAt, timelineStartDate, tempCtx);
 
             // Scroll to align the feature's start with the right side of the sidebar
             const targetScrollLeft = Math.max(0, offset);
@@ -1085,13 +1130,50 @@ export const GanttProvider: FC<GanttProviderProps> = ({ zoom = 100, range = "mon
                 behavior: "smooth",
             });
         },
-        [timelineData, zoom, range, columnWidth, sidebarWidth, onAddItem]
+        [timelineData, zoomState, range, columnWidth, sidebarWidth, headerHeight, rowHeight, onAddItem]
     );
+
+    // Auto-fit timeline to provided features (adjust zoom to fit horizontally)
+    useEffect(() => {
+        if (!fitFeatures || fitFeatures.length === 0 || !scrollRef.current) {
+            return;
+        }
+
+        // find min start and max end
+        const minStart = new Date(Math.min(...fitFeatures.map((f) => f.startAt.getTime())));
+        const maxEnd = new Date(Math.max(...fitFeatures.map((f) => (f.endAt ?? f.startAt).getTime())));
+
+        // approximate number of months between dates
+        const months = Math.max(1, Math.ceil((maxEnd.getTime() - minStart.getTime()) / (1000 * 3600 * 24 * 30)));
+
+        const available = (scrollRef.current.clientWidth || 1000) - sidebarWidth;
+        const baseColumn = range === "monthly" ? 150 : 100;
+        const desiredZoom = Math.max(20, Math.min(300, Math.floor((available / (months * baseColumn)) * 100)));
+        setZoomState(desiredZoom);
+
+        // Build a temporary context object for offset calculation
+        const tempCtx: GanttContextProps = {
+            zoom: desiredZoom,
+            range,
+            columnWidth: baseColumn,
+            sidebarWidth,
+            headerHeight,
+            rowHeight,
+            onAddItem,
+            placeholderLength: 2,
+            timelineData,
+            ref: scrollRef,
+        };
+
+        const offset = getOffset(minStart, new Date(timelineData.at(0)?.year ?? 0, 0, 1), tempCtx);
+
+        scrollRef.current.scrollTo({ left: Math.max(0, offset - sidebarWidth), behavior: "smooth" });
+    }, [fitFeatures, sidebarWidth, timelineData, range, headerHeight, rowHeight, onAddItem]);
 
     return (
         <GanttContext.Provider
             value={{
-                zoom,
+                zoom: zoomState,
                 range,
                 headerHeight,
                 columnWidth,
@@ -1101,6 +1183,7 @@ export const GanttProvider: FC<GanttProviderProps> = ({ zoom = 100, range = "mon
                 timelineData,
                 placeholderLength: 2,
                 ref: scrollRef,
+                compact,
                 scrollToFeature,
             }}
         >

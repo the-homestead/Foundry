@@ -8,6 +8,7 @@ import { Pool } from "pg";
 import * as schemaModules from "./schemas";
 import { accountTable, apikeyTable, sessionTable, twoFactorTable, userTable, verificationTable } from "./schemas/users/tables";
 
+export * from "./projects/queries";
 export * from "./schemas";
 
 const schema = {

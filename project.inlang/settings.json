@@ -1,0 +1,9 @@
+{
+    "$schema": "https://inlang.com/schema/project-settings",
+    "baseLocale": "en",
+    "locales": ["en", "de", "es", "fr", "it", "ja", "ko", "pt", "ru", "zh"],
+    "modules": ["https://cdn.jsdelivr.net/npm/@inlang/plugin-next-intl@latest/dist/index.js"],
+    "plugin.inlang.nextIntl": {
+        "pathPattern": "./apps/web/messages/{languageTag}.json"
+    }
+}

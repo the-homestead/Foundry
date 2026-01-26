@@ -3,19 +3,15 @@ import { apiKeyClient, inferAdditionalFields, lastLoginMethodClient, twoFactorCl
 import { createAuthClient } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { SYSTEM_CONFIG } from "../constants";
 
 // reuse a single regex instance at module scope to avoid recreating it on every call
 const TRAILING_SLASH_RE = /\/$/;
 
-// Normalize the configured server URL so callers can provide either the root host
-// (e.g. https://node.homestead.systems) or the full auth path
-// (e.g. https://node.homestead.systems/api/auth). We prefer the host-only form
-// and strip an optional trailing `/api/auth` to avoid duplicated paths.
-const _SERVER_URL = (process.env.NEXT_PUBLIC_SERVER_APP_URL ?? "https://node.homestead.systems").replace(/\/api\/auth\/?$/i, "").replace(/\/$/, "");
-
 // Create and export the auth client
+// Use the frontend proxy by default so cookies set for the public host are sent by the browser.
 export const authClient = createAuthClient({
-    baseURL: _SERVER_URL,
+    baseURL: process.env.NEXT_PUBLIC_APP_URL,
     fetchOptions: {
         credentials: "include",
     },
@@ -56,11 +52,13 @@ export const authClient = createAuthClient({
 export const { signIn, signOut, signUp, useSession } = authClient;
 
 /**
- * Helper to start a provider OAuth flow by redirecting to the backend OAuth endpoint.
- * Uses `NEXT_PUBLIC_SERVER_APP_URL` if available, otherwise redirects to a relative `/auth/oauth/:provider`.
+ * Helper to start a provider OAuth flow by redirecting to the local auth endpoint.
+ * Uses same-origin `/api/auth/oauth/:provider` so cookies set by the auth handler are sent by the browser.
  */
 export function signInWithProvider(provider: string) {
-    const target = `${_SERVER_URL}/api/auth/oauth/${provider}`;
+    // Redirect to the frontend proxy so the browser sends cookies for the public host
+    const callback = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}${SYSTEM_CONFIG.redirectAfterSignIn}`;
+    const target = `/api/auth/oauth/${provider}?callbackURL=${encodeURIComponent(callback)}`;
     window.location.href = target.replace(TRAILING_SLASH_RE, "");
 }
 

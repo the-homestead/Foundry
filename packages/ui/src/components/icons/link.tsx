@@ -35,7 +35,7 @@ const PATH_VARIANTS: Variants = {
     },
 };
 
-const LinkIcon = forwardRef<LinkIconHandle, LinkIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const LinkIcon = forwardRef<LinkIconHandle, LinkIconProps>(({ onMouseEnter, onMouseLeave, className, size = 32, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -71,7 +71,7 @@ const LinkIcon = forwardRef<LinkIconHandle, LinkIconProps>(({ onMouseEnter, onMo
     );
 
     return (
-        <div className={cn(className)} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
+        <div className={cn("inline-flex items-center justify-center overflow-hidden", className)} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
             <svg
                 fill="none"
                 height={size}
@@ -79,6 +79,7 @@ const LinkIcon = forwardRef<LinkIconHandle, LinkIconProps>(({ onMouseEnter, onMo
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="1.5"
+                style={{ display: "block" }}
                 viewBox="0 0 24 24"
                 width={size}
                 xmlns="http://www.w3.org/2000/svg"

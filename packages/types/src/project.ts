@@ -1,3 +1,48 @@
+// Project blog/news post
+export interface ProjectPost {
+    id: string;
+    project_id: string;
+    title: string;
+    date: string; // ISO 8601
+    excerpt: string;
+    content: string;
+    comments: number;
+}
+
+// Project issue template
+export interface ProjectIssueTemplate {
+    id: string;
+    project_id: string;
+    title: string;
+    description: string;
+}
+
+// Project activity/timeline entry
+export interface ProjectActivityEntry {
+    id: string;
+    project_id: string;
+    title: string;
+    content: string;
+    created_at: string; // ISO 8601
+}
+
+// Project additional link
+export interface ProjectLink {
+    id: string;
+    project_id: string;
+    label: string;
+    url: string;
+}
+
+// Project creator/contributor
+export interface ProjectCreator {
+    id: string;
+    project_id: string;
+    name: string;
+    role: string;
+    avatar_url?: string;
+}
+
 import type { Game } from "./games/game";
 import type { MinecraftVersion } from "./games/minecraft";
 
@@ -26,20 +71,97 @@ export interface Project {
     license?: string;
     // The version of the project. Stored as a string to accommodate various versioning schemes.
     version: string;
+
     // An array of links in key, value format related to the project (e.g., homepage, repository, documentation, donation, discord).
     links: Record<string, string>;
-    // The current status of the project.
     status: typeof ProjectStatus;
-    // The type of the project.
     type: typeof ProjectType;
-    // The main content or body of the project, typically in markdown format.
     body: string;
     icon_url?: string;
     banner_url?: string;
-    color?: string; // Hex color code (e.g., #FF5733)
-    created_at: string; // ISO 8601 date string
-    updated_at: string; // ISO 8601 date string
+    color?: string;
+    created_at: string;
+    updated_at: string;
     owner: ProjectOwner;
+}
+// Project File (downloadable, release, etc.)
+export interface ProjectFile {
+    id: string;
+    project_id: string;
+    name: string;
+    version: string;
+    size: string;
+    uploaded: string; // ISO 8601
+    downloads: number;
+    unique_downloads?: number;
+    channel: string;
+    last_downloaded?: string; // ISO 8601
+    banner_url?: string;
+    dependencies?: ProjectFileDependency[];
+}
+
+export interface ProjectFileDependency {
+    url: string;
+    name: string;
+    version: string;
+    gameVersion?: string;
+}
+
+// File tree node for archive browsing
+export interface FileTreeNode {
+    id: string;
+    name: string;
+    children?: FileTreeNode[];
+}
+
+// Gantt chart feature/task
+export interface GanttFeature {
+    id: string;
+    name: string;
+    startAt: string; // ISO 8601
+    endAt: string; // ISO 8601
+    status: { id: string; name: string; color: string };
+    lane: string;
+    metadata?: Record<string, unknown>;
+}
+
+export interface GanttMarker {
+    id: string;
+    label: string;
+    date: string; // ISO 8601
+}
+
+// Kanban board
+export interface KanbanColumn {
+    id: string;
+    name: string;
+}
+
+export interface KanbanCard {
+    id: string;
+    name: string;
+    column: string;
+}
+
+// Gallery image
+export interface ProjectGalleryImage {
+    title: string;
+    tone: string;
+    aspect: number;
+    image?: string;
+}
+export interface KanbanCard {
+    id: string;
+    name: string;
+    column: string;
+}
+
+// Gallery image
+export interface ProjectGalleryImage {
+    title: string;
+    tone: string;
+    aspect: number;
+    image?: string;
 }
 
 export interface ProjectMetadata {
