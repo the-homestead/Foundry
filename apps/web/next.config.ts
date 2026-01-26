@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const path = require("node:path");
 
@@ -9,6 +10,7 @@ const nextConfig: NextConfig = {
     pageExtensions: ["ts", "tsx", "mdx"],
     typedRoutes: true,
     poweredByHeader: false,
+    crossOrigin: "use-credentials",
     turbopack: {
         root: path.join(__dirname, "..", ".."),
     },
@@ -39,11 +41,16 @@ const nextConfig: NextConfig = {
             { hostname: "**.unsplash.com", protocol: "https" },
             { hostname: "api.github.com", protocol: "https" },
             { hostname: "utfs.io", protocol: "https" },
+            { hostname: "i.imgur.com", protocol: "https" },
+            { hostname: "picsum.photos", protocol: "https" },
+            { hostname: "cdn.discordapp.com", protocol: "https" },
+            { hostname: "i.pravatar.cc", protocol: "https" },
         ],
     },
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin();
+export default withNextIntl(nextConfig);
 
 // export default withSentryConfig(nextConfig, {
 //     // For all available options, see:

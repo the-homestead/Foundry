@@ -31,6 +31,7 @@
         ".": "./dist/index.js",
         "./schemas": "./dist/schemas/index.js",
         "./schemas/*": "./dist/schemas/*.js",
-        "./utils/*": "./dist/utils/*.js"
+        "./utils/*": "./dist/utils/*.js",
+        "./projects/queries": "./dist/projects/queries.js"
     }
 }

@@ -4,7 +4,9 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
 import { useSession } from "@foundry/web/lib/auth-client";
 import { BookOpen, Bot, Command, Frame, LifeBuoy, Map, PieChart, Send, Settings2, SquareTerminal } from "lucide-react";
-import type * as React from "react";
+import type { Locale } from "next-intl";
+import type React from "react";
+import { useEffect } from "react";
 import { NavMain } from "./nav/nav-main";
 import { NavProjects } from "./nav/nav-projects";
 import { NavSecondary } from "./nav/nav-secondary";
@@ -134,8 +136,26 @@ const dataMock = {
     ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { data, isPending } = useSession();
+export function AppSidebar({
+    changeLocaleAction,
+    locale,
+    ...props
+}: React.ComponentProps<typeof Sidebar> & { changeLocaleAction: (locale: Locale) => Promise<void>; locale: Locale }) {
+    const { data, isPending, refetch } = useSession();
+
+    // Ensure we try to refresh the session after a redirect-based login flow
+    useEffect(() => {
+        if (!(isPending || data?.user)) {
+            // best-effort refetch to pick up newly-set session cookie
+            try {
+                refetch?.();
+            } catch (_err) {
+                // ignore
+            }
+        }
+        // run once on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data?.user, isPending, refetch]);
     const sessionUser = data?.user;
     const user = sessionUser
         ? {
@@ -171,7 +191,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarContent>
                 <NavMain items={dataMock.navMain} />
                 <NavProjects projects={dataMock.projects} />
-                <NavSecondary className="mt-auto" items={dataMock.navSecondary} />
+                <NavSecondary changeLocaleAction={changeLocaleAction} className="mt-auto" items={dataMock.navSecondary} locale={locale} />
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={user} />

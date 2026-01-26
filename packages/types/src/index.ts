@@ -17,5 +17,4 @@ export {
     ROLE_VIEWER,
     toApiKeyPermissions,
 } from "./permissions/api-key";
-export type { Project, ProjectGameAssociation, ProjectMetadata, ProjectModeration, ProjectOwner, ProjectStats } from "./project";
-export { ProjectMonetizationStatus, ProjectStatus, ProjectType } from "./project";
+export * from "./project";

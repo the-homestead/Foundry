@@ -6,13 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@foundry/ui/primitives
 import { authClient, signOut, useSession } from "@foundry/web/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type * as z from "zod";
 
 import { ApiKeysTab } from "./api-keys-tab";
 import { ProfileTab } from "./profile-tab";
 import { SecurityTab } from "./security-tab";
-import { ACCOUNT_TABS, API_KEY_PROFILES, TAB_LABELS } from "./types/constants";
+import { ACCOUNT_TABS, API_KEY_PROFILES } from "./types/constants";
 import { accountSchema } from "./types/schema";
 import type { AccountDefaults, AccountTab, ApiKeyEntry, FieldErrorMap, StatusMessage } from "./types/types";
 
@@ -63,10 +64,11 @@ const saveAccountSettings = async (values: z.infer<typeof accountSchema>, refres
     }
 
     await refresh();
-    return { type: "success", message: "Account settings updated." } as const;
+    return { type: "success", messageKey: "accountUpdated" } as const;
 };
 
 export function AccountPageClient() {
+    const t = useTranslations("AccountPage");
     const { data, isPending, error, refetch } = useSession();
     const pathname = usePathname();
     const router = useRouter();
@@ -169,7 +171,7 @@ export function AccountPageClient() {
                 profileId: profile?.id,
             });
             if (result?.error) {
-                setApiKeyMessage({ type: "error", message: result.error.message ?? "Failed to create API key." });
+                setApiKeyMessage({ type: "error", message: result.error.message ?? t("saveFailed") });
                 return;
             }
             const createdKey = (result?.data as { key?: string } | undefined)?.key ?? null;
@@ -177,11 +179,11 @@ export function AccountPageClient() {
             setApiKeyName("");
             setApiKeyExpiresInDays("");
             await loadApiKeys();
-            setApiKeyMessage({ type: "success", message: "API key created." });
+            setApiKeyMessage({ type: "success", message: t("apiKeyCreated") });
         } catch {
             setApiKeyMessage({ type: "error", message: "Failed to create API key." });
         }
-    }, [apiKeyExpiresInDays, apiKeyName, apiKeyPrefix, apiKeyProfileId, loadApiKeys]);
+    }, [apiKeyExpiresInDays, apiKeyName, apiKeyPrefix, apiKeyProfileId, loadApiKeys, t]);
 
     const handleDeleteApiKey = useCallback(
         async (keyId: string) => {
@@ -189,16 +191,16 @@ export function AccountPageClient() {
             try {
                 const result = await authClient.apiKey.delete({ keyId });
                 if (result?.error) {
-                    setApiKeyMessage({ type: "error", message: result.error.message ?? "Failed to delete API key." });
+                    setApiKeyMessage({ type: "error", message: result.error.message ?? t("saveFailed") });
                     return;
                 }
                 await loadApiKeys();
-                setApiKeyMessage({ type: "success", message: "API key deleted." });
+                setApiKeyMessage({ type: "success", message: t("apiKeyDeleted") });
             } catch {
                 setApiKeyMessage({ type: "error", message: "Failed to delete API key." });
             }
         },
-        [loadApiKeys]
+        [loadApiKeys, t]
     );
 
     const handleCopyKey = useCallback(async () => {
@@ -207,11 +209,11 @@ export function AccountPageClient() {
         }
         try {
             await navigator.clipboard?.writeText(lastCreatedKey);
-            setApiKeyMessage({ type: "success", message: "API key copied to clipboard." });
+            setApiKeyMessage({ type: "success", message: t("apiKeyCopied") });
         } catch {
-            setApiKeyMessage({ type: "error", message: "Unable to copy API key." });
+            setApiKeyMessage({ type: "error", message: t("apiKeyCopyFailed") });
         }
-    }, [lastCreatedKey]);
+    }, [lastCreatedKey, t]);
 
     const handleEnableTwoFactor = useCallback(async () => {
         setTwoFactorMessage(null);
@@ -400,7 +402,17 @@ export function AccountPageClient() {
             setIsSaving(true);
             try {
                 const result = await saveAccountSettings(parsed.data, refetch);
-                setFormMessage(result);
+                // Localize known success messages or map server-provided keys
+                if (result?.type === "success") {
+                    // server returns messageKey when available
+                    const message = result && (result as { messageKey?: string }).messageKey === "accountUpdated" ? t("accountUpdated") : (result?.message ?? t("accountUpdated"));
+                    setFormMessage({ type: result.type, message });
+                } else if (result?.type === "error") {
+                    // If server returned a message, show it; otherwise use generic failure
+                    setFormMessage({ type: "error", message: result.message ?? t("saveFailed") });
+                } else {
+                    setFormMessage(result as StatusMessage);
+                }
             } catch {
                 setFormMessage({ type: "error", message: "Something went wrong while saving." });
             } finally {
@@ -436,8 +448,8 @@ export function AccountPageClient() {
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Account settings</CardTitle>
-                        <CardDescription>Loading your account details...</CardDescription>
+                        <CardTitle>{t("heading")}</CardTitle>
+                        <CardDescription>{t("loading")}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="h-12 w-full animate-pulse rounded-md bg-muted" />
@@ -454,12 +466,12 @@ export function AccountPageClient() {
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Sign in required</CardTitle>
-                        <CardDescription>Please sign in to manage your account settings.</CardDescription>
+                        <CardTitle>{t("signInRequiredTitle")}</CardTitle>
+                        <CardDescription>{t("signInRequiredDescription")}</CardDescription>
                     </CardHeader>
                     <CardFooter>
                         <Button asChild>
-                            <a href="/auth/login">Go to sign in</a>
+                            <a href="/auth/login">{t("goToSignIn")}</a>
                         </Button>
                     </CardFooter>
                 </Card>
@@ -471,22 +483,22 @@ export function AccountPageClient() {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-2">
-                    <h1 className="font-semibold text-2xl">Account settings</h1>
-                    <p className="text-muted-foreground">Manage your profile, security, and API access.</p>
+                    <h1 className="font-semibold text-2xl">{t("heading")}</h1>
+                    <p className="text-muted-foreground">{t("description")}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                     {activeTab === "profile" ? (
                         <>
                             <Button disabled={isSaving} onClick={handleAccountSubmit} type="button">
-                                {isSaving ? "Saving..." : "Save changes"}
+                                {isSaving ? t("saving") : t("save")}
                             </Button>
                             <Button disabled={isSaving} onClick={handleAccountReset} type="button" variant="outline">
-                                Reset
+                                {t("reset")}
                             </Button>
                         </>
                     ) : null}
                     <Button onClick={() => signOut()} type="button" variant="outline">
-                        Sign out
+                        {t("signOut")}
                     </Button>
                 </div>
             </div>
@@ -495,7 +507,7 @@ export function AccountPageClient() {
                 <TabsList className="grid w-full max-w-xl grid-cols-3">
                     {ACCOUNT_TABS.map((tab) => (
                         <TabsTrigger key={tab} type="button" value={tab}>
-                            {TAB_LABELS[tab]}
+                            {t(`tabs.${tab}`)}
                         </TabsTrigger>
                     ))}
                 </TabsList>

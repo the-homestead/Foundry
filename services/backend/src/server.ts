@@ -53,9 +53,9 @@ app.use(
     })
 );
 app.use(
-    "/api/auth/*",
+    "/v0/api/auth/*",
     cors({
-        origin: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+        origin: [`${process.env.NEXT_PUBLIC_APP_URL}`, "http://localhost:3000", `${process.env.NEXT_PUBLIC_SERVER_APP_URL}/`],
         allowHeaders: ["Content-Type", "Authorization"],
         allowMethods: ["POST", "GET", "OPTIONS"],
         exposeHeaders: ["Content-Length"],
@@ -65,9 +65,9 @@ app.use(
 );
 
 app.use(
-    "/api/keys/*",
+    "/v0/api/keys/*",
     cors({
-        origin: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+        origin: [`${process.env.NEXT_PUBLIC_APP_URL}`, "http://localhost:3000", `${process.env.NEXT_PUBLIC_SERVER_APP_URL}/`],
         allowHeaders: ["Content-Type", "Authorization"],
         allowMethods: ["POST", "GET", "OPTIONS"],
         exposeHeaders: ["Content-Length"],
@@ -129,7 +129,7 @@ app.get(
     })
 );
 
-const server = serve(
+serve(
     {
         fetch: app.fetch,
         port: Number(process.env.BACKEND_PORT) || 3100,
@@ -139,16 +139,16 @@ const server = serve(
     }
 );
 
-process.on("SIGINT", () => {
-    server.close();
-    process.exit(0);
-});
-process.on("SIGTERM", () => {
-    server.close((err) => {
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
-        process.exit(0);
-    });
-});
+// process.on("SIGINT", () => {
+//     server.close();
+//     process.exit(0);
+// });
+// process.on("SIGTERM", () => {
+//     server.close((err) => {
+//         if (err) {
+//             console.error(err);
+//             process.exit(1);
+//         }
+//         process.exit(0);
+//     });
+// });

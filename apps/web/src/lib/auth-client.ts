@@ -3,13 +3,15 @@ import { apiKeyClient, inferAdditionalFields, lastLoginMethodClient, twoFactorCl
 import { createAuthClient } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { SYSTEM_CONFIG } from "../constants";
 
 // reuse a single regex instance at module scope to avoid recreating it on every call
 const TRAILING_SLASH_RE = /\/$/;
 
 // Create and export the auth client
+// Use the frontend proxy by default so cookies set for the public host are sent by the browser.
 export const authClient = createAuthClient({
-    baseURL: process.env.NEXT_SERVER_APP_URL,
+    baseURL: process.env.NEXT_PUBLIC_APP_URL,
     fetchOptions: {
         credentials: "include",
     },
@@ -50,11 +52,13 @@ export const authClient = createAuthClient({
 export const { signIn, signOut, signUp, useSession } = authClient;
 
 /**
- * Helper to start a provider OAuth flow by redirecting to the backend OAuth endpoint.
- * Uses `NEXT_SERVER_APP_URL` if available, otherwise redirects to a relative `/auth/oauth/:provider`.
+ * Helper to start a provider OAuth flow by redirecting to the local auth endpoint.
+ * Uses same-origin `/api/auth/oauth/:provider` so cookies set by the auth handler are sent by the browser.
  */
 export function signInWithProvider(provider: string) {
-    const target = `${process.env.NEXT_SERVER_APP_URL}/api/auth/oauth/${provider}`;
+    // Redirect to the frontend proxy so the browser sends cookies for the public host
+    const callback = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}${SYSTEM_CONFIG.redirectAfterSignIn}`;
+    const target = `/api/auth/oauth/${provider}?callbackURL=${encodeURIComponent(callback)}`;
     window.location.href = target.replace(TRAILING_SLASH_RE, "");
 }
 

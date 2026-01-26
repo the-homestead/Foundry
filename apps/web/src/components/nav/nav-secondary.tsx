@@ -1,9 +1,13 @@
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
 import type { LucideIcon } from "lucide-react";
+import type { Locale } from "next-intl";
 import type * as React from "react";
+import LocaleSwitcher from "../locale-switcher";
 import { ThemeSheet } from "../theme/theme-sheet";
 
 export function NavSecondary({
+    changeLocaleAction,
+    locale,
     items,
     ...props
 }: {
@@ -12,6 +16,8 @@ export function NavSecondary({
         url: string;
         icon: LucideIcon;
     }[];
+    changeLocaleAction: (locale: Locale) => Promise<void>;
+    locale: Locale;
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
     return (
         <SidebarGroup {...props}>
@@ -28,6 +34,7 @@ export function NavSecondary({
                         </SidebarMenuItem>
                     ))}
                     <ThemeSheet />
+                    <LocaleSwitcher changeLocaleAction={changeLocaleAction} locale={locale} />
                 </SidebarMenu>
             </SidebarGroupContent>
         </SidebarGroup>

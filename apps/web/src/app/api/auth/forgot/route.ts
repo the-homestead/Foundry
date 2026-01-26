@@ -2,12 +2,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
-    const backend = process.env.NEXT_SERVER_APP_URL ?? "";
-    if (!backend) {
-        return NextResponse.json({ error: "Missing backend URL" }, { status: 500 });
-    }
-
-    const res = await fetch(`${backend}/api/auth/forgot`, {
+    // call local auth endpoint
+    const res = await fetch("/api/auth/forgot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

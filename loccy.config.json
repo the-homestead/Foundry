@@ -1,0 +1,36 @@
+{
+    "resources": {
+        "paths": {
+            "include": ["apps/web/messages/**/*.json"],
+            "exclude": []
+        },
+        "file": {
+            "structure": "nested",
+            "sortKeys": "yes"
+        }
+    },
+    "usages": {
+        "paths": {
+            "include": ["**/*.{js,ts,jsx,tsx}"],
+            "exclude": []
+        },
+        "tFunction": {
+            "preset": "next-intl",
+            "customFunctionNames": []
+        },
+        "detectKeysInStrings": true,
+        "quoteType": "single"
+    },
+    "ai": {
+        "translations": {
+            "autoConsistency": true,
+            "customInstructions": "",
+            "customInstructionsPerLocale": {}
+        },
+        "keypaths": {
+            "autoConsistency": true,
+            "customInstructions": ""
+        },
+        "useCodeContext": true
+    }
+}

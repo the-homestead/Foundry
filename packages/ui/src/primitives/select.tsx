@@ -77,7 +77,7 @@ function SelectItem({ className, children, ...props }: React.ComponentProps<type
     return (
         <SelectPrimitive.Item
             className={cn(
-                "relative flex w-full cursor-default select-none items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+                "relative flex w-full cursor-pointer select-none items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground disabled:cursor-not-allowed data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
                 className
             )}
             data-slot="select-item"
@@ -99,7 +99,7 @@ function SelectSeparator({ className, ...props }: React.ComponentProps<typeof Se
 
 function SelectScrollUpButton({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>) {
     return (
-        <SelectPrimitive.ScrollUpButton className={cn("flex cursor-default items-center justify-center py-1", className)} data-slot="select-scroll-up-button" {...props}>
+    <SelectPrimitive.ScrollUpButton className={cn("flex cursor-pointer items-center justify-center py-1 disabled:cursor-not-allowed", className)} data-slot="select-scroll-up-button" {...props}>
             <ChevronUpIcon className="size-4" />
         </SelectPrimitive.ScrollUpButton>
     );
@@ -107,7 +107,7 @@ function SelectScrollUpButton({ className, ...props }: React.ComponentProps<type
 
 function SelectScrollDownButton({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.ScrollDownButton>) {
     return (
-        <SelectPrimitive.ScrollDownButton className={cn("flex cursor-default items-center justify-center py-1", className)} data-slot="select-scroll-down-button" {...props}>
+    <SelectPrimitive.ScrollDownButton className={cn("flex cursor-pointer items-center justify-center py-1 disabled:cursor-not-allowed", className)} data-slot="select-scroll-down-button" {...props}>
             <ChevronDownIcon className="size-4" />
         </SelectPrimitive.ScrollDownButton>
     );

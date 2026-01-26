@@ -1,5 +1,6 @@
 "use client";
 
+import type { UrlObject } from "node:url";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@foundry/ui/primitives/collapsible";
 import {
     SidebarGroup,
@@ -13,6 +14,7 @@ import {
     SidebarMenuSubItem,
 } from "@foundry/ui/primitives/sidebar";
 import { ChevronRight, type LucideIcon } from "lucide-react";
+import Link from "next/link";
 
 export function NavMain({
     items,
@@ -36,10 +38,10 @@ export function NavMain({
                     <Collapsible asChild defaultOpen={item.isActive} key={item.title}>
                         <SidebarMenuItem>
                             <SidebarMenuButton asChild tooltip={item.title}>
-                                <a href={item.url}>
+                                <Link className="flex items-center gap-2" href={item.url as unknown as UrlObject}>
                                     <item.icon />
                                     <span>{item.title}</span>
-                                </a>
+                                </Link>
                             </SidebarMenuButton>
                             {item.items?.length ? (
                                 <>
@@ -54,9 +56,9 @@ export function NavMain({
                                             {item.items?.map((subItem) => (
                                                 <SidebarMenuSubItem key={subItem.title}>
                                                     <SidebarMenuSubButton asChild>
-                                                        <a href={subItem.url}>
+                                                        <Link className="flex items-center gap-2" href={subItem.url as unknown as UrlObject}>
                                                             <span>{subItem.title}</span>
-                                                        </a>
+                                                        </Link>
                                                     </SidebarMenuSubButton>
                                                 </SidebarMenuSubItem>
                                             ))}

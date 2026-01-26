@@ -15,7 +15,7 @@ const buildForwardHeaders = (request: Request) => {
 };
 
 const forwardRequest = async (request: Request) => {
-    const backend = process.env.NEXT_SERVER_APP_URL ?? "";
+    const backend = process.env.NEXT_PUBLIC_SERVER_APP_URL ?? "";
     if (!backend) {
         return NextResponse.json({ error: "Missing backend URL" }, { status: 500 });
     }
