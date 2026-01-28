@@ -7,7 +7,7 @@
  * Any direct changes to this file will be overwritten.
  */
 
-import { boolean, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, index, integer, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
     id: text("id").primaryKey(),
@@ -24,9 +24,14 @@ export const userTable = pgTable("user", {
     twoFactorEnabled: boolean("two_factor_enabled").default(false),
     username: text("username").unique(),
     displayUsername: text("display_username"),
-    age: integer("age"),
+    stripeCustomerId: text("stripe_customer_id"),
+    role: text("role"),
+    banned: boolean("banned").default(false),
+    banReason: text("ban_reason"),
+    banExpires: timestamp("ban_expires"),
     firstName: text("first_name"),
     lastName: text("last_name"),
+    age: integer("age"),
 });
 
 export const sessionTable = pgTable(
@@ -44,6 +49,9 @@ export const sessionTable = pgTable(
         userId: text("user_id")
             .notNull()
             .references(() => userTable.id, { onDelete: "cascade" }),
+        impersonatedBy: text("impersonated_by"),
+        activeOrganizationId: text("active_organization_id"),
+        activeTeamId: text("active_team_id"),
     },
     (table) => [index("session_userId_idx").on(table.userId)]
 );
@@ -149,4 +157,82 @@ export const twoFactorTable = pgTable(
             .references(() => userTable.id, { onDelete: "cascade" }),
     },
     (table) => [index("twoFactor_secret_idx").on(table.secret), index("twoFactor_userId_idx").on(table.userId)]
+);
+
+export const organizationTable = pgTable(
+    "organization",
+    {
+        id: text("id").primaryKey(),
+        name: text("name").notNull(),
+        slug: text("slug").notNull().unique(),
+        logo: text("logo"),
+        createdAt: timestamp("created_at").notNull(),
+        metadata: text("metadata"),
+    },
+    (table) => [uniqueIndex("organization_slug_uidx").on(table.slug)]
+);
+
+export const teamTable = pgTable(
+    "team",
+    {
+        id: text("id").primaryKey(),
+        name: text("name").notNull(),
+        organizationId: text("organization_id")
+            .notNull()
+            .references(() => organizationTable.id, { onDelete: "cascade" }),
+        createdAt: timestamp("created_at").notNull(),
+        updatedAt: timestamp("updated_at").$onUpdate(() => /* @__PURE__ */ new Date()),
+    },
+    (table) => [index("team_organizationId_idx").on(table.organizationId)]
+);
+
+export const teamMemberTable = pgTable(
+    "team_member",
+    {
+        id: text("id").primaryKey(),
+        teamId: text("team_id")
+            .notNull()
+            .references(() => teamTable.id, { onDelete: "cascade" }),
+        userId: text("user_id")
+            .notNull()
+            .references(() => userTable.id, { onDelete: "cascade" }),
+        createdAt: timestamp("created_at"),
+    },
+    (table) => [index("teamMember_teamId_idx").on(table.teamId), index("teamMember_userId_idx").on(table.userId)]
+);
+
+export const memberTable = pgTable(
+    "member",
+    {
+        id: text("id").primaryKey(),
+        organizationId: text("organization_id")
+            .notNull()
+            .references(() => organizationTable.id, { onDelete: "cascade" }),
+        userId: text("user_id")
+            .notNull()
+            .references(() => userTable.id, { onDelete: "cascade" }),
+        role: text("role").default("member").notNull(),
+        createdAt: timestamp("created_at").notNull(),
+    },
+    (table) => [index("member_organizationId_idx").on(table.organizationId), index("member_userId_idx").on(table.userId)]
+);
+
+export const invitationTable = pgTable(
+    "invitation",
+    {
+        id: text("id").primaryKey(),
+        organizationId: text("organization_id")
+            .notNull()
+            .references(() => organizationTable.id, { onDelete: "cascade" }),
+        email: text("email").notNull(),
+        role: text("role"),
+        teamId: text("team_id"),
+        status: text("status").default("pending").notNull(),
+        expiresAt: timestamp("expires_at").notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        inviterId: text("inviter_id")
+            .notNull()
+            .references(() => userTable.id, { onDelete: "cascade" }),
+    },
+    (table) => [index("invitation_organizationId_idx").on(table.organizationId), index("invitation_email_idx").on(table.email)]
 );
