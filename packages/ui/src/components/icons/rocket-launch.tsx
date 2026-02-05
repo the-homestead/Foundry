@@ -57,7 +57,7 @@ const FIRE_VARIANTS: Variants = {
     },
 };
 
-const RocketLaunchIcon = forwardRef<RocketLaunchIconHandle, RocketLaunchIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const RocketLaunchIcon = forwardRef<RocketLaunchIconHandle, RocketLaunchIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

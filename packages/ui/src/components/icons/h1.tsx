@@ -37,7 +37,7 @@ const VARIANTS: Variants = {
     },
 };
 
-const H1Icon = forwardRef<H1IconHandle, H1IconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const H1Icon = forwardRef<H1IconHandle, H1IconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

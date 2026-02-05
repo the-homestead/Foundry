@@ -31,7 +31,7 @@ const CODE_VARIANTS: Variants = {
     }),
 };
 
-const CodeBracketSquareIcon = forwardRef<CodeBracketSquareIconHandle, CodeBracketSquareIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CodeBracketSquareIcon = forwardRef<CodeBracketSquareIconHandle, CodeBracketSquareIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

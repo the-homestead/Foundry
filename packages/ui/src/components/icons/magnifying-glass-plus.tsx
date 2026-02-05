@@ -48,7 +48,7 @@ const HORIZONTAL_LINE_VARIANT: Variants = {
     },
 };
 
-const MagnifyingGlassPlusIcon = forwardRef<MagnifyingGlassPlusIconHandle, MagnifyingGlassPlusIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const MagnifyingGlassPlusIcon = forwardRef<MagnifyingGlassPlusIconHandle, MagnifyingGlassPlusIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -46,7 +46,7 @@ const SPEAKER_VARIANTS: Variants = {
     },
 };
 
-const RadioIcon = forwardRef<RadioIconHandle, RadioIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const RadioIcon = forwardRef<RadioIconHandle, RadioIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

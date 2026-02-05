@@ -33,7 +33,7 @@ const SCREEN_VARIANTS: Variants = {
     },
 };
 
-const TvIcon = forwardRef<TvIconHandle, TvIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const TvIcon = forwardRef<TvIconHandle, TvIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

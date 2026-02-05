@@ -31,7 +31,7 @@ const BALANCE_VARIANTS: Variants = {
     },
 };
 
-const ScaleIcon = forwardRef<ScaleIconHandle, ScaleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ScaleIcon = forwardRef<ScaleIconHandle, ScaleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

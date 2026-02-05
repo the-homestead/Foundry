@@ -26,7 +26,7 @@ const VARIANTS: Variants = {
     },
 };
 
-const EyeSlashIcon = forwardRef<EyeSlashIconHandle, EyeSlashIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const EyeSlashIcon = forwardRef<EyeSlashIconHandle, EyeSlashIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

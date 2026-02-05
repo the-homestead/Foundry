@@ -35,7 +35,7 @@ const CLIP_VARIANTS: Variants = {
     },
 };
 
-const Battery50Icon = forwardRef<Battery50IconHandle, Battery50IconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const Battery50Icon = forwardRef<Battery50IconHandle, Battery50IconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
     const clipId = useId();

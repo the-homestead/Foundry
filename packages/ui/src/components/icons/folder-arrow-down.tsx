@@ -28,7 +28,7 @@ const ARROW_TRANSITION: Transition = {
     duration: 0.5,
 };
 
-const FolderArrowDownIcon = forwardRef<FolderArrowDownIconHandle, FolderArrowDownIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const FolderArrowDownIcon = forwardRef<FolderArrowDownIconHandle, FolderArrowDownIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

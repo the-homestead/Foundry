@@ -30,7 +30,7 @@ const STRETCH_VARIANTS: Variants = {
     },
 };
 
-const ArrowUturnUpIcon = forwardRef<ArrowUturnUpIconHandle, ArrowUturnUpIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ArrowUturnUpIcon = forwardRef<ArrowUturnUpIconHandle, ArrowUturnUpIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

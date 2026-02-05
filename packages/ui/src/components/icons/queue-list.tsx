@@ -42,7 +42,7 @@ const LIST_ITEMS = [
     { y: 12, path: "M3.75 12H20.25" },
 ] as const;
 
-const QueueListIcon = forwardRef<QueueListIconHandle, QueueListIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const QueueListIcon = forwardRef<QueueListIconHandle, QueueListIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

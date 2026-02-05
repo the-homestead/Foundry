@@ -50,7 +50,7 @@ const DOTS = [
     { d: "M14.25 17.25h.008v.008h-.008v-.008Z", index: 11 },
 ] as const;
 
-const CalendarDaysIcon = forwardRef<CalendarDaysIconHandle, CalendarDaysIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CalendarDaysIcon = forwardRef<CalendarDaysIconHandle, CalendarDaysIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

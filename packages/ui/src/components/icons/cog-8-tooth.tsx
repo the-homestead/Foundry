@@ -17,7 +17,7 @@ interface Cog8ToothIconProps extends HTMLAttributes<HTMLDivElement> {
     size?: number;
 }
 
-const Cog8ToothIcon = forwardRef<Cog8ToothIconHandle, Cog8ToothIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const Cog8ToothIcon = forwardRef<Cog8ToothIconHandle, Cog8ToothIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -52,7 +52,7 @@ const SPEED_LINE_VARIANTS: Variants = {
     }),
 };
 
-const TruckIcon = forwardRef<TruckIconHandle, TruckIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const TruckIcon = forwardRef<TruckIconHandle, TruckIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -31,7 +31,7 @@ const DEVICE_VARIANTS: Variants = {
     },
 };
 
-const DeviceTabletIcon = forwardRef<DeviceTabletIconHandle, DeviceTabletIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const DeviceTabletIcon = forwardRef<DeviceTabletIconHandle, DeviceTabletIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

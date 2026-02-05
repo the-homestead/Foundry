@@ -37,7 +37,7 @@ const ARROW_VARIANTS: Variants = {
     },
 };
 
-const ArrowUpLeftIcon = forwardRef<ArrowUpLeftIconHandle, ArrowUpLeftIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ArrowUpLeftIcon = forwardRef<ArrowUpLeftIconHandle, ArrowUpLeftIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

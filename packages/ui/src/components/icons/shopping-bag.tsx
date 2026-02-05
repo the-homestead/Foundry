@@ -33,7 +33,7 @@ const BAG_VARIANTS: Variants = {
     },
 };
 
-const ShoppingBagIcon = forwardRef<ShoppingBagIconHandle, ShoppingBagIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ShoppingBagIcon = forwardRef<ShoppingBagIconHandle, ShoppingBagIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

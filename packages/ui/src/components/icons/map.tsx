@@ -31,7 +31,7 @@ const MAP_VARIANTS: Variants = {
     },
 };
 
-const MapIcon = forwardRef<MapIconHandle, MapIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const MapIcon = forwardRef<MapIconHandle, MapIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

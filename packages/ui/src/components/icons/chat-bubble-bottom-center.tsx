@@ -41,7 +41,7 @@ const ICON_VARIANTS: Variants = {
 };
 
 const ChatBubbleBottomCenterIcon = forwardRef<ChatBubbleBottomCenterIconHandle, ChatBubbleBottomCenterIconProps>(
-    ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+    ({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
         const controls = useAnimation();
         const isControlledRef = useRef(false);
 

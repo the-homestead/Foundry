@@ -35,7 +35,7 @@ const PATH_VARIANTS: Variants = {
     },
 };
 
-const PlayCircleIcon = forwardRef<PlayCircleIconHandle, PlayCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const PlayCircleIcon = forwardRef<PlayCircleIconHandle, PlayCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

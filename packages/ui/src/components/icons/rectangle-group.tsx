@@ -34,7 +34,7 @@ const RECT_VARIANTS = (delay: number): Variants => ({
     },
 });
 
-const RectangleGroupIcon = forwardRef<RectangleGroupIconHandle, RectangleGroupIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const RectangleGroupIcon = forwardRef<RectangleGroupIconHandle, RectangleGroupIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

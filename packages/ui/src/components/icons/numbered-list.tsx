@@ -70,7 +70,7 @@ const LIST_ITEMS = [
     },
 ] as const;
 
-const NumberedListIcon = forwardRef<NumberedListIconHandle, NumberedListIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const NumberedListIcon = forwardRef<NumberedListIconHandle, NumberedListIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

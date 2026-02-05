@@ -23,7 +23,7 @@ const LINE_VARIANTS: Variants = {
     hidden: { pathLength: 0, opacity: 0 },
 };
 
-const DocumentTextIcon = forwardRef<DocumentTextIconHandle, DocumentTextIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const DocumentTextIcon = forwardRef<DocumentTextIconHandle, DocumentTextIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

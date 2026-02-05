@@ -56,7 +56,7 @@ const CENTER_BAR_VARIANTS: Variants = {
     },
 };
 
-const Bars3CenterLeftIcon = forwardRef<Bars3CenterLeftIconHandle, Bars3CenterLeftIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const Bars3CenterLeftIcon = forwardRef<Bars3CenterLeftIconHandle, Bars3CenterLeftIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -31,7 +31,7 @@ const SVG_VARIANTS: Variants = {
     },
 };
 
-const BackspaceIcon = forwardRef<BackspaceIconHandle, BackspaceIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const BackspaceIcon = forwardRef<BackspaceIconHandle, BackspaceIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -33,7 +33,7 @@ const FLAME_VARIANTS: Variants = {
     },
 };
 
-const FireIcon = forwardRef<FireIconHandle, FireIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const FireIcon = forwardRef<FireIconHandle, FireIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

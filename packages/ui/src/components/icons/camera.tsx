@@ -41,7 +41,7 @@ const LENS_VARIANTS: Variants = {
     },
 };
 
-const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CameraIcon = forwardRef<CameraIconHandle, CameraIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

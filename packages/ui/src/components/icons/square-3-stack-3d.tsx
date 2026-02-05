@@ -29,7 +29,7 @@ const STACK_VARIANTS: Variants = {
     },
 };
 
-const Square3Stack3DIcon = forwardRef<Square3Stack3DIconHandle, Square3Stack3DIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const Square3Stack3DIcon = forwardRef<Square3Stack3DIconHandle, Square3Stack3DIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

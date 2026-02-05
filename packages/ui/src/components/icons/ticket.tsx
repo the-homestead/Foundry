@@ -33,7 +33,7 @@ const TICKET_VARIANTS: Variants = {
     },
 };
 
-const TicketIcon = forwardRef<TicketIconHandle, TicketIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const TicketIcon = forwardRef<TicketIconHandle, TicketIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

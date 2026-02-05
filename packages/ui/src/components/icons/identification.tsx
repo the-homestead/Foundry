@@ -33,7 +33,7 @@ const VARIANTS: Variants = {
     }),
 };
 
-const IdentificationIcon = forwardRef<IdentificationIconHandle, IdentificationIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const IdentificationIcon = forwardRef<IdentificationIconHandle, IdentificationIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -29,7 +29,7 @@ const SCISSORS_VARIANTS: Variants = {
     },
 };
 
-const ScissorsIcon = forwardRef<ScissorsIconHandle, ScissorsIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ScissorsIcon = forwardRef<ScissorsIconHandle, ScissorsIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

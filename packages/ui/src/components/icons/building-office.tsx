@@ -41,7 +41,7 @@ const FLOOR_LINES = [
     { path: "M13.5 6.75H15", y: 6.75, index: 2 },
 ] as const;
 
-const BuildingOfficeIcon = forwardRef<BuildingOfficeIconHandle, BuildingOfficeIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const BuildingOfficeIcon = forwardRef<BuildingOfficeIconHandle, BuildingOfficeIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

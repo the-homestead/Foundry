@@ -41,7 +41,7 @@ const VARIANTS: Variants = {
 };
 
 const DocumentCurrencyEuroIcon = forwardRef<DocumentCurrencyEuroIconHandle, DocumentCurrencyEuroIconProps>(
-    ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+    ({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
         const controls = useAnimation();
         const isControlledRef = useRef(false);
 

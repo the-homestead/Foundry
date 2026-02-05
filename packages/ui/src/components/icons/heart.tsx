@@ -23,7 +23,7 @@ const SVG_VARIANTS: Variants = {
     animate: { scale: [1, 1.08, 1] },
 };
 
-const HeartIcon = forwardRef<HeartIconHandle, HeartIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const HeartIcon = forwardRef<HeartIconHandle, HeartIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

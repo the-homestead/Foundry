@@ -29,7 +29,7 @@ const PATH_VARIANTS: Variants = {
     },
 };
 
-const XCircleIcon = forwardRef<XCircleIconHandle, XCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const XCircleIcon = forwardRef<XCircleIconHandle, XCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -35,7 +35,7 @@ const PEN_VARIANTS: Variants = {
     },
 };
 
-const PencilSquareIcon = forwardRef<PencilSquareIconHandle, PencilSquareIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const PencilSquareIcon = forwardRef<PencilSquareIconHandle, PencilSquareIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

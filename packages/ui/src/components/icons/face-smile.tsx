@@ -75,7 +75,7 @@ const EYE_VARIANTS: Variants = {
     },
 };
 
-const FaceSmileIcon = forwardRef<FaceSmileIconHandle, FaceSmileIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const FaceSmileIcon = forwardRef<FaceSmileIconHandle, FaceSmileIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

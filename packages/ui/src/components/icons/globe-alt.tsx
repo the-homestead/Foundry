@@ -32,7 +32,7 @@ const SPIN_VARIANTS: Variants = {
     },
 };
 
-const GlobeAltIcon = forwardRef<GlobeAltIconHandle, GlobeAltIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const GlobeAltIcon = forwardRef<GlobeAltIconHandle, GlobeAltIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

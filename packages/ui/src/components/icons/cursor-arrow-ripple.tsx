@@ -44,7 +44,7 @@ const RIPPLE_VARIANTS: Variants = {
     }),
 };
 
-const CursorArrowRippleIcon = forwardRef<CursorArrowRippleIconHandle, CursorArrowRippleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CursorArrowRippleIcon = forwardRef<CursorArrowRippleIconHandle, CursorArrowRippleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const cursorControls = useAnimation();
     const rippleControls = useAnimation();
     const isControlledRef = useRef(false);

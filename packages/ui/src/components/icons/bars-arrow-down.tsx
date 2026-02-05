@@ -29,7 +29,7 @@ const ARROW_VARIANTS: Variants = {
     },
 };
 
-const BarsArrowDownIcon = forwardRef<BarsArrowDownIconHandle, BarsArrowDownIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const BarsArrowDownIcon = forwardRef<BarsArrowDownIconHandle, BarsArrowDownIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

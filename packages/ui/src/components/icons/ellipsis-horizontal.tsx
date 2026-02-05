@@ -32,7 +32,7 @@ const DOT_VARIANTS: Variants = {
     }),
 };
 
-const EllipsisHorizontalIcon = forwardRef<EllipsisHorizontalIconHandle, EllipsisHorizontalIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const EllipsisHorizontalIcon = forwardRef<EllipsisHorizontalIconHandle, EllipsisHorizontalIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -23,7 +23,7 @@ const PATH_VARIANTS: Variants = {
     animate: { translateX: 1.1, translateY: -1.1 },
 };
 
-const CloudIcon = forwardRef<CloudIconHandle, CloudIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CloudIcon = forwardRef<CloudIconHandle, CloudIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

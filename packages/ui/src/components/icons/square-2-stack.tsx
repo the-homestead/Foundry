@@ -43,7 +43,7 @@ const BACK_VARIANTS: Variants = {
     },
 };
 
-const Square2StackIcon = forwardRef<Square2StackIconHandle, Square2StackIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const Square2StackIcon = forwardRef<Square2StackIconHandle, Square2StackIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -40,7 +40,7 @@ const VARIANTS: Variants = {
     },
 };
 
-const DocumentCurrencyYenIcon = forwardRef<DocumentCurrencyYenIconHandle, DocumentCurrencyYenIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const DocumentCurrencyYenIcon = forwardRef<DocumentCurrencyYenIconHandle, DocumentCurrencyYenIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -60,7 +60,7 @@ const CIRCLE_VARIANTS: Variants = {
     },
 };
 
-const ViewfinderCircleIcon = forwardRef<ViewfinderCircleIconHandle, ViewfinderCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ViewfinderCircleIcon = forwardRef<ViewfinderCircleIconHandle, ViewfinderCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

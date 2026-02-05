@@ -17,7 +17,7 @@ interface PlusIconProps extends HTMLAttributes<HTMLDivElement> {
     size?: number;
 }
 
-const PlusIcon = forwardRef<PlusIconHandle, PlusIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const PlusIcon = forwardRef<PlusIconHandle, PlusIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

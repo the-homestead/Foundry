@@ -31,7 +31,7 @@ const VARIABLE_VARIANTS: Variants = {
     },
 };
 
-const VariableIcon = forwardRef<VariableIconHandle, VariableIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const VariableIcon = forwardRef<VariableIconHandle, VariableIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

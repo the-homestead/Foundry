@@ -36,7 +36,7 @@ const PATH_VARIANTS: Variants = {
     },
 };
 
-const DocumentCheckIcon = forwardRef<DocumentCheckIconHandle, DocumentCheckIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const DocumentCheckIcon = forwardRef<DocumentCheckIconHandle, DocumentCheckIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

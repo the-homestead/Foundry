@@ -23,7 +23,7 @@ const SVG_VARIANTS: Variants = {
     animate: { rotate: [0, -10, 10, -10, 0] },
 };
 
-const BellIcon = forwardRef<BellIconHandle, BellIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const BellIcon = forwardRef<BellIconHandle, BellIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

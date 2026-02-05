@@ -53,7 +53,7 @@ const PILLARS = [
     { d: "M15.75 12.75v8.25", index: 2 },
 ] as const;
 
-const BuildingLibraryIcon = forwardRef<BuildingLibraryIconHandle, BuildingLibraryIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const BuildingLibraryIcon = forwardRef<BuildingLibraryIconHandle, BuildingLibraryIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

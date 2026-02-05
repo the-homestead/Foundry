@@ -57,7 +57,7 @@ const LIST_ITEMS = [
 ] as const;
 
 const ClipboardDocumentListIcon = forwardRef<ClipboardDocumentListIconHandle, ClipboardDocumentListIconProps>(
-    ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+    ({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
         const controls = useAnimation();
         const isControlledRef = useRef(false);
 

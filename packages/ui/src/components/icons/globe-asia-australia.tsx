@@ -34,7 +34,7 @@ const LAND_VARIANTS: Variants = {
     },
 };
 
-const GlobeAsiaAustraliaIcon = forwardRef<GlobeAsiaAustraliaIconHandle, GlobeAsiaAustraliaIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const GlobeAsiaAustraliaIcon = forwardRef<GlobeAsiaAustraliaIconHandle, GlobeAsiaAustraliaIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

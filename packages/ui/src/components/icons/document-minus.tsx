@@ -28,7 +28,7 @@ const SYMBOL_VARIANT: Variants = {
     },
 };
 
-const DocumentMinusIcon = forwardRef<DocumentMinusIconHandle, DocumentMinusIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const DocumentMinusIcon = forwardRef<DocumentMinusIconHandle, DocumentMinusIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -31,7 +31,7 @@ const ROTATE_VARIANTS: Variants = {
     },
 };
 
-const CurrencyEuroIcon = forwardRef<CurrencyEuroIconHandle, CurrencyEuroIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CurrencyEuroIcon = forwardRef<CurrencyEuroIconHandle, CurrencyEuroIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

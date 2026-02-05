@@ -33,7 +33,7 @@ const TABLE_VARIANTS: Variants = {
     },
 };
 
-const TableCellsIcon = forwardRef<TableCellsIconHandle, TableCellsIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const TableCellsIcon = forwardRef<TableCellsIconHandle, TableCellsIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

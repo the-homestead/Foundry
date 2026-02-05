@@ -76,7 +76,7 @@ const LEFT_USER_VARIANTS: Variants = {
     },
 };
 
-const UserGroupIcon = forwardRef<UserGroupIconHandle, UserGroupIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const UserGroupIcon = forwardRef<UserGroupIconHandle, UserGroupIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

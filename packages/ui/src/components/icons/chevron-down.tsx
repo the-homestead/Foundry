@@ -29,7 +29,7 @@ const VARIANTS: Variants = {
     },
 };
 
-const ChevronDownIcon = forwardRef<ChevronDownIconHandle, ChevronDownIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ChevronDownIcon = forwardRef<ChevronDownIconHandle, ChevronDownIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

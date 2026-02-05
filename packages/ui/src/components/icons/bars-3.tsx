@@ -43,7 +43,7 @@ const BARS = [
     { d: "M3.75 17.25h16.5", delay: 0.2 },
 ];
 
-const Bars3Icon = forwardRef<Bars3IconHandle, Bars3IconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const Bars3Icon = forwardRef<Bars3IconHandle, Bars3IconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

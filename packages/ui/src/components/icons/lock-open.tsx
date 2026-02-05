@@ -44,7 +44,7 @@ const SHACKLE_VARIANTS: Variants = {
     },
 };
 
-const LockOpenIcon = forwardRef<LockOpenIconHandle, LockOpenIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const LockOpenIcon = forwardRef<LockOpenIconHandle, LockOpenIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

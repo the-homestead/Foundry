@@ -29,7 +29,7 @@ const ROTATE_VARIANTS: Variants = {
     },
 };
 
-const LifebuoyIcon = forwardRef<LifebuoyIconHandle, LifebuoyIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const LifebuoyIcon = forwardRef<LifebuoyIconHandle, LifebuoyIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -31,7 +31,7 @@ const QUESTION_MARK_VARIANTS: Variants = {
     },
 };
 
-const QuestionMarkCircleIcon = forwardRef<QuestionMarkCircleIconHandle, QuestionMarkCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const QuestionMarkCircleIcon = forwardRef<QuestionMarkCircleIconHandle, QuestionMarkCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

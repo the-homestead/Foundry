@@ -29,7 +29,7 @@ const ARROW_VARIANTS: Variants = {
     },
 };
 
-const CloudArrowUpIcon = forwardRef<CloudArrowUpIconHandle, CloudArrowUpIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CloudArrowUpIcon = forwardRef<CloudArrowUpIconHandle, CloudArrowUpIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

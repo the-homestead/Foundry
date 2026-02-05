@@ -29,7 +29,7 @@ const CAPSULE_VARIANTS: Variants = {
     },
 };
 
-const MicrophoneIcon = forwardRef<MicrophoneIconHandle, MicrophoneIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const MicrophoneIcon = forwardRef<MicrophoneIconHandle, MicrophoneIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -30,7 +30,7 @@ const SVG_VARIANTS: Variants = {
     },
 };
 
-const BugAntIcon = forwardRef<BugAntIconHandle, BugAntIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const BugAntIcon = forwardRef<BugAntIconHandle, BugAntIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

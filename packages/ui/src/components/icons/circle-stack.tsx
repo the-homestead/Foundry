@@ -29,7 +29,7 @@ const STACK_VARIANTS: Variants = {
     },
 };
 
-const CircleStackIcon = forwardRef<CircleStackIconHandle, CircleStackIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CircleStackIcon = forwardRef<CircleStackIconHandle, CircleStackIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

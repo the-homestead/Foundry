@@ -40,7 +40,7 @@ const LIGHT_VARIANTS: Variants = {
     },
 };
 
-const ServerIcon = forwardRef<ServerIconHandle, ServerIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ServerIcon = forwardRef<ServerIconHandle, ServerIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

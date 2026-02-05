@@ -30,7 +30,7 @@ const ARROW_VARIANTS: Variants = {
 };
 
 const ArrowLeftStartOnRectangleIcon = forwardRef<ArrowLeftStartOnRectangleIconHandle, ArrowLeftStartOnRectangleIconProps>(
-    ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+    ({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
         const controls = useAnimation();
         const isControlledRef = useRef(false);
 

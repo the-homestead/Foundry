@@ -44,7 +44,7 @@ const WAVE_VARIANTS: Variants = {
     }),
 };
 
-const SignalIcon = forwardRef<SignalIconHandle, SignalIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const SignalIcon = forwardRef<SignalIconHandle, SignalIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const waveControls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -33,7 +33,7 @@ const SVG_VARIANTS: Variants = {
     },
 };
 
-const EnvelopeOpenIcon = forwardRef<EnvelopeOpenIconHandle, EnvelopeOpenIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const EnvelopeOpenIcon = forwardRef<EnvelopeOpenIconHandle, EnvelopeOpenIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

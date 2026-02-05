@@ -48,7 +48,7 @@ const X_VARIANTS: Variants = {
     },
 };
 
-const CpuChipIcon = forwardRef<CpuChipIconHandle, CpuChipIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CpuChipIcon = forwardRef<CpuChipIconHandle, CpuChipIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

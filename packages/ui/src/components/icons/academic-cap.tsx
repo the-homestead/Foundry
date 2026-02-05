@@ -41,7 +41,7 @@ const TASSEL_VARIANTS: Variants = {
     },
 };
 
-const AcademicCapIcon = forwardRef<AcademicCapIconHandle, AcademicCapIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const AcademicCapIcon = forwardRef<AcademicCapIconHandle, AcademicCapIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

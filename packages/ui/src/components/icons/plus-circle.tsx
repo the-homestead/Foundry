@@ -48,7 +48,7 @@ const HORIZONTAL_LINE_VARIANT: Variants = {
     },
 };
 
-const PlusCircleIcon = forwardRef<PlusCircleIconHandle, PlusCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const PlusCircleIcon = forwardRef<PlusCircleIconHandle, PlusCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

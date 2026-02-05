@@ -35,7 +35,7 @@ const PATH_VARIANTS: Variants = {
     },
 };
 
-const PlayPauseIcon = forwardRef<PlayPauseIconHandle, PlayPauseIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const PlayPauseIcon = forwardRef<PlayPauseIconHandle, PlayPauseIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

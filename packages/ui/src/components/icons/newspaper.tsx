@@ -43,7 +43,7 @@ const CREATE_LINE_VARIANTS = (delay: number): Variants => ({
     },
 });
 
-const NewspaperIcon = forwardRef<NewspaperIconHandle, NewspaperIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const NewspaperIcon = forwardRef<NewspaperIconHandle, NewspaperIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

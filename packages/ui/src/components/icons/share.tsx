@@ -47,7 +47,7 @@ const LINE_VARIANTS: Variants = {
     },
 };
 
-const ShareIcon = forwardRef<ShareIconHandle, ShareIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ShareIcon = forwardRef<ShareIconHandle, ShareIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

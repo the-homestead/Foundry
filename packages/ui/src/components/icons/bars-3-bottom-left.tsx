@@ -56,7 +56,7 @@ const BOTTOM_BAR_VARIANTS: Variants = {
     },
 };
 
-const Bars3BottomLeftIcon = forwardRef<Bars3BottomLeftIconHandle, Bars3BottomLeftIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const Bars3BottomLeftIcon = forwardRef<Bars3BottomLeftIconHandle, Bars3BottomLeftIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

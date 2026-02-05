@@ -45,7 +45,7 @@ const RAY_VARIANTS: Variants = {
     }),
 };
 
-const CursorArrowRaysIcon = forwardRef<CursorArrowRaysIconHandle, CursorArrowRaysIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CursorArrowRaysIcon = forwardRef<CursorArrowRaysIconHandle, CursorArrowRaysIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const cursorControls = useAnimation();
     const rayControls = useAnimation();
     const isControlledRef = useRef(false);

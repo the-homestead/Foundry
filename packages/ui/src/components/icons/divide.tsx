@@ -51,7 +51,7 @@ const BOTTOM_DOT_VARIANTS: Variants = {
     },
 };
 
-const DivideIcon = forwardRef<DivideIconHandle, DivideIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const DivideIcon = forwardRef<DivideIconHandle, DivideIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

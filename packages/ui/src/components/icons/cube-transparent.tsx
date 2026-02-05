@@ -31,7 +31,7 @@ const CUBE_VARIANTS: Variants = {
     },
 };
 
-const CubeTransparentIcon = forwardRef<CubeTransparentIconHandle, CubeTransparentIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const CubeTransparentIcon = forwardRef<CubeTransparentIconHandle, CubeTransparentIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

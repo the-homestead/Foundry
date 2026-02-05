@@ -23,7 +23,7 @@ const ARROW_VARIANTS: Variants = {
     animate: { y: [0, -2, 0] },
 };
 
-const FolderIcon = forwardRef<FolderIconHandle, FolderIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const FolderIcon = forwardRef<FolderIconHandle, FolderIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

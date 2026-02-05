@@ -39,7 +39,7 @@ const LINES = [
     { d: "M15 4.5v15", index: 1 },
 ] as const;
 
-const ViewColumnsIcon = forwardRef<ViewColumnsIconHandle, ViewColumnsIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ViewColumnsIcon = forwardRef<ViewColumnsIconHandle, ViewColumnsIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

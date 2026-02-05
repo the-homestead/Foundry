@@ -60,7 +60,7 @@ const PATH_VARIANTS: Variants = {
     },
 };
 
-const TrashIcon = forwardRef<TrashIconHandle, TrashIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const TrashIcon = forwardRef<TrashIconHandle, TrashIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

@@ -33,7 +33,7 @@ const VARIANTS: Variants = {
     },
 };
 
-const EqualsIcon = forwardRef<EqualsIconHandle, EqualsIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const EqualsIcon = forwardRef<EqualsIconHandle, EqualsIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

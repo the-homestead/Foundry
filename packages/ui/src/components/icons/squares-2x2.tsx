@@ -36,7 +36,7 @@ const VARIANTS: Variants = {
     }),
 };
 
-const Squares2X2Icon = forwardRef<Squares2X2IconHandle, Squares2X2IconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const Squares2X2Icon = forwardRef<Squares2X2IconHandle, Squares2X2IconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

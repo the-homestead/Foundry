@@ -29,7 +29,7 @@ const FLAG_VARIANTS: Variants = {
     },
 };
 
-const FlagIcon = forwardRef<FlagIconHandle, FlagIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const FlagIcon = forwardRef<FlagIconHandle, FlagIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

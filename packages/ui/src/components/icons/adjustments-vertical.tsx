@@ -25,7 +25,7 @@ const DEFAULT_TRANSITION: Transition = {
     mass: 0.4,
 };
 
-const AdjustmentsVerticalIcon = forwardRef<AdjustmentsVerticalIconHandle, AdjustmentsVerticalIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const AdjustmentsVerticalIcon = forwardRef<AdjustmentsVerticalIconHandle, AdjustmentsVerticalIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

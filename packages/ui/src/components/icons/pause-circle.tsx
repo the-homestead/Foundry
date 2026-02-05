@@ -49,7 +49,7 @@ const RIGHT_BAR_VARIANTS: Variants = {
     },
 };
 
-const PauseCircleIcon = forwardRef<PauseCircleIconHandle, PauseCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const PauseCircleIcon = forwardRef<PauseCircleIconHandle, PauseCircleIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

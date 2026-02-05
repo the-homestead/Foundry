@@ -31,7 +31,7 @@ const SVG_VARIANTS: Variants = {
     },
 };
 
-const DocumentIcon = forwardRef<DocumentIconHandle, DocumentIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const DocumentIcon = forwardRef<DocumentIconHandle, DocumentIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

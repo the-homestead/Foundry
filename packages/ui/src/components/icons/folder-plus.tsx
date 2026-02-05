@@ -48,7 +48,7 @@ const HORIZONTAL_LINE_VARIANT: Variants = {
     },
 };
 
-const FolderPlusIcon = forwardRef<FolderPlusIconHandle, FolderPlusIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const FolderPlusIcon = forwardRef<FolderPlusIconHandle, FolderPlusIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

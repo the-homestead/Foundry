@@ -50,7 +50,7 @@ const DOT_VARIANTS: Variants = {
     }),
 };
 
-const ReceiptPercentIcon = forwardRef<ReceiptPercentIconHandle, ReceiptPercentIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ReceiptPercentIcon = forwardRef<ReceiptPercentIconHandle, ReceiptPercentIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

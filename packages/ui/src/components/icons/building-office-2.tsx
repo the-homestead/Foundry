@@ -44,7 +44,7 @@ const WINDOWS = [
     { path: "M17.25 11h.008v.008h-.008v-.008Z", index: 2 },
 ] as const;
 
-const BuildingOffice2Icon = forwardRef<BuildingOffice2IconHandle, BuildingOffice2IconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const BuildingOffice2Icon = forwardRef<BuildingOffice2IconHandle, BuildingOffice2IconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

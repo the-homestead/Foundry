@@ -31,7 +31,7 @@ const DEVICE_VARIANTS: Variants = {
     },
 };
 
-const DevicePhoneMobileIcon = forwardRef<DevicePhoneMobileIconHandle, DevicePhoneMobileIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const DevicePhoneMobileIcon = forwardRef<DevicePhoneMobileIconHandle, DevicePhoneMobileIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

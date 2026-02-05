@@ -38,7 +38,7 @@ const LINE_VARIANTS: Variants = {
     },
 };
 
-const ArrowUpIcon = forwardRef<ArrowUpIconHandle, ArrowUpIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const ArrowUpIcon = forwardRef<ArrowUpIconHandle, ArrowUpIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

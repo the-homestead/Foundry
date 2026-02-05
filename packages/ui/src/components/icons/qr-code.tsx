@@ -34,7 +34,7 @@ const DOT_VARIANTS: Variants = {
     }),
 };
 
-const QrCodeIcon = forwardRef<QrCodeIconHandle, QrCodeIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const QrCodeIcon = forwardRef<QrCodeIconHandle, QrCodeIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 

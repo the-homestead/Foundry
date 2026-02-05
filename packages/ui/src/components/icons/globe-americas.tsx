@@ -33,7 +33,7 @@ const LAND_VARIANTS: Variants = {
     },
 };
 
-const GlobeAmericasIcon = forwardRef<GlobeAmericasIconHandle, GlobeAmericasIconProps>(({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+const GlobeAmericasIcon = forwardRef<GlobeAmericasIconHandle, GlobeAmericasIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
