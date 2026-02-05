@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
     poweredByHeader: false,
     crossOrigin: "use-credentials",
     turbopack: {
-        root: path.join(__dirname, "..", ".."),
+        root: path.join(import.meta.dirname, "..", ".."),
     },
     logging: {
         fetches: {

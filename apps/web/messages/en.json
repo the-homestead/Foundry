@@ -348,8 +348,7 @@
                 "button": "Update payment method"
             }
         }
-    }
-    ,
+    },
     "AuthPage": {
         "forgot": {
             "title": "Reset password",

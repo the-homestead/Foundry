@@ -1,11 +1,11 @@
 "use client";
+import { Input } from "@foundry/ui/primitives/input";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@foundry/ui/primitives/input-group";
 import { Label } from "@foundry/ui/primitives/label";
 import type React from "react";
 import { useState } from "react";
 import { AtSymbolIcon } from "../icons/at-symbol";
 import { LockClosedIcon } from "../icons/lock-closed";
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@foundry/ui/primitives/input-group";
-import { Input } from "@foundry/ui/primitives/input";
 
 type Mode = "login" | "register" | "forgot" | "reset";
 

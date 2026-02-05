@@ -1,24 +1,24 @@
-/** biome-ignore-all lint/correctness/noUnusedFunctionParameters: <explanation> */
-/** biome-ignore-all lint/suspicious/useAwait: <explanation> */
+/** biome-ignore-all lint/correctness/noUnusedFunctionParameters: <Def> */
+/** biome-ignore-all lint/suspicious/noExplicitAny: <Def> */
+/** biome-ignore-all lint/suspicious/useAwait: <Def> */
 import { passkey } from "@better-auth/passkey";
 import { stripe } from "@better-auth/stripe";
 import { db, schema } from "@foundry/database";
 import { LAUNCHER_FREE, toApiKeyPermissions } from "@foundry/types/permissions/api-key";
+import AccountUpdated from "@foundry/web/emails/user/account-updated";
+import PasswordResetEmail from "@foundry/web/emails/user/password-reset";
+import TwoFactorEmail from "@foundry/web/emails/user/two-factor";
+import VerifyEmail from "@foundry/web/emails/user/verify-email";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, haveIBeenPwned, lastLoginMethod, organization, twoFactor, username } from "better-auth/plugins";
-import { headers } from "next/headers";
+import { createTranslator } from "next-intl";
+import { Resend } from "resend";
 import Stripe from "stripe";
 import { SYSTEM_CONFIG } from "../constants";
-import type { UserDbType } from "./auth-types";
-import { Resend } from 'resend';
-import VerifyEmail from "@foundry/web/emails/user/verify-email";
-import PasswordResetEmail from "@foundry/web/emails/user/password-reset";
-import TwoFactorEmail from "@foundry/web/emails/user/two-factor";
-import AccountUpdated from "@foundry/web/emails/user/account-updated";
-import { createTranslator } from "next-intl";
 
+// biome-ignore lint/style/noNonNullAssertion: <Def>
 const fromEmail = process.env.EMAIL_SENDER_ADDRESS!;
 
 type Locale = "en" | "de" | "es" | "fr" | "it" | "ja" | "ko" | "pt" | "ru" | "zh";
@@ -31,7 +31,9 @@ export async function detectLocaleFromRequest(request: any, fallback: Locale = "
         const maybeLocale = request?.locale ?? request?.headers?.get?.("x-locale") ?? undefined;
         if (maybeLocale && typeof maybeLocale === "string") {
             const normalized = maybeLocale.split("-")[0];
-            if (SUPPORTED_LOCALES.includes(normalized as Locale)) return normalized as Locale;
+            if (SUPPORTED_LOCALES.includes(normalized as Locale)) {
+                return normalized as Locale;
+            }
         }
 
         // 2) parse Accept-Language header
@@ -47,24 +49,27 @@ export async function detectLocaleFromRequest(request: any, fallback: Locale = "
                 .filter(Boolean);
             for (const part of parts) {
                 const base = part.split("-")[0];
-                if (SUPPORTED_LOCALES.includes(part as Locale)) return part as Locale;
-                if (SUPPORTED_LOCALES.includes(base as Locale)) return base as Locale;
+                if (SUPPORTED_LOCALES.includes(part as Locale)) {
+                    return part as Locale;
+                }
+                if (SUPPORTED_LOCALES.includes(base as Locale)) {
+                    return base as Locale;
+                }
             }
         }
-    } catch (e) {
+    } catch (_e) {
         // fallthrough to default
     }
     return fallback;
 }
 
+// biome-ignore lint/style/noNonNullAssertion: <Def>
 const resend = new Resend(process.env.RESEND_API_KEY!);
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 const appOrigin = new URL(appUrl).origin;
 const rpID = new URL(appUrl).hostname;
 
-
 // configure basic social providers from env (same as backend)
-// biome-ignore lint/suspicious/noExplicitAny: <Def>
 const socialProviders: Record<string, any> = {};
 if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
     socialProviders.google = {
@@ -119,10 +124,10 @@ export const auth = betterAuth({
                 from: fromEmail,
                 to: user.email,
                 subject: t("passwordReset.subject"),
-                react: <PasswordResetEmail name={user.name || ""} locale={locale} resetUrl={url} expiresHours={24} />,
+                react: <PasswordResetEmail expiresHours={24} locale={locale} name={user.name || ""} resetUrl={url} />,
             });
         },
-    onPasswordReset: async ({ user }: { user: any }, request: any) => {
+        onPasswordReset: async ({ user }: { user: any }, request: any) => {
             try {
                 const locale = await detectLocaleFromRequest(request as any, "en");
                 const t = createTranslator({
@@ -135,7 +140,7 @@ export const auth = betterAuth({
                     from: fromEmail,
                     to: user.email,
                     subject: t("accountUpdated.subject"),
-                    react: <AccountUpdated name={user.name || ""} locale={locale} changes={[t("accountUpdated.changes", { changes: "password" })]} />,
+                    react: <AccountUpdated changes={[t("accountUpdated.changes", { changes: "password" })]} locale={locale} name={user.name || ""} />,
                 });
             } catch (e) {
                 console.error("Failed to send account-updated email:", e);
@@ -155,9 +160,9 @@ export const auth = betterAuth({
                 from: fromEmail,
                 to: user.email,
                 subject: t("verifyEmail.subject"),
-                react: <VerifyEmail name={user.name || ""} verifyUrl={url} locale={locale} />
+                react: <VerifyEmail locale={locale} name={user.name || ""} verifyUrl={url} />,
             });
-        }
+        },
     },
     advanced: {
         // make cookies usable cross-site
@@ -201,7 +206,7 @@ export const auth = betterAuth({
                         from: fromEmail,
                         to: user.email,
                         subject: t("twoFactor.subject"),
-                        react: <TwoFactorEmail name={user.name || ""} locale={locale} code={otp} expiresMinutes={10} />,
+                        react: <TwoFactorEmail code={otp} expiresMinutes={10} locale={locale} name={user.name || ""} />,
                     });
                 } catch (e) {
                     // log and swallow so 2FA flow isn't blocked by email failures
@@ -213,6 +218,7 @@ export const auth = betterAuth({
             minUsernameLength: 3,
             maxUsernameLength: 30,
             usernameValidator: (username) => {
+                // biome-ignore lint/performance/useTopLevelRegex: <Reg>
                 const usernameRegex = /^[a-zA-Z0-9_]+$/; // Alphanumeric and underscores only
                 if (!usernameRegex.test(username)) {
                     return false;

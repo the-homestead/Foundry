@@ -1,13 +1,11 @@
 "use client";
+import { AtSymbolIcon, LockClosedIcon } from "@foundry/ui/icons";
 import { cn } from "@foundry/ui/lib/utils";
-import { Badge } from "@foundry/ui/primitives/badge";
 import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@foundry/ui/primitives/field";
 import { Input } from "@foundry/ui/primitives/input";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@foundry/ui/primitives/input-group";
-import { AtSymbolIcon } from "@foundry/ui/icons";
-import { LockClosedIcon } from "@foundry/ui/icons";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 // biome-ignore lint/performance/noNamespaceImport: <Def>

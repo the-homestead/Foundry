@@ -1,12 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
+import { getIconList } from "@foundry/ui/icons";
 import { Badge } from "@foundry/ui/primitives/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
 import { Input } from "@foundry/ui/primitives/input";
 import { Label } from "@foundry/ui/primitives/label";
 import { ScrollArea } from "@foundry/ui/primitives/scroll-area";
 import { Separator } from "@foundry/ui/primitives/separator";
-import { getIconList } from "@foundry/ui/icons";
 import type { ComponentType } from "react";
 import { useMemo, useState } from "react";
 import { SectionHeader } from "./section-header";

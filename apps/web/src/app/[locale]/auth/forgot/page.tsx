@@ -1,10 +1,10 @@
 "use client";
 import AuthForm from "@foundry/ui/components/auth/auth-form";
-import { authClient } from "@foundry/web/lib/auth-client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
 import { useRouter } from "@foundry/web/i18n/navigation";
-import { useState } from "react";
+import { authClient } from "@foundry/web/lib/auth-client";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 export default function ForgotPage() {
     const router = useRouter();
@@ -30,8 +30,16 @@ export default function ForgotPage() {
             }
             setMessage({ type: "success", message: t("forgot.sendSuccess") });
             router.push("/auth/login");
-        } catch (err: any) {
-            setMessage({ type: "error", message: err?.message || t("forgot.sendFailed") });
+        } catch (err: unknown) {
+            let errMessage: string;
+            if (err instanceof Error) {
+                errMessage = err.message;
+            } else if (typeof err === "string") {
+                errMessage = err;
+            } else {
+                errMessage = t("forgot.sendFailed");
+            }
+            setMessage({ type: "error", message: errMessage });
         }
     };
 
@@ -44,9 +52,7 @@ export default function ForgotPage() {
                 </CardHeader>
                 <CardContent>
                     <AuthForm mode="forgot" onSubmit={handleSubmit} />
-                    {message ? (
-                        <p className={message.type === "error" ? "mt-4 text-sm text-destructive" : "mt-4 text-sm text-emerald-500"}>{message.message}</p>
-                    ) : null}
+                    {message ? <p className={message.type === "error" ? "mt-4 text-destructive text-sm" : "mt-4 text-emerald-500 text-sm"}>{message.message}</p> : null}
                 </CardContent>
             </Card>
         </div>

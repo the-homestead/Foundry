@@ -7,10 +7,10 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@foundry/ui/pri
 import { Input } from "@foundry/ui/primitives/input";
 import { Label } from "@foundry/ui/primitives/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@foundry/ui/primitives/tabs";
-import { authClient } from "@foundry/web/lib/auth-client";
 import { useRouter } from "@foundry/web/i18n/navigation";
-import { useCallback, useState } from "react";
+import { authClient } from "@foundry/web/lib/auth-client";
 import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 
 const TABS = ["authenticator", "otp", "backup"] as const;
 
@@ -50,7 +50,7 @@ export default function TwoFactorPage() {
         } finally {
             setLoading(false);
         }
-    }, [router, totpCode, trustDevice]);
+    }, [router, totpCode, trustDevice, t]);
 
     const handleSendOtp = useCallback(async () => {
         setLoading(true);
@@ -67,7 +67,7 @@ export default function TwoFactorPage() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [t]);
 
     const handleVerifyOtp = useCallback(async () => {
         if (!otpCode.trim()) {
@@ -93,7 +93,7 @@ export default function TwoFactorPage() {
         } finally {
             setLoading(false);
         }
-    }, [otpCode, router, trustDevice]);
+    }, [otpCode, router, trustDevice, t]);
 
     const handleVerifyBackup = useCallback(async () => {
         if (!backupCode.trim()) {
@@ -145,7 +145,13 @@ export default function TwoFactorPage() {
                             <FieldGroup>
                                 <Field>
                                     <FieldLabel htmlFor="totpCode">{t("twoFactor.placeholders.totpCode")}</FieldLabel>
-                                    <Input id="totpCode" inputMode="numeric" onChange={(event) => setTotpCode(event.target.value)} placeholder={t("twoFactor.placeholders.totpCode")} value={totpCode} />
+                                    <Input
+                                        id="totpCode"
+                                        inputMode="numeric"
+                                        onChange={(event) => setTotpCode(event.target.value)}
+                                        placeholder={t("twoFactor.placeholders.totpCode")}
+                                        value={totpCode}
+                                    />
                                     <FieldDescription>{t("twoFactor.description")}</FieldDescription>
                                 </Field>
                             </FieldGroup>
@@ -155,7 +161,13 @@ export default function TwoFactorPage() {
                             <FieldGroup>
                                 <Field>
                                     <FieldLabel htmlFor="otpCode">{t("twoFactor.placeholders.otpCode")}</FieldLabel>
-                                    <Input id="otpCode" inputMode="numeric" onChange={(event) => setOtpCode(event.target.value)} placeholder={t("twoFactor.placeholders.otpCode")} value={otpCode} />
+                                    <Input
+                                        id="otpCode"
+                                        inputMode="numeric"
+                                        onChange={(event) => setOtpCode(event.target.value)}
+                                        placeholder={t("twoFactor.placeholders.otpCode")}
+                                        value={otpCode}
+                                    />
                                     <FieldDescription>{t("twoFactor.description")}</FieldDescription>
                                 </Field>
                             </FieldGroup>
@@ -168,7 +180,12 @@ export default function TwoFactorPage() {
                             <FieldGroup>
                                 <Field>
                                     <FieldLabel htmlFor="backupCode">{t("twoFactor.placeholders.backupCode")}</FieldLabel>
-                                    <Input id="backupCode" onChange={(event) => setBackupCode(event.target.value)} placeholder={t("twoFactor.placeholders.backupCode")} value={backupCode} />
+                                    <Input
+                                        id="backupCode"
+                                        onChange={(event) => setBackupCode(event.target.value)}
+                                        placeholder={t("twoFactor.placeholders.backupCode")}
+                                        value={backupCode}
+                                    />
                                     <FieldDescription>{t("twoFactor.description")}</FieldDescription>
                                 </Field>
                             </FieldGroup>

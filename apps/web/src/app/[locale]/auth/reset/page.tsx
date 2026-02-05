@@ -7,7 +7,7 @@ export default async function LocalizedResetIndex({ params, searchParams }: { pa
     const { locale } = (await params) ?? {};
     if (!token) {
         const t = createTranslator({
-            messages: await import("../../../../../messages/" + (locale ?? "en") + ".json"),
+            messages: await import(`../../../../../messages/${locale ?? "en"}.json`),
             namespace: "AuthPage",
             locale: locale as Locale,
         });
@@ -15,8 +15,8 @@ export default async function LocalizedResetIndex({ params, searchParams }: { pa
         return (
             <div className="mx-auto flex w-full max-w-lg flex-col gap-6 p-8">
                 <div className="p-6">
-                    <h1 className="text-2xl font-semibold">{t("reset.missingTokenTitle")}</h1>
-                    <p className="mt-2 text-sm text-muted-foreground">{t("reset.missingTokenDescription")}</p>
+                    <h1 className="font-semibold text-2xl">{t("reset.missingTokenTitle")}</h1>
+                    <p className="mt-2 text-muted-foreground text-sm">{t("reset.missingTokenDescription")}</p>
                 </div>
             </div>
         );
@@ -27,4 +27,3 @@ export default async function LocalizedResetIndex({ params, searchParams }: { pa
     // are applied correctly and no `any` casts are needed.
     redirect({ href: `/auth/reset/${encodeURIComponent(token)}`, locale: locale as Locale });
 }
- 
