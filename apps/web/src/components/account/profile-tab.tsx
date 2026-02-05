@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@foun
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldSet } from "@foundry/ui/primitives/field";
 import { Input } from "@foundry/ui/primitives/input";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@foundry/ui/primitives/input-group";
-
+import { useTranslations } from "next-intl";
 import { FieldHint } from "./field-hint";
 import type { AccountForm, FieldErrorMap, StatusMessage } from "./types/types";
 
@@ -22,6 +22,8 @@ interface ProfileTabProps {
 }
 
 export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formMessage, clearFieldError, onSubmit }: ProfileTabProps) {
+    const t = useTranslations("AccountPage");
+    const c = useTranslations("common");
     return (
         <form
             onSubmit={(event) => {
@@ -32,16 +34,16 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
             <div className="grid gap-6 lg:grid-cols-12">
                 <Card className="lg:col-span-7">
                     <CardHeader className="text-center">
-                        <CardTitle className="text-center">Identity</CardTitle>
-                        <CardDescription className="text-center">Core details for your profile.</CardDescription>
+                        <CardTitle className="text-center">{t("profile.identity.title")}</CardTitle>
+                        <CardDescription className="text-center">{t("profile.identity.description")}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <FieldSet>
                             <FieldGroup className="w-full">
                                 <Field orientation="vertical">
                                     <FieldLabel className="w-full justify-center text-center" htmlFor="fullName">
-                                        Display name
-                                        <FieldHint label="Display name help" text="Shown on your profile and shared across your workspace." />
+                                        {t("profile.identity.displayName")}
+                                        <FieldHint label={t("profile.identity.displayName")} text={t("profile.identity.displayNameHelp")} />
                                     </FieldLabel>
                                     <FieldContent className="mx-auto w-full max-w-sm">
                                         <form.Field name="fullName">
@@ -70,8 +72,8 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
 
                                 <Field orientation="vertical">
                                     <FieldLabel className="w-full justify-center text-center" htmlFor="username">
-                                        Username
-                                        <FieldHint label="Username help" text="Your unique handle for sharing and mentions." />
+                                        {t("profile.identity.username")}
+                                        <FieldHint label={t("profile.identity.username")} text={t("profile.identity.usernameHelp")} />
                                     </FieldLabel>
                                     <FieldContent className="mx-auto w-full max-w-sm">
                                         <form.Field name="username">
@@ -105,8 +107,8 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
 
                                 <Field orientation="vertical">
                                     <FieldLabel className="w-full justify-center text-center" htmlFor="email">
-                                        Email
-                                        <FieldHint label="Email help" text="Email updates require verification." />
+                                        {t("profile.identity.email")}
+                                        <FieldHint label={t("profile.identity.email")} text={t("profile.identity.emailHelp")} />
                                     </FieldLabel>
                                     <FieldContent className="mx-auto w-full max-w-sm">
                                         <form.Field name="email">
@@ -121,8 +123,8 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
 
                 <Card className="lg:col-span-5">
                     <CardHeader className="text-center">
-                        <CardTitle className="text-center">Profile fields</CardTitle>
-                        <CardDescription className="text-center">Optional details for your workspace.</CardDescription>
+                        <CardTitle className="text-center">{t("profile.fields.title")}</CardTitle>
+                        <CardDescription className="text-center">{t("profile.fields.description")}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <FieldSet>
@@ -130,8 +132,8 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                 <div className="grid gap-6 lg:grid-cols-1">
                                     <Field>
                                         <FieldLabel className="w-full justify-center text-center" htmlFor="firstName">
-                                            First name
-                                            <FieldHint label="First name help" text="Shown in places where your first name is preferred." />
+                                            {t("profile.fields.firstName")}
+                                            <FieldHint label={t("profile.fields.firstName")} text={t("profile.fields.firstNameHelp")} />
                                         </FieldLabel>
                                         <form.Field name="firstName">
                                             {(field) => (
@@ -148,8 +150,8 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                     </Field>
                                     <Field>
                                         <FieldLabel className="w-full justify-center text-center" htmlFor="lastName">
-                                            Last name
-                                            <FieldHint label="Last name help" text="Used for formal identification in workspace details." />
+                                            {t("profile.fields.lastName")}
+                                            <FieldHint label={t("profile.fields.lastName")} text={t("profile.fields.lastNameHelp")} />
                                         </FieldLabel>
                                         <form.Field name="lastName">
                                             {(field) => (
@@ -195,8 +197,8 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
 
                 <Card className="lg:col-span-5">
                     <CardHeader className="text-center">
-                        <CardTitle className="text-center">Avatar</CardTitle>
-                        <CardDescription className="text-center">Update your profile image.</CardDescription>
+                        <CardTitle className="text-center">{t("profile.avatar.title")}</CardTitle>
+                        <CardDescription className="text-center">{t("profile.avatar.description")}</CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-4">
                         <div className="grid gap-4 sm:grid-cols-[auto,1fr]">
@@ -206,25 +208,26 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                     <AvatarFallback>{avatarFallback}</AvatarFallback>
                                 </Avatar>
                                 <div className="space-y-1">
-                                    <p className="font-medium">Profile picture</p>
-                                    <p className="text-muted-foreground text-sm">PNG, JPG up to 5MB.</p>
+                                    <p className="font-medium">{t("profile.avatar.picture")}</p>
+                                    <p className="text-muted-foreground text-sm">{t("profile.avatar.pictureHelp")}</p>
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <p className="text-muted-foreground text-sm">Square images look best. Transparent PNGs keep your brand crisp.</p>
+                                <p className="text-muted-foreground text-sm">{t("profile.avatar.pictureNote")}</p>
                                 <div className="flex flex-wrap items-center gap-2">
                                     <Badge variant="outline">Synced</Badge>
-                                    <span className="text-muted-foreground text-xs">Last updated just now</span>
+                                    <Badge variant="outline">{t("profile.avatar.synced")}</Badge>
+                                    <span className="text-muted-foreground text-xs">{t("profile.avatar.lastUpdatedJustNow")}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             <Input accept="image/*" className="sr-only" id="avatarUpload" type="file" />
                             <Button asChild>
-                                <label htmlFor="avatarUpload">Upload</label>
+                                <label htmlFor="avatarUpload">{c("buttons.upload")}</label>
                             </Button>
                             <Button type="button" variant="outline">
-                                Remove
+                                {c("buttons.remove")}
                             </Button>
                         </div>
                     </CardContent>
@@ -232,43 +235,43 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
 
                 <Card className="lg:col-span-7">
                     <CardHeader className="text-center">
-                        <CardTitle className="text-center">Connected apps</CardTitle>
-                        <CardDescription className="text-center">Manage OAuth connections to external services.</CardDescription>
+                        <CardTitle className="text-center">{t("profile.connectedApps.title")}</CardTitle>
+                        <CardDescription className="text-center">{t("profile.connectedApps.description")}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
                             <div>
-                                <p className="font-medium">GitHub</p>
-                                <p className="text-muted-foreground text-sm">Code syncing and integrations.</p>
+                                <p className="font-medium">{t("profile.connectedApps.app.github.name")}</p>
+                                <p className="text-muted-foreground text-sm">{t("profile.connectedApps.app.github.description")}</p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Badge variant="outline">Not connected</Badge>
+                                <Badge variant="outline">{c("fields.notConnected")}</Badge>
                                 <Button size="sm" type="button" variant="outline">
-                                    Connect
+                                    {c("buttons.connect")}
                                 </Button>
                             </div>
                         </div>
                         <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
                             <div>
-                                <p className="font-medium">Google</p>
-                                <p className="text-muted-foreground text-sm">Calendar and identity sync.</p>
+                                <p className="font-medium">{t("profile.connectedApps.app.google.name")}</p>
+                                <p className="text-muted-foreground text-sm">{t("profile.connectedApps.app.google.description")}</p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Badge>Connected</Badge>
+                                <Badge>{c("fields.connected")}</Badge>
                                 <Button size="sm" type="button" variant="outline">
-                                    Disconnect
+                                    {c("buttons.disconnect")}
                                 </Button>
                             </div>
                         </div>
                         <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
                             <div>
-                                <p className="font-medium">Discord</p>
-                                <p className="text-muted-foreground text-sm">Community and role sync.</p>
+                                <p className="font-medium">{t("profile.connectedApps.app.discord.name")}</p>
+                                <p className="text-muted-foreground text-sm">{t("profile.connectedApps.app.discord.description")}</p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Badge variant="outline">Not connected</Badge>
+                                <Badge variant="outline">{c("fields.notConnected")}</Badge>
                                 <Button size="sm" type="button" variant="outline">
-                                    Connect
+                                    {c("buttons.connect")}
                                 </Button>
                             </div>
                         </div>
@@ -276,7 +279,7 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                 </Card>
 
                 <div className="space-y-2 lg:col-span-12">
-                    <p className="text-muted-foreground text-sm">Changes sync to your account immediately.</p>
+                    <p className="text-muted-foreground text-sm">{t("security.changesSync")}</p>
                     {formMessage ? (
                         <FieldDescription className={formMessage.type === "error" ? "text-destructive" : "text-emerald-500"}>{formMessage.message}</FieldDescription>
                     ) : null}

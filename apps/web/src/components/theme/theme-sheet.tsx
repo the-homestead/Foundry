@@ -8,6 +8,8 @@ import { Card, CardContent } from "@foundry/ui/primitives/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@foundry/ui/primitives/sheet";
 import { SidebarMenuButton, SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
 import { Check, Monitor, Moon, Palette, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useTheme } from "../../providers/theme-provider";
 
 function getThemeIcon(key: string) {
@@ -33,30 +35,75 @@ function getThemeIcon(key: string) {
     }
 }
 
-function getThemeDescription(key: string) {
-    switch (key) {
-        case "light":
-            return "Clean and bright interface";
-        case "dark":
-            return "Easy on the eyes at night";
-        case "system":
-            return "Follows your OS preference";
-        case "latte":
-            return "Warm and inviting coffee theme";
-        case "mocha":
-            return "Rich dark chocolate tones";
-        case "frappe":
-            return "Cool and sophisticated";
-        case "macchiato":
-            return "Bold espresso layers";
-        default:
-            return "";
-    }
-}
+// descriptions are provided via translations (see /apps/web/messages/*.json)
 
 export function ThemeSheet() {
     const { theme, color, setTheme, setColor } = useTheme();
     const activeTheme = THEMES[theme];
+    const t = useTranslations("Theme");
+
+    // compute translation maps in an effect to avoid calling t() synchronously during render
+    const [themeLabels, setThemeLabels] = useState<Record<string, string>>(() => Object.fromEntries(Object.keys(THEMES).map((k) => [k, THEMES[k as BaseTheme].label])));
+
+    const [themeDescriptions, setThemeDescriptions] = useState<Record<string, string>>(() => Object.fromEntries(Object.keys(THEMES).map((k) => [k, ""])));
+
+    const [colorLabels, setColorLabels] = useState<Record<string, string>>(() => ({}));
+
+    // Only run when translation function changes
+    useEffect(() => {
+        // build labels/descriptions safely and only set state if values changed
+        const newLabels = Object.fromEntries(
+            Object.keys(THEMES).map((k) => {
+                try {
+                    const v = t(`labels.${k}`) as string;
+                    return [k, v || THEMES[k as BaseTheme].label];
+                } catch {
+                    return [k, THEMES[k as BaseTheme].label];
+                }
+            })
+        ) as Record<string, string>;
+
+        const newDescriptions = Object.fromEntries(
+            Object.keys(THEMES).map((k) => {
+                try {
+                    const v = t(`descriptions.${k}`) as string;
+                    return [k, v || ""];
+                } catch {
+                    return [k, ""];
+                }
+            })
+        ) as Record<string, string>;
+
+        setThemeLabels((prev) => {
+            return JSON.stringify(prev) === JSON.stringify(newLabels) ? prev : newLabels;
+        });
+        setThemeDescriptions((prev) => {
+            return JSON.stringify(prev) === JSON.stringify(newDescriptions) ? prev : newDescriptions;
+        });
+        // Only run when translation function changes
+    }, [t]);
+
+    // Recompute color labels when theme or translations change
+    useEffect(() => {
+        if (!activeTheme?.colors) {
+            setColorLabels({});
+            return;
+        }
+
+        const newColors = Object.fromEntries(
+            Object.entries(activeTheme.colors).map(([k, c]) => {
+                try {
+                    const v = t(`colors.${k}`) as string;
+                    return [k, v || c.label];
+                } catch {
+                    return [k, c.label];
+                }
+            })
+        ) as Record<string, string>;
+
+        setColorLabels((prev) => (JSON.stringify(prev) === JSON.stringify(newColors) ? prev : newColors));
+        // Recompute color labels when theme or translations change
+    }, [activeTheme, t]);
 
     return (
         <Sheet>
@@ -65,7 +112,7 @@ export function ThemeSheet() {
                     <SidebarMenuButton asChild size="sm">
                         <button className="flex w-full items-center gap-2 text-left" type="button">
                             <PaintBrushIcon size={20} />
-                            <span>Theme</span>
+                            <span>{t("sheet.button")}</span>
                         </button>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -75,9 +122,9 @@ export function ThemeSheet() {
                 <SheetHeader className="pb-6">
                     <SheetTitle className="flex items-center gap-2">
                         <Palette className="h-5 w-5" />
-                        Theme Customization
+                        {t("sheet.title")}
                     </SheetTitle>
-                    <SheetDescription>Personalize your interface appearance.</SheetDescription>
+                    <SheetDescription>{t("sheet.description")}</SheetDescription>
                 </SheetHeader>
 
                 <div className="space-y-8 p-6">
@@ -85,7 +132,7 @@ export function ThemeSheet() {
                     <Card>
                         <CardContent className="p-4">
                             <div className="space-y-3">
-                                <h3 className="font-medium text-sm">Standard Themes</h3>
+                                <h3 className="font-medium text-sm">{t("sheet.header_standard")}</h3>
                                 <div className="grid grid-cols-1 gap-2">
                                     {["light", "dark", "system"].map((key) => (
                                         <Button
@@ -98,9 +145,9 @@ export function ThemeSheet() {
                                             <div className="flex w-full items-center gap-3">
                                                 {getThemeIcon(key)}
                                                 <div className="flex-1 text-left">
-                                                    <div className={cn("font-medium text-sm", theme === key && "text-primary-foreground")}>{THEMES[key as BaseTheme].label}</div>
+                                                    <div className={cn("font-medium text-sm", theme === key && "text-primary-foreground")}>{themeLabels[key]}</div>
                                                     <div className={cn("text-xs", theme === key ? "text-primary-foreground/80" : "text-muted-foreground")}>
-                                                        {getThemeDescription(key)}
+                                                        {themeDescriptions[key]}
                                                     </div>
                                                 </div>
                                                 {theme === key && <Check className="h-4 w-4" />}
@@ -116,7 +163,7 @@ export function ThemeSheet() {
                     <Card>
                         <CardContent className="p-4">
                             <div className="space-y-3">
-                                <h3 className="font-medium text-sm">Catppuccin Themes</h3>
+                                <h3 className="font-medium text-sm">{t("sheet.header_catppuccin")}</h3>
                                 <div className="grid grid-cols-1 gap-2">
                                     {["latte", "mocha", "frappe", "macchiato"].map((key) => (
                                         <Button
@@ -129,11 +176,9 @@ export function ThemeSheet() {
                                             <div className="flex w-full items-center gap-3">
                                                 {getThemeIcon(key)}
                                                 <div className="min-w-0 flex-1 text-left">
-                                                    <div className={cn("truncate font-medium text-sm", theme === key && "text-primary-foreground")}>
-                                                        {THEMES[key as BaseTheme].label}
-                                                    </div>
+                                                    <div className={cn("truncate font-medium text-sm", theme === key && "text-primary-foreground")}>{themeLabels[key]}</div>
                                                     <div className={cn("truncate text-xs", theme === key ? "text-primary-foreground/80" : "text-muted-foreground")}>
-                                                        {getThemeDescription(key)}
+                                                        {themeDescriptions[key]}
                                                     </div>
                                                 </div>
                                                 {theme === key && <Check className="h-4 w-4 flex-shrink-0" />}
@@ -151,8 +196,8 @@ export function ThemeSheet() {
                             <CardContent className="p-4">
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="font-medium text-sm">Accent Color</h3>
-                                        <div className="ml-2 truncate text-muted-foreground text-xs">{activeTheme.colors[color]?.label} selected</div>
+                                        <h3 className="font-medium text-sm">{t("sheet.header_accent")}</h3>
+                                        <div className="ml-2 truncate text-muted-foreground text-xs">{colorLabels[color] ?? activeTheme.colors[color]?.label ?? ""} selected</div>
                                     </div>
                                     <div className="space-y-3">
                                         <div className="grid grid-cols-4 gap-2">
@@ -165,7 +210,7 @@ export function ThemeSheet() {
                                                     key={key}
                                                     onClick={() => setColor(key as AccentColor)}
                                                     style={{ backgroundColor: c.preview }}
-                                                    title={c.label}
+                                                    title={colorLabels[key] ?? c.label}
                                                     type="button"
                                                 >
                                                     {color === key && (
@@ -181,7 +226,7 @@ export function ThemeSheet() {
                                         <div className="grid grid-cols-4 gap-2 text-muted-foreground text-xs">
                                             {Object.entries(activeTheme.colors).map(([key, c]) => (
                                                 <div className="truncate text-center" key={key}>
-                                                    {c.label}
+                                                    {colorLabels[key] ?? c.label}
                                                 </div>
                                             ))}
                                         </div>

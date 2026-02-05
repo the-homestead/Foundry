@@ -5,6 +5,9 @@ import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@foundry/ui/primitives/field";
 import { Input } from "@foundry/ui/primitives/input";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@foundry/ui/primitives/input-group";
+import { AtSymbolIcon } from "@foundry/ui/icons";
+import { LockClosedIcon } from "@foundry/ui/icons";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 // biome-ignore lint/performance/noNamespaceImport: <Def>
@@ -129,27 +132,34 @@ export default function RegisterForm({
                                             return (
                                                 <Field data-invalid={isInvalid}>
                                                     <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                                                    <Input
-                                                        aria-invalid={isInvalid}
-                                                        autoComplete="email webauthn"
-                                                        id={field.name}
-                                                        name={field.name}
-                                                        onBlur={field.handleBlur}
-                                                        onChange={(e) => {
-                                                            field.handleChange(e.target.value);
-                                                            setFieldErrors((p) => {
-                                                                if (!p[field.name]) {
-                                                                    return p;
-                                                                }
-                                                                const copy = { ...p };
-                                                                delete copy[field.name];
-                                                                return copy;
-                                                            });
-                                                        }}
-                                                        placeholder="you@example.com"
-                                                        type="email"
-                                                        value={field.state.value}
-                                                    />
+                                                    <InputGroup>
+                                                        <InputGroupAddon align="inline-start">
+                                                            <InputGroupText>
+                                                                <AtSymbolIcon />
+                                                            </InputGroupText>
+                                                        </InputGroupAddon>
+                                                        <InputGroupInput
+                                                            aria-invalid={isInvalid}
+                                                            autoComplete="email webauthn"
+                                                            id={field.name}
+                                                            name={field.name}
+                                                            onBlur={field.handleBlur}
+                                                            onChange={(e) => {
+                                                                field.handleChange(e.target.value);
+                                                                setFieldErrors((p) => {
+                                                                    if (!p[field.name]) {
+                                                                        return p;
+                                                                    }
+                                                                    const copy = { ...p };
+                                                                    delete copy[field.name];
+                                                                    return copy;
+                                                                });
+                                                            }}
+                                                            placeholder="you@example.com"
+                                                            type="email"
+                                                            value={field.state.value}
+                                                        />
+                                                    </InputGroup>
                                                     {(() => {
                                                         const errors = fieldErrors[field.name];
                                                         return errors ? (
@@ -255,26 +265,33 @@ export default function RegisterForm({
                                     return (
                                         <Field>
                                             <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                                            <Input
-                                                aria-invalid={isInvalid}
-                                                autoComplete="new-password webauthn"
-                                                id={field.name}
-                                                name={field.name}
-                                                onBlur={field.handleBlur}
-                                                onChange={(e) => {
-                                                    field.handleChange(e.target.value);
-                                                    setFieldErrors((p) => {
-                                                        if (!p[field.name]) {
-                                                            return p;
-                                                        }
-                                                        const copy = { ...p };
-                                                        delete copy[field.name];
-                                                        return copy;
-                                                    });
-                                                }}
-                                                type="password"
-                                                value={field.state.value}
-                                            />
+                                            <InputGroup>
+                                                <InputGroupAddon align="inline-start">
+                                                    <InputGroupText>
+                                                        <LockClosedIcon />
+                                                    </InputGroupText>
+                                                </InputGroupAddon>
+                                                <InputGroupInput
+                                                    aria-invalid={isInvalid}
+                                                    autoComplete="new-password webauthn"
+                                                    id={field.name}
+                                                    name={field.name}
+                                                    onBlur={field.handleBlur}
+                                                    onChange={(e) => {
+                                                        field.handleChange(e.target.value);
+                                                        setFieldErrors((p) => {
+                                                            if (!p[field.name]) {
+                                                                return p;
+                                                            }
+                                                            const copy = { ...p };
+                                                            delete copy[field.name];
+                                                            return copy;
+                                                        });
+                                                    }}
+                                                    type="password"
+                                                    value={field.state.value}
+                                                />
+                                            </InputGroup>
                                             {(() => {
                                                 const errors = fieldErrors[field.name];
                                                 return errors ? (
@@ -296,26 +313,33 @@ export default function RegisterForm({
                                     return (
                                         <Field>
                                             <FieldLabel htmlFor={field.name}>Confirm password</FieldLabel>
-                                            <Input
-                                                aria-invalid={isInvalid}
-                                                autoComplete="new-password webauthn"
-                                                id={field.name}
-                                                name={field.name}
-                                                onBlur={field.handleBlur}
-                                                onChange={(e) => {
-                                                    field.handleChange(e.target.value);
-                                                    setFieldErrors((p) => {
-                                                        if (!p[field.name]) {
-                                                            return p;
-                                                        }
-                                                        const copy = { ...p };
-                                                        delete copy[field.name];
-                                                        return copy;
-                                                    });
-                                                }}
-                                                type="password"
-                                                value={field.state.value}
-                                            />
+                                            <InputGroup>
+                                                <InputGroupAddon align="inline-start">
+                                                    <InputGroupText>
+                                                        <LockClosedIcon />
+                                                    </InputGroupText>
+                                                </InputGroupAddon>
+                                                <InputGroupInput
+                                                    aria-invalid={isInvalid}
+                                                    autoComplete="new-password webauthn"
+                                                    id={field.name}
+                                                    name={field.name}
+                                                    onBlur={field.handleBlur}
+                                                    onChange={(e) => {
+                                                        field.handleChange(e.target.value);
+                                                        setFieldErrors((p) => {
+                                                            if (!p[field.name]) {
+                                                                return p;
+                                                            }
+                                                            const copy = { ...p };
+                                                            delete copy[field.name];
+                                                            return copy;
+                                                        });
+                                                    }}
+                                                    type="password"
+                                                    value={field.state.value}
+                                                />
+                                            </InputGroup>
                                             {(() => {
                                                 const errors = fieldErrors[field.name];
                                                 return errors ? (
@@ -337,17 +361,6 @@ export default function RegisterForm({
                                         Create account
                                     </Button>
                                 </div>
-                                {lastUsedMethod === "email" ? (
-                                    <div className="flex justify-center">
-                                        <Badge variant="outline">Last used</Badge>
-                                    </div>
-                                ) : null}
-                                <FieldDescription className="mt-4 text-center">
-                                    Already have an account?{" "}
-                                    <a className="link" href="/auth/login">
-                                        Sign in
-                                    </a>
-                                </FieldDescription>
                             </Field>
                         </FieldGroup>
                     </form>

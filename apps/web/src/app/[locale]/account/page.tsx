@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default function AccountPage() {
+export default async function AccountPage() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <AccountPageClient />

@@ -145,17 +145,18 @@ export function AppSidebar({
 
     // Ensure we try to refresh the session after a redirect-based login flow
     useEffect(() => {
-        if (!(isPending || data?.user)) {
-            // best-effort refetch to pick up newly-set session cookie
-            try {
+        // Run once on mount. Best-effort refetch to pick up newly-set session cookie
+        // (don't depend on unstable `refetch` identity to avoid repeated calls).
+        try {
+            // Only attempt a refetch if there is no user yet
+            if (!data?.user) {
                 refetch?.();
-            } catch (_err) {
-                // ignore
             }
+        } catch (_err) {
+            // ignore
         }
-        // run once on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data?.user, isPending, refetch]);
+    }, []);
     const sessionUser = data?.user;
     const user = sessionUser
         ? {

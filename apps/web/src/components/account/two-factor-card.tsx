@@ -8,7 +8,7 @@ import { Checkbox } from "@foundry/ui/primitives/checkbox";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@foundry/ui/primitives/field";
 import { Input } from "@foundry/ui/primitives/input";
 import { Label } from "@foundry/ui/primitives/label";
-
+import { useTranslations } from "next-intl";
 import { FieldHint } from "./field-hint";
 import type { StatusMessage } from "./types/types";
 
@@ -42,17 +42,19 @@ interface TwoFactorEnabledPanelProps {
 }
 
 function TwoFactorEnabledPanel({ backupCodes, totpUri, twoFactorLoading, twoFactorPassword, onDisableTwoFactor, onGenerateBackupCodes, onGetTotpUri }: TwoFactorEnabledPanelProps) {
+    const t = useTranslations("AccountPage");
+
     return (
         <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
                 <Button disabled={twoFactorLoading || !twoFactorPassword} onClick={onDisableTwoFactor} type="button" variant="outline">
-                    Disable 2FA
+                    {t("security.twoFactor.disableButton")}
                 </Button>
                 <Button disabled={twoFactorLoading || !twoFactorPassword} onClick={onGenerateBackupCodes} type="button">
-                    Generate backup codes
+                    {t("security.twoFactor.generateBackupCodes")}
                 </Button>
                 <Button disabled={twoFactorLoading || !twoFactorPassword} onClick={onGetTotpUri} type="button" variant="outline">
-                    Show QR code
+                    {t("security.twoFactor.showQr")}
                 </Button>
             </div>
 
@@ -64,7 +66,7 @@ function TwoFactorEnabledPanel({ backupCodes, totpUri, twoFactorLoading, twoFact
 
             {backupCodes?.length ? (
                 <div className="space-y-3">
-                    <h3 className="font-medium">Backup codes</h3>
+                    <h3 className="font-medium">{t("security.twoFactor.backupCodesTitle")}</h3>
                     <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                         {backupCodes.map((code) => (
                             <div className="rounded-md border bg-muted/40 px-3 py-2 font-mono text-sm" key={code}>
@@ -105,11 +107,13 @@ function TwoFactorSetupPanel({
     setTrustDevice,
     setTwoFactorCode,
 }: TwoFactorSetupPanelProps) {
+    const t = useTranslations("AccountPage");
+
     return (
         <div className="space-y-6">
             <div className="flex flex-wrap gap-2">
                 <Button disabled={twoFactorLoading || !twoFactorPassword} onClick={onEnableTwoFactor} type="button">
-                    {twoFactorLoading ? "Working..." : "Enable 2FA"}
+                    {twoFactorLoading ? t("security.twoFactor.working") : t("security.twoFactor.enableButton")}
                 </Button>
             </div>
 
@@ -120,27 +124,27 @@ function TwoFactorSetupPanel({
                     </div>
                     <div className="space-y-4">
                         <div>
-                            <h3 className="font-medium">Scan in your authenticator</h3>
-                            <p className="text-muted-foreground text-sm">Use the QR code to add this account to your app.</p>
+                            <h3 className="font-medium">{t("security.twoFactor.scanTitle")}</h3>
+                            <p className="text-muted-foreground text-sm">{t("security.twoFactor.scanHelp")}</p>
                         </div>
                         <Field>
                             <FieldLabel className="w-full justify-center text-center" htmlFor="twoFactorCode">
-                                Verification code
+                                {t("security.twoFactor.verificationCode")}
                             </FieldLabel>
                             <Input id="twoFactorCode" inputMode="numeric" onChange={(event) => setTwoFactorCode(event.target.value)} placeholder="123456" value={twoFactorCode} />
                         </Field>
                         <div className="flex items-center gap-2">
                             <Checkbox checked={trustDevice} id="trustDevice" onCheckedChange={(value) => setTrustDevice(Boolean(value))} />
                             <Label className="text-muted-foreground text-sm" htmlFor="trustDevice">
-                                Trust this device for 30 days
+                                {t("security.twoFactor.trustDevice")}
                             </Label>
                         </div>
                         <div className="flex flex-wrap gap-2">
                             <Button disabled={twoFactorLoading} onClick={onVerifyTotp} type="button">
-                                Verify code
+                                {t("security.twoFactor.verifyButton")}
                             </Button>
                             <Button disabled={twoFactorLoading || !twoFactorPassword} onClick={onGetTotpUri} type="button" variant="outline">
-                                Refresh QR
+                                {t("security.twoFactor.refreshQr")}
                             </Button>
                         </div>
                     </div>
@@ -149,7 +153,7 @@ function TwoFactorSetupPanel({
 
             {backupCodes?.length ? (
                 <div className="space-y-3">
-                    <h3 className="font-medium">Backup codes</h3>
+                    <h3 className="font-medium">{t("security.twoFactor.backupCodesTitle")}</h3>
                     <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                         {backupCodes.map((code) => (
                             <div className="rounded-md border bg-muted/40 px-3 py-2 font-mono text-sm" key={code}>
@@ -181,25 +185,28 @@ export function TwoFactorCard({
     onGenerateBackupCodes,
     onGetTotpUri,
 }: TwoFactorCardProps) {
+    const t = useTranslations("AccountPage");
+    const c = useTranslations("common");
+
     return (
         <Card>
             <CardHeader className="text-center">
-                <CardTitle className="text-center">Two-factor authentication</CardTitle>
-                <CardDescription className="text-center">Add a second verification step for sign-ins.</CardDescription>
+                <CardTitle className="text-center">{t("security.twoFactor.title")}</CardTitle>
+                <CardDescription className="text-center">{t("security.twoFactor.description")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={twoFactorEnabled ? "default" : "outline"}>{twoFactorEnabled ? "Enabled" : "Not enabled"}</Badge>
-                    <p className="text-muted-foreground text-sm">Authenticator apps are supported for code-based verification.</p>
+                    <Badge variant={twoFactorEnabled ? "default" : "outline"}>{twoFactorEnabled ? c("fields.enabled") : c("fields.notEnabled")}</Badge>
+                    <p className="text-muted-foreground text-sm">{t("security.twoFactor.description")}</p>
                 </div>
 
                 <FieldSet>
-                    <FieldLegend>Account password</FieldLegend>
+                    <FieldLegend>{t("security.twoFactor.passwordLabel")}</FieldLegend>
                     <FieldGroup>
                         <Field>
                             <FieldLabel className="w-full justify-center text-center" htmlFor="twoFactorPassword">
-                                Password
-                                <FieldHint label="Two-factor password help" text="Required to enable, disable, or regenerate codes." />
+                                {t("security.twoFactor.passwordLabel")}
+                                <FieldHint label={t("security.twoFactor.passwordLabel")} text={t("security.twoFactor.passwordHelp")} />
                             </FieldLabel>
                             <Input
                                 id="twoFactorPassword"

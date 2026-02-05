@@ -27,10 +27,10 @@ export const API_KEY_PROFILES = [
     },
 ];
 
-export const ACCOUNT_TABS = ["profile", "security", "api-keys"] as const;
+export const ACCOUNT_TABS = ["profile", "security", "apiKeys"] as const;
 
 export const TAB_LABELS: Record<(typeof ACCOUNT_TABS)[number], string> = {
     profile: "Profile",
     security: "Security",
-    "api-keys": "API keys",
+    apiKeys: "API keys",
 };

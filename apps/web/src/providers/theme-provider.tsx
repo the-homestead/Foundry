@@ -2,7 +2,7 @@
 
 import { type AccentColor, type BaseTheme, THEMES } from "@foundry/ui/lib/theme-config";
 import { useTheme as useNextTheme } from "next-themes";
-import { createContext, useCallback, useContext, useLayoutEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 interface ThemeState {
     theme: BaseTheme;
@@ -24,6 +24,14 @@ export function CustomThemeProvider({ children }: { children: React.ReactNode })
         theme: "system",
         color: "base",
     });
+
+    // Keep a ref to the current state so effects that intentionally don't
+    // depend on `state` can still access the latest values without forcing
+    // the effect to re-run on every state change.
+    const stateRef = useRef(state);
+    useEffect(() => {
+        stateRef.current = state;
+    }, [state]);
 
     // Synchronously apply theme + load from storage to avoid flicker.
     const applyState = useCallback(
@@ -75,17 +83,21 @@ export function CustomThemeProvider({ children }: { children: React.ReactNode })
                 if (parsed) {
                     setState((s) => {
                         const next = { theme: parsed.theme ?? s.theme, color: parsed.color ?? s.color };
+                        // Only update/apply if something actually changed to avoid an update loop
+                        if (next.theme === s.theme && next.color === s.color) {
+                            return s;
+                        }
                         applyState(next);
                         return next;
                     });
                 }
             } else {
-                // Still apply default on first load
-                applyState(state);
+                // Still apply default on first load - use the ref so we don't depend on state
+                applyState(stateRef.current);
             }
         } catch (_e) {
             // If parsing fails, apply current in-memory state
-            applyState(state);
+            applyState(stateRef.current);
         }
 
         // Sync across tabs: if another tab updates the theme, adopt it
@@ -96,6 +108,10 @@ export function CustomThemeProvider({ children }: { children: React.ReactNode })
                     if (parsed) {
                         setState((s) => {
                             const next = { theme: parsed.theme ?? s.theme, color: parsed.color ?? s.color };
+                            // Only update/apply if something actually changed to avoid an update loop
+                            if (next.theme === s.theme && next.color === s.color) {
+                                return s;
+                            }
                             applyState(next);
                             return next;
                         });
@@ -112,10 +128,10 @@ export function CustomThemeProvider({ children }: { children: React.ReactNode })
                 try {
                     const raw = localStorage.getItem(STORAGE_KEY);
                     const parsed = raw ? (JSON.parse(raw) as Partial<ThemeState>) : null;
-                    const next = { theme: parsed?.theme ?? state.theme, color: parsed?.color ?? state.color };
+                    const next = { theme: parsed?.theme ?? stateRef.current.theme, color: parsed?.color ?? stateRef.current.color };
                     applyState(next);
                 } catch {
-                    applyState(state);
+                    applyState(stateRef.current);
                 }
             }
         };
@@ -135,18 +151,36 @@ export function CustomThemeProvider({ children }: { children: React.ReactNode })
         // We intentionally omit 'state' here because we want to read the
         // stored state on mount and when storage changes. applyState reads
         // from its closure and setState is used when needed.
+        // Only re-run if applyState identity changes.
+        // We intentionally omit 'state' here to avoid this effect running on every
+        // theme change which can trigger reentrant updates. applyState reads from
+        // its closure and setState is used when needed.
+        // Disable the exhaustive deps correctness rule for this effect on purpose.
+        // eslint-disable-next-line lint/correctness/useExhaustiveDependencies
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [applyState, state]);
+    }, [applyState]);
 
     // Persist and apply whenever state changes
     useLayoutEffect(() => {
+        // Avoid reapplying/writing if the state is identical to the last applied state.
+        // This prevents potential update loops where applyState or storage events
+        // inadvertently cause re-renders that would re-trigger this effect.
+        const last = lastAppliedRef.current;
+        const currentJson = JSON.stringify(state);
+        if (last === currentJson) {
+            return;
+        }
+
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            localStorage.setItem(STORAGE_KEY, currentJson);
         } catch {
             // ignore storage quota issues
         }
         applyState(state);
+        lastAppliedRef.current = currentJson;
     }, [state, applyState]);
+
+    const lastAppliedRef = useRef<string | null>(null);
 
     const value: ThemeContextType = {
         ...state,

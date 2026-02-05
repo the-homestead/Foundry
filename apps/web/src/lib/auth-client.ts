@@ -1,5 +1,5 @@
 import { passkeyClient } from "@better-auth/passkey/client";
-import { apiKeyClient, inferAdditionalFields, lastLoginMethodClient, twoFactorClient, usernameClient } from "better-auth/client/plugins";
+import { adminClient, apiKeyClient, inferAdditionalFields, lastLoginMethodClient, organizationClient, twoFactorClient, usernameClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -26,6 +26,8 @@ export const authClient = createAuthClient({
                 window.location.href = "/auth/two-factor";
             },
         }),
+        adminClient(),
+        organizationClient({}),
         inferAdditionalFields({
             user: {
                 age: {

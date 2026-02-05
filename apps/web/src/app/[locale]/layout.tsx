@@ -125,6 +125,9 @@ export default async function RootLayout({ children, params }: Props) {
         notFound();
     }
 
+    // NOTE: removed server -> client session exposure for security reasons.
+    // Session fetching should remain server-only and not be serialized to the client.
+
     async function changeLocaleAction(locale: Locale) {
         "use server";
         const store = await cookies();
@@ -198,9 +201,9 @@ export default async function RootLayout({ children, params }: Props) {
                                     {children}
                                     <Separator />
                                     <FooterSection />
+                                    <Toaster />
                                 </SidebarInset>
                             </SidebarProvider>
-                            <Toaster />
                         </CustomThemeProvider>
                     </ThemeProvider>
                 </NextIntlClientProvider>

@@ -5,6 +5,9 @@ import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@foundry/ui/primitives/field";
 import { Input } from "@foundry/ui/primitives/input";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@foundry/ui/primitives/input-group";
+import { AtSymbolIcon } from "@foundry/ui/icons";
+import { LockClosedIcon } from "@foundry/ui/icons";
 import { useForm } from "@tanstack/react-form";
 import type React from "react";
 import { useState } from "react";
@@ -72,27 +75,34 @@ export default function LoginForm({
                                     return (
                                         <Field data-invalid={isInvalid}>
                                             <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                                            <Input
-                                                aria-invalid={isInvalid}
-                                                autoComplete="username webauthn"
-                                                id={field.name}
-                                                name={field.name}
-                                                onBlur={field.handleBlur}
-                                                onChange={(e) => {
-                                                    field.handleChange(e.target.value);
-                                                    setFieldErrors((p) => {
-                                                        if (!p[field.name]) {
-                                                            return p;
-                                                        }
-                                                        const copy = { ...p };
-                                                        delete copy[field.name];
-                                                        return copy;
-                                                    });
-                                                }}
-                                                placeholder="you@example.com"
-                                                type="email"
-                                                value={field.state.value}
-                                            />
+                                            <InputGroup>
+                                                <InputGroupAddon align="inline-start">
+                                                    <InputGroupText>
+                                                        <AtSymbolIcon />
+                                                    </InputGroupText>
+                                                </InputGroupAddon>
+                                                <InputGroupInput
+                                                    aria-invalid={isInvalid}
+                                                    autoComplete="username webauthn"
+                                                    id={field.name}
+                                                    name={field.name}
+                                                    onBlur={field.handleBlur}
+                                                    onChange={(e) => {
+                                                        field.handleChange(e.target.value);
+                                                        setFieldErrors((p) => {
+                                                            if (!p[field.name]) {
+                                                                return p;
+                                                            }
+                                                            const copy = { ...p };
+                                                            delete copy[field.name];
+                                                            return copy;
+                                                        });
+                                                    }}
+                                                    placeholder="you@example.com"
+                                                    type="email"
+                                                    value={field.state.value}
+                                                />
+                                            </InputGroup>
                                             {(() => {
                                                 const fieldErrorMessages = fieldErrors[field.name]?.map((m) => ({ message: m }));
                                                 const metaErrorMessages = isInvalid
@@ -117,26 +127,33 @@ export default function LoginForm({
                                                     Forgot your password?
                                                 </a>
                                             </div>
-                                            <Input
-                                                aria-invalid={isInvalid}
-                                                autoComplete="current-password webauthn"
-                                                id={field.name}
-                                                name={field.name}
-                                                onBlur={field.handleBlur}
-                                                onChange={(e) => {
-                                                    field.handleChange(e.target.value);
-                                                    setFieldErrors((p) => {
-                                                        if (!p[field.name]) {
-                                                            return p;
-                                                        }
-                                                        const copy = { ...p };
-                                                        delete copy[field.name];
-                                                        return copy;
-                                                    });
-                                                }}
-                                                type="password"
-                                                value={field.state.value}
-                                            />
+                                            <InputGroup>
+                                                <InputGroupAddon align="inline-start">
+                                                    <InputGroupText>
+                                                        <LockClosedIcon />
+                                                    </InputGroupText>
+                                                </InputGroupAddon>
+                                                <InputGroupInput
+                                                    aria-invalid={isInvalid}
+                                                    autoComplete="current-password webauthn"
+                                                    id={field.name}
+                                                    name={field.name}
+                                                    onBlur={field.handleBlur}
+                                                    onChange={(e) => {
+                                                        field.handleChange(e.target.value);
+                                                        setFieldErrors((p) => {
+                                                            if (!p[field.name]) {
+                                                                return p;
+                                                            }
+                                                            const copy = { ...p };
+                                                            delete copy[field.name];
+                                                            return copy;
+                                                        });
+                                                    }}
+                                                    type="password"
+                                                    value={field.state.value}
+                                                />
+                                            </InputGroup>
                                             {(() => {
                                                 const fieldErrorMessages = fieldErrors[field.name]?.map((m) => ({ message: m }));
                                                 const metaErrorMessages = isInvalid

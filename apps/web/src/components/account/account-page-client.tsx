@@ -19,25 +19,6 @@ import type { AccountDefaults, AccountTab, ApiKeyEntry, FieldErrorMap, StatusMes
 
 import { buildErrorMap, parseAge, toSecondsFromDays } from "./utils";
 
-const createApiKeyOnServer = async (input: { name?: string; prefix?: string; expiresIn?: number; profileId?: string }) => {
-    const response = await fetch("/api/keys", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(input),
-    });
-
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        return { error: { message: errorBody?.error ?? "Failed to create API key." } } as const;
-    }
-
-    const data = await response.json().catch(() => null);
-    return { data } as const;
-};
-
 const saveAccountSettings = async (values: z.infer<typeof accountSchema>, refresh: () => Promise<void>) => {
     const updateResult = await authClient.updateUser({
         name: values.fullName.trim(),
@@ -69,6 +50,7 @@ const saveAccountSettings = async (values: z.infer<typeof accountSchema>, refres
 
 export function AccountPageClient() {
     const t = useTranslations("AccountPage");
+    const c = useTranslations("common");
     const { data, isPending, error, refetch } = useSession();
     const pathname = usePathname();
     const router = useRouter();
@@ -84,6 +66,8 @@ export function AccountPageClient() {
     const [apiKeyExpiresInDays, setApiKeyExpiresInDays] = useState("");
     const [apiKeyProfileId, setApiKeyProfileId] = useState(API_KEY_PROFILES[1]?.id ?? "launcher-free");
     const [lastCreatedKey, setLastCreatedKey] = useState<string | null>(null);
+    const [apiKeyCreating, setApiKeyCreating] = useState(false);
+    const [pendingRevokeId, setPendingRevokeId] = useState<string | null>(null);
     const [twoFactorPassword, setTwoFactorPassword] = useState("");
     const [twoFactorCode, setTwoFactorCode] = useState("");
     const [twoFactorMessage, setTwoFactorMessage] = useState<StatusMessage | null>(null);
@@ -144,63 +128,75 @@ export function AccountPageClient() {
         try {
             const result = await authClient.apiKey.list({});
             if (result?.error) {
-                setApiKeyMessage({ type: "error", message: result.error.message ?? "Failed to load API keys." });
+                setApiKeyMessage({ type: "error", message: result.error.message ?? c("status.error") });
                 setApiKeys([]);
                 return;
             }
             const keys = (result?.data ?? []) as ApiKeyEntry[];
             setApiKeys(keys);
         } catch {
-            setApiKeyMessage({ type: "error", message: "Failed to load API keys." });
+            setApiKeyMessage({ type: "error", message: c("status.error") });
             setApiKeys([]);
         } finally {
             setApiKeyLoading(false);
         }
-    }, []);
+    }, [c]);
 
     const handleCreateApiKey = useCallback(async () => {
         setApiKeyMessage(null);
         setLastCreatedKey(null);
+        setApiKeyCreating(true);
         try {
             const expiresIn = toSecondsFromDays(apiKeyExpiresInDays.trim());
             const profile = API_KEY_PROFILES.find((item) => item.id === apiKeyProfileId) ?? API_KEY_PROFILES[0];
-            const result = await createApiKeyOnServer({
+            const { data, error } = await authClient.apiKey.create({
                 name: apiKeyName.trim() || undefined,
-                prefix: apiKeyPrefix.trim() || undefined,
                 expiresIn,
-                profileId: profile?.id,
+                prefix: apiKeyPrefix.trim() || undefined,
+                metadata: {
+                    profileId: profile?.id,
+                },
             });
-            if (result?.error) {
-                setApiKeyMessage({ type: "error", message: result.error.message ?? t("saveFailed") });
+            if (error) {
+                setApiKeyMessage({ type: "error", message: error.message ?? c("status.saveFailed") });
                 return;
             }
-            const createdKey = (result?.data as { key?: string } | undefined)?.key ?? null;
+            const createdKey = (data as { key?: string } | undefined)?.key ?? null;
             setLastCreatedKey(createdKey);
             setApiKeyName("");
             setApiKeyExpiresInDays("");
             await loadApiKeys();
-            setApiKeyMessage({ type: "success", message: t("apiKeyCreated") });
+            setApiKeyMessage({ type: "success", message: t("success.apiKeyCreated") });
         } catch {
-            setApiKeyMessage({ type: "error", message: "Failed to create API key." });
+            setApiKeyMessage({ type: "error", message: c("status.error") });
+        } finally {
+            setApiKeyCreating(false);
         }
-    }, [apiKeyExpiresInDays, apiKeyName, apiKeyPrefix, apiKeyProfileId, loadApiKeys, t]);
+    }, [apiKeyExpiresInDays, apiKeyName, apiKeyPrefix, apiKeyProfileId, loadApiKeys, t, c]);
 
     const handleDeleteApiKey = useCallback(
         async (keyId: string) => {
             setApiKeyMessage(null);
             try {
-                const result = await authClient.apiKey.delete({ keyId });
-                if (result?.error) {
-                    setApiKeyMessage({ type: "error", message: result.error.message ?? t("saveFailed") });
+                // If this is the first click, set pending revoke id to show inline confirmation
+                if (pendingRevokeId !== keyId) {
+                    setPendingRevokeId(keyId);
                     return;
                 }
+
+                const result = await authClient.apiKey.delete({ keyId });
+                if (result?.error) {
+                    setApiKeyMessage({ type: "error", message: result.error.message ?? c("status.saveFailed") });
+                    return;
+                }
+                setPendingRevokeId(null);
                 await loadApiKeys();
-                setApiKeyMessage({ type: "success", message: t("apiKeyDeleted") });
+                setApiKeyMessage({ type: "success", message: t("success.apiKeyDeleted") });
             } catch {
-                setApiKeyMessage({ type: "error", message: "Failed to delete API key." });
+                setApiKeyMessage({ type: "error", message: c("status.error") });
             }
         },
-        [loadApiKeys, t]
+        [loadApiKeys, t, c, pendingRevokeId]
     );
 
     const handleCopyKey = useCallback(async () => {
@@ -209,9 +205,9 @@ export function AccountPageClient() {
         }
         try {
             await navigator.clipboard?.writeText(lastCreatedKey);
-            setApiKeyMessage({ type: "success", message: t("apiKeyCopied") });
+            setApiKeyMessage({ type: "success", message: t("success.apiKeyCopied") });
         } catch {
-            setApiKeyMessage({ type: "error", message: t("apiKeyCopyFailed") });
+            setApiKeyMessage({ type: "error", message: t("apiKeys.create.copyFailed") });
         }
     }, [lastCreatedKey, t]);
 
@@ -337,20 +333,21 @@ export function AccountPageClient() {
             setPasswordSetupMessage({ type: "error", message: "No email found for your account." });
             return;
         }
+
         setPasswordSetupLoading(true);
         setPasswordSetupMessage(null);
         try {
-            const response = await fetch("/api/auth/forgot", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email }),
+            const { error } = await authClient.requestPasswordReset({
+                email,
+                // Redirect to the in-app reset page; the token will be appended by the backend
+                redirectTo: `${window.location.origin}/auth/reset`,
             });
-            if (!response.ok) {
-                setPasswordSetupMessage({ type: "error", message: "Failed to send setup email." });
+
+            if (error) {
+                setPasswordSetupMessage({ type: "error", message: error.message ?? "Failed to send setup email." });
                 return;
             }
+
             setPasswordSetupMessage({ type: "success", message: "Password setup email sent." });
         } catch {
             setPasswordSetupMessage({ type: "error", message: "Failed to send setup email." });
@@ -395,7 +392,7 @@ export function AccountPageClient() {
             }
             setFieldErrors({});
             if (!data?.user) {
-                setFormMessage({ type: "error", message: "You must be signed in to update your account." });
+                setFormMessage({ type: "error", message: t("errors.mustSignIn") });
                 return;
             }
 
@@ -405,16 +402,19 @@ export function AccountPageClient() {
                 // Localize known success messages or map server-provided keys
                 if (result?.type === "success") {
                     // server returns messageKey when available
-                    const message = result && (result as { messageKey?: string }).messageKey === "accountUpdated" ? t("accountUpdated") : (result?.message ?? t("accountUpdated"));
+                    const message =
+                        result && (result as { messageKey?: string }).messageKey === "accountUpdated"
+                            ? t("success.accountUpdated")
+                            : (result?.message ?? t("success.accountUpdated"));
                     setFormMessage({ type: result.type, message });
                 } else if (result?.type === "error") {
                     // If server returned a message, show it; otherwise use generic failure
-                    setFormMessage({ type: "error", message: result.message ?? t("saveFailed") });
+                    setFormMessage({ type: "error", message: result.message ?? c("status.saveFailed") });
                 } else {
                     setFormMessage(result as StatusMessage);
                 }
             } catch {
-                setFormMessage({ type: "error", message: "Something went wrong while saving." });
+                setFormMessage({ type: "error", message: c("status.saveFailed") });
             } finally {
                 setIsSaving(false);
             }
@@ -449,7 +449,7 @@ export function AccountPageClient() {
                 <Card>
                     <CardHeader>
                         <CardTitle>{t("heading")}</CardTitle>
-                        <CardDescription>{t("loading")}</CardDescription>
+                        <CardDescription>{t("errors.loading")}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="h-12 w-full animate-pulse rounded-md bg-muted" />
@@ -466,12 +466,12 @@ export function AccountPageClient() {
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>{t("signInRequiredTitle")}</CardTitle>
-                        <CardDescription>{t("signInRequiredDescription")}</CardDescription>
+                        <CardTitle>{t("errors.signInRequiredTitle")}</CardTitle>
+                        <CardDescription>{t("errors.signInRequiredDescription")}</CardDescription>
                     </CardHeader>
                     <CardFooter>
                         <Button asChild>
-                            <a href="/auth/login">{t("goToSignIn")}</a>
+                            <a href="/auth/login">{c("buttons.goToSignIn")}</a>
                         </Button>
                     </CardFooter>
                 </Card>
@@ -490,15 +490,15 @@ export function AccountPageClient() {
                     {activeTab === "profile" ? (
                         <>
                             <Button disabled={isSaving} onClick={handleAccountSubmit} type="button">
-                                {isSaving ? t("saving") : t("save")}
+                                {isSaving ? c("buttons.saving") : c("buttons.save")}
                             </Button>
                             <Button disabled={isSaving} onClick={handleAccountReset} type="button" variant="outline">
-                                {t("reset")}
+                                {c("buttons.reset")}
                             </Button>
                         </>
                     ) : null}
                     <Button onClick={() => signOut()} type="button" variant="outline">
-                        {t("signOut")}
+                        {c("buttons.signOut")}
                     </Button>
                 </div>
             </div>
@@ -555,8 +555,9 @@ export function AccountPageClient() {
                     />
                 </TabsContent>
 
-                <TabsContent className="space-y-6" value="api-keys">
+                <TabsContent className="space-y-6" value="apiKeys">
                     <ApiKeysTab
+                        apiKeyCreating={apiKeyCreating}
                         apiKeyExpiresInDays={apiKeyExpiresInDays}
                         apiKeyLoading={apiKeyLoading}
                         apiKeyMessage={apiKeyMessage}

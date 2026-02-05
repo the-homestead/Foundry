@@ -4,6 +4,8 @@ import type React from "react";
 import { useState } from "react";
 import { AtSymbolIcon } from "../icons/at-symbol";
 import { LockClosedIcon } from "../icons/lock-closed";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@foundry/ui/primitives/input-group";
+import { Input } from "@foundry/ui/primitives/input";
 
 type Mode = "login" | "register" | "forgot" | "reset";
 
@@ -56,38 +58,42 @@ export default function AuthForm({ mode = "login", onSubmit }: { mode?: Mode; on
             {mode === "register" && (
                 <div>
                     <Label className="mb-1 block font-medium text-sm">Username</Label>
-                    <input className="input" onChange={(e) => setUsername(e.target.value)} placeholder="username" required value={username} />
+                    <Input className="normal-case" onChange={(e) => setUsername(e.target.value)} placeholder="Username" required value={username} />
                 </div>
             )}
 
             {(mode === "login" || mode === "register" || mode === "forgot" || mode === "reset") && (
                 <div>
                     <Label className="mb-1 block font-medium text-sm">Email</Label>
-                    <div className="relative">
-                        <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-gray-400">
-                            <AtSymbolIcon size={16} />
-                        </div>
-                        <input className="input pl-10" onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required type="email" value={email} />
-                    </div>
+                    <InputGroup className="w-full">
+                        <InputGroupAddon align="inline-start">
+                            <InputGroupText>
+                                <AtSymbolIcon />
+                            </InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput className="normal-case" onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required type="email" value={email} />
+                    </InputGroup>
                 </div>
             )}
 
             {(mode === "login" || mode === "register" || mode === "reset") && (
                 <div>
                     <Label className="mb-1 block font-medium text-sm">Password</Label>
-                    <div className="relative">
-                        <div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-gray-400">
-                            <LockClosedIcon size={16} />
-                        </div>
-                        <input className="input pl-10" onChange={(e) => setPassword(e.target.value)} placeholder="password" required type="password" value={password} />
-                    </div>
+                    <InputGroup className="w-full">
+                        <InputGroupAddon align="inline-start">
+                            <InputGroupText>
+                                <LockClosedIcon />
+                            </InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput className="normal-case" onChange={(e) => setPassword(e.target.value)} placeholder="Password" required type="password" value={password} />
+                    </InputGroup>
                 </div>
             )}
 
             {(mode === "register" || mode === "reset") && (
                 <div>
                     <Label className="mb-1 block font-medium text-sm">Confirm Password</Label>
-                    <input className="input" onChange={(e) => setConfirm(e.target.value)} placeholder="confirm password" required type="password" value={confirm} />
+                    <Input className="normal-case" onChange={(e) => setConfirm(e.target.value)} placeholder="Confirm password" required type="password" value={confirm} />
                 </div>
             )}
 

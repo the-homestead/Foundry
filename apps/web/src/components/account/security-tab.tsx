@@ -3,7 +3,7 @@
 import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
 import { FieldDescription } from "@foundry/ui/primitives/field";
-
+import { useTranslations } from "next-intl";
 import { PasswordCard } from "./password-card";
 import { TwoFactorCard } from "./two-factor-card";
 import type { AccountForm, FieldErrorMap, StatusMessage } from "./types/types";
@@ -65,6 +65,7 @@ export function SecurityTab({
     onGenerateBackupCodes,
     onGetTotpUri,
 }: SecurityTabProps) {
+    const t = useTranslations("AccountPage");
     return (
         <div className="grid gap-6 lg:grid-cols-12">
             <div className="lg:col-span-7">
@@ -100,15 +101,13 @@ export function SecurityTab({
             </div>
             <Card className="lg:col-span-12">
                 <CardHeader className="text-center">
-                    <CardTitle className="text-center">Create a password</CardTitle>
-                    <CardDescription className="text-center">OAuth users can add a password for email sign-ins.</CardDescription>
+                    <CardTitle className="text-center">{t("security.createPasswordCard.title")}</CardTitle>
+                    <CardDescription className="text-center">{t("security.createPasswordCard.description")}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center gap-4">
-                    <p className="max-w-lg text-center text-muted-foreground text-sm">
-                        We&apos;ll email a secure link to create your password. This is useful if you signed up with an OAuth provider and want a direct login option.
-                    </p>
+                    <p className="max-w-lg text-center text-muted-foreground text-sm">{t("security.createPasswordCard.explain")}</p>
                     <Button disabled={passwordSetupLoading} onClick={onSendPasswordSetup} type="button" variant="outline">
-                        {passwordSetupLoading ? "Sending..." : "Send setup email"}
+                        {passwordSetupLoading ? t("security.createPasswordCard.sending") : t("security.createPasswordCard.sendButton")}
                     </Button>
                     {passwordSetupMessage ? (
                         <FieldDescription className={passwordSetupMessage.type === "error" ? "text-destructive" : "text-emerald-500"}>

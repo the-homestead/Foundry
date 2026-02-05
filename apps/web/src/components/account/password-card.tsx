@@ -20,6 +20,7 @@ interface PasswordCardProps {
 
 export function PasswordCard({ form, fieldErrors, formMessage, isSaving, clearFieldError, onReset, onSubmit }: PasswordCardProps) {
     const t = useTranslations("AccountPage");
+    const c = useTranslations("common");
     return (
         <Card>
             <CardHeader className="text-center">
@@ -109,10 +110,10 @@ export function PasswordCard({ form, fieldErrors, formMessage, isSaving, clearFi
                         <CardFooter className="flex flex-col items-start gap-3 border-t pt-6">
                             <div className="flex flex-wrap items-center gap-3">
                                 <Button disabled={isSaving} type="submit">
-                                    {isSaving ? t("saving") : t("save")}
+                                    {isSaving ? c("buttons.saving") : c("buttons.save")}
                                 </Button>
                                 <Button disabled={isSaving} onClick={onReset} type="button" variant="outline">
-                                    {t("reset")}
+                                    {c("buttons.reset")}
                                 </Button>
                             </div>
                             <FieldDescription>{t("security.changesSync")}</FieldDescription>
