@@ -1,54 +1,79 @@
+import { useTranslations } from "next-intl";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function TimezoneSwitcher() {
+    const t = useTranslations("TimezoneSwitcher");
+
+    const groups = [
+        {
+            label: t("groups.northAmerica"),
+            items: [
+                { value: "est", label: t("items.est") },
+                { value: "cst", label: t("items.cst") },
+                { value: "mst", label: t("items.mst") },
+                { value: "pst", label: t("items.pst") },
+                { value: "akst", label: t("items.akst") },
+                { value: "hst", label: t("items.hst") },
+            ],
+        },
+        {
+            label: t("groups.europeAfrica"),
+            items: [
+                { value: "gmt", label: t("items.gmt") },
+                { value: "cet", label: t("items.cet") },
+                { value: "eet", label: t("items.eet") },
+                { value: "west", label: t("items.west") },
+                { value: "cat", label: t("items.cat") },
+                { value: "eat", label: t("items.eat") },
+            ],
+        },
+        {
+            label: t("groups.asia"),
+            items: [
+                { value: "msk", label: t("items.msk") },
+                { value: "ist", label: t("items.ist") },
+                { value: "cst_china", label: t("items.cstChina") },
+                { value: "jst", label: t("items.jst") },
+                { value: "kst", label: t("items.kst") },
+                { value: "ist_indonesia", label: t("items.istIndonesia") },
+            ],
+        },
+        {
+            label: t("groups.australia"),
+            items: [
+                { value: "awst", label: t("items.awst") },
+                { value: "acst", label: t("items.acst") },
+                { value: "aest", label: t("items.aest") },
+                { value: "nzst", label: t("items.nzst") },
+                { value: "fjt", label: t("items.fjt") },
+            ],
+        },
+        {
+            label: t("groups.southAmerica"),
+            items: [
+                { value: "art", label: t("items.art") },
+                { value: "bot", label: t("items.bot") },
+                { value: "brt", label: t("items.brt") },
+                { value: "clt", label: t("items.clt") },
+            ],
+        },
+    ];
     return (
         <Select>
             <SelectTrigger className="w-full max-w-64">
-                <SelectValue placeholder="Select a timezone" />
+                <SelectValue placeholder={t("placeholder")} />
             </SelectTrigger>
             <SelectContent>
-                <SelectGroup>
-                    <SelectLabel>North America</SelectLabel>
-                    <SelectItem value="est">Eastern Standard Time</SelectItem>
-                    <SelectItem value="cst">Central Standard Time</SelectItem>
-                    <SelectItem value="mst">Mountain Standard Time</SelectItem>
-                    <SelectItem value="pst">Pacific Standard Time</SelectItem>
-                    <SelectItem value="akst">Alaska Standard Time</SelectItem>
-                    <SelectItem value="hst">Hawaii Standard Time</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                    <SelectLabel>Europe & Africa</SelectLabel>
-                    <SelectItem value="gmt">Greenwich Mean Time</SelectItem>
-                    <SelectItem value="cet">Central European Time</SelectItem>
-                    <SelectItem value="eet">Eastern European Time</SelectItem>
-                    <SelectItem value="west">Western European Summer Time</SelectItem>
-                    <SelectItem value="cat">Central Africa Time</SelectItem>
-                    <SelectItem value="eat">East Africa Time</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                    <SelectLabel>Asia</SelectLabel>
-                    <SelectItem value="msk">Moscow Time</SelectItem>
-                    <SelectItem value="ist">India Standard Time</SelectItem>
-                    <SelectItem value="cst_china">China Standard Time</SelectItem>
-                    <SelectItem value="jst">Japan Standard Time</SelectItem>
-                    <SelectItem value="kst">Korea Standard Time</SelectItem>
-                    <SelectItem value="ist_indonesia">Indonesia Central Standard Time</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                    <SelectLabel>Australia & Pacific</SelectLabel>
-                    <SelectItem value="awst">Australian Western Standard Time</SelectItem>
-                    <SelectItem value="acst">Australian Central Standard Time</SelectItem>
-                    <SelectItem value="aest">Australian Eastern Standard Time</SelectItem>
-                    <SelectItem value="nzst">New Zealand Standard Time</SelectItem>
-                    <SelectItem value="fjt">Fiji Time</SelectItem>
-                </SelectGroup>
-                <SelectGroup>
-                    <SelectLabel>South America</SelectLabel>
-                    <SelectItem value="art">Argentina Time</SelectItem>
-                    <SelectItem value="bot">Bolivia Time</SelectItem>
-                    <SelectItem value="brt">Brasilia Time</SelectItem>
-                    <SelectItem value="clt">Chile Standard Time</SelectItem>
-                </SelectGroup>
+                {groups.map((group) => (
+                    <SelectGroup key={group.label}>
+                        <SelectLabel>{group.label}</SelectLabel>
+                        {group.items.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                            </SelectItem>
+                        ))}
+                    </SelectGroup>
+                ))}
             </SelectContent>
         </Select>
     );

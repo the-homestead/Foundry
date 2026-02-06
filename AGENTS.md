@@ -13,18 +13,12 @@ This monorepo uses **Turborepo** with **pnpm workspaces** and **Ultracite** for 
 
 ### Root Level Commands
 ```bash
-# Development (runs all packages)
-pnpm dev
-
-# Build all packages
-pnpm build
-
 # Type checking across all packages
-pnpm check-types
+pnpm turbo check-types
 
 # Code quality (Ultracite)
-pnpm check      # Lint and format check
-pnpm fix        # Auto-fix linting and formatting issues
+pnpm turbo check      # Lint and format check
+pnpm turbo fix        # Auto-fix linting and formatting issues
 
 # Database operations
 pnpm db:check   # Database health checks

@@ -4,6 +4,7 @@ import { cn } from "@foundry/ui/lib/utils";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@foundry/ui/primitives/breadcrumb";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Fragment, useMemo } from "react";
 
 interface BreadcrumbsProps {
@@ -21,7 +22,9 @@ const formatSegment = (segment: string) => {
     return lower.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-export const Breadcrumbs = ({ className, rootLabel = "Home", labelMap, showRootOnMobile = false }: BreadcrumbsProps) => {
+export const Breadcrumbs = ({ className, rootLabel, labelMap, showRootOnMobile = false }: BreadcrumbsProps) => {
+    const t = useTranslations("common");
+    const resolvedRootLabel = rootLabel ?? t("breadcrumbs.home");
     const pathname = usePathname();
 
     const crumbs = useMemo(() => {
@@ -44,7 +47,7 @@ export const Breadcrumbs = ({ className, rootLabel = "Home", labelMap, showRootO
             <Breadcrumb className={className}>
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbPage>{rootLabel}</BreadcrumbPage>
+                        <BreadcrumbPage>{resolvedRootLabel}</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -56,7 +59,7 @@ export const Breadcrumbs = ({ className, rootLabel = "Home", labelMap, showRootO
             <BreadcrumbList>
                 <BreadcrumbItem className={cn(!showRootOnMobile && "hidden md:block")}>
                     <BreadcrumbLink asChild>
-                        <Link href="/">{rootLabel}</Link>
+                        <Link href="/">{resolvedRootLabel}</Link>
                     </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className={cn(!showRootOnMobile && "hidden md:block")} />

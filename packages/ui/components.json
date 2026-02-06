@@ -21,6 +21,7 @@
     "registries": {
         "@heroicons-animated": "https://www.heroicons-animated.com/r/{name}.json",
         "@aceternity": "https://ui.aceternity.com/registry/{name}.json",
-        "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json"
+        "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json",
+        "@animate-ui": "https://animate-ui.com/r/{name}.json"
     }
 }

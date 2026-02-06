@@ -14,11 +14,12 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@fo
 import { signOut } from "@foundry/web/lib/auth-client";
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles, User, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
-const getInitials = (name: string) => {
+const getInitials = (name: string, fallback: string) => {
     const trimmed = name.trim();
     if (!trimmed) {
-        return "??";
+        return fallback;
     }
     // biome-ignore lint/performance/useTopLevelRegex: <d>
     const parts = trimmed.split(/\s+/);
@@ -39,12 +40,14 @@ export function NavUser({
     };
 }) {
     const { isMobile } = useSidebar();
-    const name = user.name?.trim() || "Guest";
+    const t = useTranslations("UserMenu");
+    const common = useTranslations("common");
+    const name = user.name?.trim() || t("guest");
     const email = user.email?.trim() || "";
     const avatar = user.avatar ?? "";
-    const fallback = getInitials(name);
+    const fallback = getInitials(name, t("initialsFallback"));
 
-    const isAuthenticated = email && name !== "Guest" && name !== "Loading...";
+    const isAuthenticated = email && name !== t("guest") && name !== common("states.loading");
 
     if (!isAuthenticated) {
         return (
@@ -55,8 +58,8 @@ export function NavUser({
                             <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground" size="lg">
                                 <User className="h-8 w-8 rounded-lg" />
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">Sign In</span>
-                                    <span className="truncate text-xs">Access your account</span>
+                                    <span className="truncate font-medium">{t("signIn")}</span>
+                                    <span className="truncate text-xs">{t("accessAccount")}</span>
                                 </div>
                                 <ChevronsUpDown className="ml-auto size-4" />
                             </SidebarMenuButton>
@@ -71,13 +74,13 @@ export function NavUser({
                                 <DropdownMenuItem asChild>
                                     <Link href="/auth/login">
                                         <User />
-                                        Sign In
+                                        {t("signIn")}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link href="/auth/register">
                                         <UserPlus />
-                                        Sign Up
+                                        {t("signUp")}
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
@@ -122,7 +125,7 @@ export function NavUser({
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
                                 <Sparkles />
-                                Upgrade to Pro
+                                {t("upgrade")}
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
@@ -130,16 +133,16 @@ export function NavUser({
                             <DropdownMenuItem asChild>
                                 <Link href="/account">
                                     <BadgeCheck />
-                                    Account
+                                    {t("account")}
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <CreditCard />
-                                Billing
+                                {t("billing")}
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <Bell />
-                                Notifications
+                                {t("notifications")}
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
@@ -150,7 +153,7 @@ export function NavUser({
                             }}
                         >
                             <LogOut />
-                            Log out
+                            {t("logout")}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

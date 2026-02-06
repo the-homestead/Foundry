@@ -14,6 +14,7 @@ import {
     GlimpseTitle,
     GlimpseTrigger,
 } from "@foundry/ui/components";
+import { cn } from "@foundry/ui/lib/utils";
 import { Badge, type badgeVariants } from "@foundry/ui/primitives/badge";
 import { BlockQuote, H1, H2, H3, H4, List, P } from "@foundry/ui/typography/index";
 import type { VariantProps } from "class-variance-authority";
@@ -35,6 +36,8 @@ import remarkGfm from "remark-gfm";
 
 const LANGUAGE_REGEX = /language-([\w-]+)/;
 const FILENAME_EXTENSION_REGEX = /\.(js|ts|tsx|jsx|json|md|css|scss|html|py|go|rs|java|c|cpp|sh|yml|yaml|toml|ini|txt)$/i;
+const DEFAULT_IMAGE_WIDTH = 1600;
+const DEFAULT_IMAGE_HEIGHT = 900;
 
 interface SpanProps {
     className?: string;
@@ -82,6 +85,11 @@ interface GlimpseLinkProps {
     // Add other allowed props here if needed
 }
 
+interface DivProps extends React.HTMLAttributes<HTMLDivElement> {
+    "data-layout"?: string;
+    "data-image-layout"?: string;
+}
+
 // Preprocess markdown to replace HTML comments with a :comment[ ... ] directive
 function preprocessComments(md: string): string {
     // Replace HTML comments with a custom directive :comment[...], always surrounded by blank lines
@@ -109,6 +117,7 @@ export default function MarkdownViewer({ content }: { content: string }) {
         code: (props: { inline?: boolean; className?: string; children?: ReactNode; node?: unknown }) => JSX.Element;
         span: (props: SpanProps & { variant?: string }) => JSX.Element;
         img: (props: ImgProps) => JSX.Element;
+        div: (props: DivProps) => JSX.Element;
         figcaption: (props: FigcaptionProps) => JSX.Element;
         figure: (props: FigureProps) => JSX.Element;
         "glimpse-link": (props: GlimpseLinkProps) => JSX.Element;
@@ -224,11 +233,42 @@ export default function MarkdownViewer({ content }: { content: string }) {
                 </span>
             );
         },
+        div: ({ className, children, ...props }: DivProps) => {
+            const layout = props["data-image-layout"] ?? props["data-layout"];
+            let layoutClassName = "";
+            if (layout === "row") {
+                layoutClassName = "grid gap-3 sm:grid-cols-2";
+            } else if (layout === "inline") {
+                layoutClassName = "flex flex-wrap gap-3";
+            } else if (layout === "stack") {
+                layoutClassName = "flex flex-col gap-3";
+            }
+
+            return (
+                <div className={cn(layoutClassName, className)} {...props}>
+                    {children}
+                </div>
+            );
+        },
         img: ({ src, alt, height, width, ...props }: ImgProps) => {
             const safeSrc = typeof src === "string" ? src : "";
-            const safeHeight = typeof height === "string" ? Number.parseInt(height, 10) || 600 : (height ?? 600);
-            const safeWidth = typeof width === "string" ? Number.parseInt(width, 10) || 800 : (width ?? 800);
-            return <Image alt={alt ?? ""} height={safeHeight} src={safeSrc} style={{ maxWidth: "100%", height: "auto" }} width={safeWidth} {...props} />;
+            const numericHeight = typeof height === "string" ? Number.parseInt(height, 10) : height;
+            const numericWidth = typeof width === "string" ? Number.parseInt(width, 10) : width;
+            const safeHeight = numericHeight && numericHeight > 0 ? numericHeight : DEFAULT_IMAGE_HEIGHT;
+            const safeWidth = numericWidth && numericWidth > 0 ? numericWidth : DEFAULT_IMAGE_WIDTH;
+            return (
+                <Image
+                    alt={alt ?? ""}
+                    className="mx-auto"
+                    height={safeHeight}
+                    quality={95}
+                    sizes="100vw"
+                    src={safeSrc}
+                    style={{ height: "auto", maxWidth: "100%", objectFit: "contain", objectPosition: "center", width: "100%" }}
+                    width={safeWidth}
+                    {...props}
+                />
+            );
         },
         figcaption: ({ children, className, id, role, style, tabIndex, title, ariaDescribedby }: FigcaptionProps) => (
             <div
@@ -302,6 +342,16 @@ export default function MarkdownViewer({ content }: { content: string }) {
                             presets: {
                                 a: { text: "ARTICLE" },
                                 v: { text: "VIDEO", props: { className: ["custom"] } },
+                            },
+                        },
+                        image: {
+                            elementProps: (node: { name?: string; attributes?: Record<string, unknown> } | undefined) => {
+                                if (!node?.name?.startsWith("image-div")) {
+                                    return null;
+                                }
+                                const layoutValue = node.attributes?.layout;
+                                const layout = typeof layoutValue === "string" ? layoutValue : "stack";
+                                return { "data-image-layout": layout };
                             },
                         },
                         comment: {},

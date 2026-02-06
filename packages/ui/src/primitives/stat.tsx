@@ -1,10 +1,13 @@
 import React from "react";
 
+import { SlidingNumber } from "@foundry/ui/primitives/sliding-number";
+
 export interface StatProps {
   label: string;
   value?: string | number | null;
   title?: string; // optional title for tooltip
   className?: string;
+  animateNumber?: boolean;
 }
 
 export function formatCount(value?: string | number | null) {
@@ -30,15 +33,20 @@ export function formatDate(value?: string | number | null) {
   }
 }
 
-export function Stat({ label, value, title, className = "" }: StatProps) {
+export function Stat({ label, value, title, className = "", animateNumber = false }: StatProps) {
   let display = typeof value === "number" || /\d/.test(String(value ?? "")) ? formatCount(value) : String(value ?? "—");
   // If the label contains 'Updated' we try date formatting
   if (/updated/i.test(label)) display = formatDate(value) as string;
 
+  const numericValue = typeof value === "number" ? value : Number(String(value ?? "").replace(/[^0-9.-]+/g, ""));
+  const shouldAnimate = animateNumber && typeof value !== "undefined" && value !== null && Number.isFinite(numericValue);
+
   return (
     <div className={`inline-flex items-center gap-2 rounded-md bg-muted px-3 py-1 text-sm ${className}`} title={title}>
       <span className="text-muted-foreground text-xs">{label}</span>
-      <strong className="font-medium">{display}</strong>
+      <strong className="font-medium">
+        {shouldAnimate ? <SlidingNumber number={numericValue} thousandSeparator="," /> : display}
+      </strong>
     </div>
   );
 }

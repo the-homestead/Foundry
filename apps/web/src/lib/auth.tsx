@@ -17,6 +17,7 @@ import { createTranslator } from "next-intl";
 import { Resend } from "resend";
 import Stripe from "stripe";
 import { SYSTEM_CONFIG } from "../constants";
+import { ac, adminRole, devRole, userRole } from "./permissions";
 
 // biome-ignore lint/style/noNonNullAssertion: <Def>
 const fromEmail = process.env.EMAIL_SENDER_ADDRESS!;
@@ -68,6 +69,10 @@ const resend = new Resend(process.env.RESEND_API_KEY!);
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 const appOrigin = new URL(appUrl).origin;
 const rpID = new URL(appUrl).hostname;
+const adminUserIds = (process.env.ADMIN_USER_IDS ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
 
 // configure basic social providers from env (same as backend)
 const socialProviders: Record<string, any> = {};
@@ -188,6 +193,16 @@ export const auth = betterAuth({
             enableMetadata: true,
             permissions: { defaultPermissions: toApiKeyPermissions(LAUNCHER_FREE) },
         }),
+        admin({
+            ac,
+            roles: {
+                user: userRole,
+                admin: adminRole,
+                dev: devRole,
+            },
+            adminUserIds,
+            defaultRole: "user",
+        }),
         haveIBeenPwned({ customPasswordCompromisedMessage: "Please choose a more secure password." }),
         lastLoginMethod({ storeInDatabase: true }),
         passkey({ origin: appOrigin, rpID, rpName: "Foundry" }),
@@ -232,7 +247,6 @@ export const auth = betterAuth({
             stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET_TEST!,
             createCustomerOnSignUp: true,
         }),
-        admin(),
         organization({
             teams: { enabled: true },
             allowUserToCreateOrganization: (_user) => {

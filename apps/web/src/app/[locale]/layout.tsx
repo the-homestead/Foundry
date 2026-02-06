@@ -5,14 +5,13 @@ import "@foundry/ui/global.css";
 import "@foundry/ui/shadcn.css";
 import "@foundry/ui/catppuccin.css";
 import { FooterSection } from "@foundry/ui/components";
-import { Separator } from "@foundry/ui/primitives/separator";
-import { SidebarInset, SidebarProvider } from "@foundry/ui/primitives/sidebar";
+import { SidebarProvider } from "@foundry/ui/primitives/sidebar";
 import { Toaster } from "@foundry/ui/primitives/sonner";
+import { NavbarDemo } from "@foundry/web/components/app-navbar";
 import { routing } from "@foundry/web/i18n/routing";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { hasLocale, type Locale, NextIntlClientProvider } from "next-intl";
-import { AppSidebar } from "../../components/app-sidebar";
 import { ThemeProvider } from "../../providers/next-theme-provider";
 import { CustomThemeProvider } from "../../providers/theme-provider";
 
@@ -196,14 +195,12 @@ export default async function RootLayout({ children, params }: Props) {
                     <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange enableSystem>
                         <CustomThemeProvider>
                             <SidebarProvider>
-                                <AppSidebar changeLocaleAction={changeLocaleAction} locale={locale} />
-                                <SidebarInset>
+                                <NavbarDemo changeLocaleAction={changeLocaleAction} locale={locale as Locale}>
                                     {children}
-                                    <Separator />
                                     <FooterSection />
-                                    <Toaster />
-                                </SidebarInset>
+                                </NavbarDemo>
                             </SidebarProvider>
+                            <Toaster />
                         </CustomThemeProvider>
                     </ThemeProvider>
                 </NextIntlClientProvider>

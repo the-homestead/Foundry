@@ -4,6 +4,7 @@ import { createAuthClient } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { SYSTEM_CONFIG } from "../constants";
+import { ac, adminRole, devRole, userRole } from "./permissions";
 
 // reuse a single regex instance at module scope to avoid recreating it on every call
 const TRAILING_SLASH_RE = /\/$/;
@@ -26,7 +27,14 @@ export const authClient = createAuthClient({
                 window.location.href = "/auth/two-factor";
             },
         }),
-        adminClient(),
+        adminClient({
+            ac,
+            roles: {
+                user: userRole,
+                admin: adminRole,
+                dev: devRole,
+            },
+        }),
         organizationClient({}),
         inferAdditionalFields({
             user: {

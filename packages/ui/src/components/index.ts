@@ -11,4 +11,5 @@ export * from "./error";
 export * from "./footer";
 export * from "./icons/index";
 export * from "./kibo-ui/index";
+export * from "./rating";
 export * from "./timeline";

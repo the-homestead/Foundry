@@ -5,7 +5,7 @@ import { LAUNCHER_FREE, toApiKeyPermissions } from "@foundry/types/permissions/a
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { apiKey, haveIBeenPwned, lastLoginMethod, oAuthProxy, twoFactor, username } from "better-auth/plugins";
+import { admin, apiKey, haveIBeenPwned, lastLoginMethod, oAuthProxy, twoFactor, username } from "better-auth/plugins";
 
 interface GitHubProfile {
     [key: string]: unknown;
@@ -46,6 +46,10 @@ const hasDiscordCredentials =
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_SERVER_APP_URL ?? "http://localhost:3000";
 const appOrigin = new URL(appUrl).origin;
 const rpID = new URL(appUrl).hostname;
+const adminUserIds = (process.env.ADMIN_USER_IDS ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
 
 // Build social providers configuration
 const socialProviders: Record<string, SocialProviderConfig> = {};
@@ -164,6 +168,11 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
             permissions: {
                 defaultPermissions: toApiKeyPermissions(LAUNCHER_FREE),
             },
+        }),
+        admin({
+            adminRoles: ["admin"],
+            adminUserIds,
+            defaultRole: "user",
         }),
         haveIBeenPwned({
             customPasswordCompromisedMessage: "Please choose a more secure password.",

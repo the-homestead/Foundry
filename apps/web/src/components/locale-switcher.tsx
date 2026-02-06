@@ -1,19 +1,24 @@
 "use client";
 
+import { GlobeAmericasIcon } from "@foundry/ui/icons";
+import { cn } from "@foundry/ui/lib/utils";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@foundry/ui/primitives/select";
-import { SidebarMenuButton, SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
+import { SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
 import { usePathname, useRouter } from "@foundry/web/i18n/navigation";
 import { routing } from "@foundry/web/i18n/routing";
-import { Globe } from "lucide-react";
 import type { Locale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 interface Props {
     changeLocaleAction: (locale: Locale) => Promise<void>;
     locale: Locale;
+    variant?: "navbar" | "sidebar";
+    triggerClassName?: string;
 }
 
-export default function LocaleSwitcher({ changeLocaleAction, locale }: Props) {
+export default function LocaleSwitcher({ changeLocaleAction, locale, variant = "sidebar", triggerClassName }: Props) {
+    const t = useTranslations("LocaleSwitcher");
     const langs = ["en", "de", "es", "fr", "it", "ja", "ko", "pt", "ru", "zh"];
     const pathname = usePathname();
     const router = useRouter();
@@ -62,29 +67,29 @@ export default function LocaleSwitcher({ changeLocaleAction, locale }: Props) {
         }
     };
 
-    return (
-        <SidebarMenuItem>
-            <Select defaultValue={locale} disabled={isChanging} onValueChange={handleChange}>
-                <SidebarMenuButton asChild size="sm">
-                    <SelectTrigger className="w-full text-left" size="sm">
-                        <div className="flex items-center gap-2 truncate">
-                            <Globe className="size-4" />
-                            <SelectValue placeholder="Language" />
-                        </div>
-                    </SelectTrigger>
-                </SidebarMenuButton>
+    const triggerBaseClassName = variant === "navbar" ? "text-left" : "min-w-[140px] text-left";
 
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectLabel>Languages</SelectLabel>
-                        {langs.map((lang) => (
-                            <SelectItem key={lang} value={lang}>
-                                {lang.toUpperCase()}
-                            </SelectItem>
-                        ))}
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-        </SidebarMenuItem>
+    const content = (
+        <Select defaultValue={locale} disabled={isChanging} onValueChange={handleChange}>
+            <SelectTrigger className={cn(triggerBaseClassName, triggerClassName)} size="sm">
+                <div className="flex items-center gap-2 truncate">
+                    <GlobeAmericasIcon className="size-4" />
+                    <SelectValue placeholder={t("placeholder")} />
+                </div>
+            </SelectTrigger>
+
+            <SelectContent>
+                <SelectGroup>
+                    <SelectLabel>{t("label")}</SelectLabel>
+                    {langs.map((lang) => (
+                        <SelectItem key={lang} value={lang}>
+                            {lang.toUpperCase()}
+                        </SelectItem>
+                    ))}
+                </SelectGroup>
+            </SelectContent>
+        </Select>
     );
+
+    return variant === "navbar" ? <div className="flex items-center">{content}</div> : <SidebarMenuItem>{content}</SidebarMenuItem>;
 }

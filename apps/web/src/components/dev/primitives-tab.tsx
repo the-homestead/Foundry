@@ -17,6 +17,7 @@ import {
     Compare,
     Timeline,
 } from "@foundry/ui/components";
+import { GitHubStarsButton } from "@foundry/ui/components/github-stars";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@foundry/ui/primitives/accordion";
 import { Alert, AlertDescription, AlertTitle } from "@foundry/ui/primitives/alert";
 import {
@@ -104,9 +105,11 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@foundry/u
 import { ScrollArea } from "@foundry/ui/primitives/scroll-area";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@foundry/ui/primitives/select";
 import { Separator } from "@foundry/ui/primitives/separator";
+import { ShareButton } from "@foundry/ui/primitives/share-button";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@foundry/ui/primitives/sheet";
 import { Skeleton } from "@foundry/ui/primitives/skeleton";
 import { Slider } from "@foundry/ui/primitives/slider";
+import { SlidingNumber } from "@foundry/ui/primitives/sliding-number";
 import { Spinner } from "@foundry/ui/primitives/spinner";
 import { Spotlight as SpotlightEffect } from "@foundry/ui/primitives/spotlight";
 import { Spotlight as SpotlightTwo } from "@foundry/ui/primitives/spotlight-two";
@@ -139,6 +142,8 @@ export const primitiveGroups: { title: string; description: string; items: strin
             "button-group",
             "input-group",
             "input-otp",
+            "toggle",
+            "toggle-group",
             "label",
             "field",
             "item",
@@ -146,16 +151,15 @@ export const primitiveGroups: { title: string; description: string; items: strin
         ],
     },
     {
-        title: "Feedback",
-        description: "Alerts, progress, skeletons, spinners, empty states, badges, and avatars.",
-        items: ["alert", "progress", "badge", "avatar", "skeleton", "spinner", "empty", "sonner"],
+        title: "Feedback & Status",
+        description: "Alerts, progress, skeletons, spinners, empty states, badges, and stats.",
+        items: ["alert", "alert-dialog", "progress", "badge", "avatar", "skeleton", "spinner", "empty", "sonner", "stat"],
     },
     {
-        title: "Structure & Navigation",
-        description: "Accordions, tabs, menus, overlays, and layout primitives.",
+        title: "Navigation & Menus",
+        description: "Accordions, tabs, menus, tooltips, and overlays.",
         items: [
             "accordion",
-            "card",
             "tabs",
             "breadcrumb",
             "navigation-menu",
@@ -164,22 +168,31 @@ export const primitiveGroups: { title: string; description: string; items: strin
             "dropdown-menu",
             "popover",
             "tooltip",
+            "tooltip-card",
+            "hover-card",
             "dialog",
             "sheet",
             "drawer",
-            "separator",
-            "scroll-area",
-            "resizable",
-            "carousel",
-            "aspect-ratio",
         ],
     },
     {
         title: "Data Display",
-        description: "Tables, charts, pagination, calendars, commands, and selection.",
-        items: ["table", "chart", "pagination", "calendar", "command", "radio-group", "select"],
+        description: "Tables, charts, pagination, calendars, and commands.",
+        items: ["table", "chart", "pagination", "calendar", "command"],
+    },
+    {
+        title: "Layout & Utilities",
+        description: "Cards, separators, scroll, resizing, and layout helpers.",
+        items: ["card", "separator", "scroll-area", "resizable", "carousel", "aspect-ratio", "bento-grid", "footer", "sidebar", "share-button", "mode-toggle"],
+    },
+    {
+        title: "Motion & Visuals",
+        description: "Motion-driven visuals, animated text, and spotlight effects.",
+        items: ["encrypted-text", "sliding-number", "sparkles", "spotlight", "spotlight-two", "vortex", "particles"],
     },
 ];
+
+const formatPrimitiveName = (name: string) => name.replaceAll("-", " ").replace(/\b\w/g, (char) => char.toUpperCase());
 
 const chartConfig = {
     desktop: {
@@ -248,6 +261,25 @@ const timelineEntries: { title: string; content: ReactNode }[] = [
 export function PrimitivesTab() {
     return (
         <>
+            <SectionHeader description="A quick map of every primitive in the library." title="Catalog" tooltip="Use this list to keep the demo in sync with exports." />
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {primitiveGroups.map((group) => (
+                    <Card key={group.title}>
+                        <CardHeader className="items-start gap-1">
+                            <CardTitle className="text-base">{group.title}</CardTitle>
+                            <CardDescription>{group.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex flex-wrap gap-2">
+                            {group.items.map((item) => (
+                                <Badge key={item} variant="secondary">
+                                    {formatPrimitiveName(item)}
+                                </Badge>
+                            ))}
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+
             <SectionHeader description="Core inputs, feedback, and surface components." title="Foundations" tooltip="Grouped to keep the overview readable." />
             <div className="grid gap-6 xl:grid-cols-[1.1fr_1fr]">
                 <Card>
@@ -310,6 +342,14 @@ export function PrimitivesTab() {
                                 <Button size="sm" variant="destructive">
                                     Destructive
                                 </Button>
+                            </div>
+                            <Separator />
+                            <div className="flex h-10 flex-wrap gap-2">
+                                <GitHubStarsButton repo="animate-ui" username="imskyleen" />
+                                <Separator orientation="vertical" />
+                                <ShareButton data-urls={JSON.stringify({ facebook: "https://facebook.com", twitter: "https://twitter.com", linkedin: "https://linkedin.com" })}>
+                                    Share
+                                </ShareButton>
                             </div>
                         </div>
                     </CardContent>
@@ -1289,6 +1329,8 @@ export function PrimitivesTab() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <EncryptedText className="font-semibold text-lg" encryptedClassName="text-muted-foreground" revealedClassName="text-foreground" text="Secure by design." />
+                        <br />
+                        <SlidingNumber fromNumber={0} number={251_023} prefix="Users: " thousandSeparator="," />
                         <br />
                         <TooltipCard
                             content={

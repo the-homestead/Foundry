@@ -16,6 +16,7 @@ export interface StarIconHandle {
 
 interface StarIconProps extends HTMLAttributes<HTMLDivElement> {
     size?: number;
+    filled?: boolean;
 }
 
 const VARIANTS: Variants = {
@@ -31,7 +32,7 @@ const VARIANTS: Variants = {
     },
 };
 
-const StarIcon = forwardRef<StarIconHandle, StarIconProps>(({ onMouseEnter, onMouseLeave, className, size = 20, ...props }, ref) => {
+const StarIcon = forwardRef<StarIconHandle, StarIconProps>(({ onMouseEnter, onMouseLeave, className, filled = false, size = 20, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -70,7 +71,7 @@ const StarIcon = forwardRef<StarIconHandle, StarIconProps>(({ onMouseEnter, onMo
         <div className={cn(className)} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} {...props}>
             <motion.svg
                 animate={controls}
-                fill="none"
+                fill={filled ? "currentColor" : "none"}
                 height={size}
                 initial="normal"
                 stroke="currentColor"
@@ -91,4 +92,8 @@ const StarIcon = forwardRef<StarIconHandle, StarIconProps>(({ onMouseEnter, onMo
 
 StarIcon.displayName = "StarIcon";
 
-export { StarIcon };
+const StarFilledIcon = forwardRef<StarIconHandle, StarIconProps>((props, ref) => <StarIcon {...props} filled ref={ref} />);
+
+StarFilledIcon.displayName = "StarFilledIcon";
+
+export { StarFilledIcon, StarIcon };

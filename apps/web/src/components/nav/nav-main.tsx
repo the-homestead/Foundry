@@ -15,6 +15,7 @@ import {
 } from "@foundry/ui/primitives/sidebar";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export function NavMain({
     items,
@@ -30,9 +31,10 @@ export function NavMain({
         }[];
     }[];
 }) {
+    const t = useTranslations("Sidebar");
     return (
         <SidebarGroup>
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel>{t("sectionLabel")}</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => (
                     <Collapsible asChild defaultOpen={item.isActive} key={item.title}>
@@ -48,7 +50,7 @@ export function NavMain({
                                     <CollapsibleTrigger asChild>
                                         <SidebarMenuAction className="data-[state=open]:rotate-90">
                                             <ChevronRight />
-                                            <span className="sr-only">Toggle</span>
+                                            <span className="sr-only">{t("toggle")}</span>
                                         </SidebarMenuAction>
                                     </CollapsibleTrigger>
                                     <CollapsibleContent>

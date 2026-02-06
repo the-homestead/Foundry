@@ -285,7 +285,7 @@ import { Square2StackIcon, type Square2StackIconHandle } from "./square-2-stack"
 import { Square3Stack3DIcon, type Square3Stack3DIconHandle } from "./square-3-stack-3d";
 import { Squares2X2Icon, type Squares2X2IconHandle } from "./squares-2x2";
 import { SquaresPlusIcon, type SquaresPlusIconHandle } from "./squares-plus";
-import { StarIcon, type StarIconHandle } from "./star";
+import { StarFilledIcon, StarIcon, type StarIconHandle } from "./star";
 import { StopIcon, type StopIconHandle } from "./stop";
 import { StopCircleIcon, type StopCircleIconHandle } from "./stop-circle";
 import { StrikethroughIcon, type StrikethroughIconHandle } from "./strikethrough";
@@ -1220,6 +1220,7 @@ export {
     type Squares2X2IconHandle,
     SquaresPlusIcon,
     type SquaresPlusIconHandle,
+    StarFilledIcon,
     StarIcon,
     type StarIconHandle,
     StopCircleIcon,

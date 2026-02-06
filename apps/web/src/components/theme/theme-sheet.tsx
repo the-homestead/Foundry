@@ -6,7 +6,6 @@ import { cn } from "@foundry/ui/lib/utils";
 import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent } from "@foundry/ui/primitives/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@foundry/ui/primitives/sheet";
-import { SidebarMenuButton, SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
 import { Check, Monitor, Moon, Palette, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -37,7 +36,7 @@ function getThemeIcon(key: string) {
 
 // descriptions are provided via translations (see /apps/web/messages/*.json)
 
-export function ThemeSheet() {
+export function ThemeSheet({ triggerClassName }: { triggerClassName?: string }) {
     const { theme, color, setTheme, setColor } = useTheme();
     const activeTheme = THEMES[theme];
     const t = useTranslations("Theme");
@@ -108,14 +107,9 @@ export function ThemeSheet() {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <SidebarMenuItem key="theme">
-                    <SidebarMenuButton asChild size="sm">
-                        <button className="flex w-full items-center gap-2 text-left" type="button">
-                            <PaintBrushIcon size={20} />
-                            <span>{t("sheet.button")}</span>
-                        </button>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
+                <Button className={cn("h-9 w-9 p-0", triggerClassName)} type="button" variant="outline">
+                    <PaintBrushIcon size={20} />
+                </Button>
             </SheetTrigger>
 
             <SheetContent className="w-[480px] overflow-y-auto" side="right">
