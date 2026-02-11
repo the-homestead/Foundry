@@ -3,7 +3,16 @@
         "title": "Gießerei"
     },
     "BrowsePage": {
-        "title": "Browse"
+        "title": "Browse",
+        "subtitle": "Discover and share mods, resource packs, shaders, and data packs for your favorite games.",
+        "selectGame": "Select a game to explore content.",
+        "sidebar": {
+            "title": "Sidebar",
+            "description": "Customize filters by game and collapse sections as needed.",
+            "games": {
+                "title": "Games"
+            }
+        }
     },
     "Navigation": {
         "brand": {
@@ -389,7 +398,15 @@
             "disconnect": "Disconnect",
             "cancel": "Cancel",
             "close": "Close",
-            "open": "Open"
+            "open": "Open",
+            "uploading": "Uploading...",
+            "search": "Search",
+            "edit": "Edit",
+            "delete": "Delete",
+            "confirm": "Confirm",
+            "submit": "Submit",
+            "next": "Next",
+            "previous": "Previous"
         },
         "status": {
             "error": "An error occurred.",
@@ -437,7 +454,11 @@
         "tabs": {
             "profile": "Profile",
             "security": "Security",
-            "apiKeys": "API keys"
+            "apiKeys": "API keys",
+            "sessions": "Sessions",
+            "billing": "Billing",
+            "notifications": "Notifications",
+            "contentBlocking": "Content Blocking"
         },
         "errors": {
             "loading": "Loading your account details...",
@@ -522,7 +543,9 @@
                 "pictureHelp": "PNG, JPG up to 5MB.",
                 "pictureNote": "Square images look best. Transparent PNGs keep your brand crisp.",
                 "synced": "Synced",
-                "lastUpdatedJustNow": "Last updated just now"
+                "lastUpdatedJustNow": "Last updated just now",
+                "success": "Avatar updated.",
+                "error": "Failed to upload avatar."
             },
             "connectedApps": {
                 "title": "Connected apps",

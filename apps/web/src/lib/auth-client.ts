@@ -1,9 +1,21 @@
+"use client";
 import { passkeyClient } from "@better-auth/passkey/client";
-import { adminClient, apiKeyClient, inferAdditionalFields, lastLoginMethodClient, organizationClient, twoFactorClient, usernameClient } from "better-auth/client/plugins";
+import { ssoClient } from "@better-auth/sso/client";
+import {
+    adminClient,
+    apiKeyClient,
+    inferAdditionalFields,
+    lastLoginMethodClient,
+    multiSessionClient,
+    organizationClient,
+    twoFactorClient,
+    usernameClient,
+} from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { SYSTEM_CONFIG } from "../constants";
+import type auth from "./auth";
 import { ac, adminRole, devRole, userRole } from "./permissions";
 
 // reuse a single regex instance at module scope to avoid recreating it on every call
@@ -17,10 +29,15 @@ export const authClient = createAuthClient({
         credentials: "include",
     },
     plugins: [
+        // enable domain verification client-side when requested via env
+        ssoClient({
+            domainVerification: { enabled: process.env.NEXT_PUBLIC_SSO_DOMAIN_VERIFICATION === "true" },
+        }),
         apiKeyClient(),
         lastLoginMethodClient(),
         passkeyClient(),
         usernameClient(),
+        multiSessionClient(),
         twoFactorClient({
             onTwoFactorRedirect: () => {
                 // Redirect to the two-factor page
@@ -29,6 +46,7 @@ export const authClient = createAuthClient({
         }),
         adminClient({
             ac,
+            // roles here must be also defined in `./permissions` if lost see https://www.better-auth.com/docs/plugins/admin#custom-permissions
             roles: {
                 user: userRole,
                 admin: adminRole,
@@ -36,25 +54,8 @@ export const authClient = createAuthClient({
             },
         }),
         organizationClient({}),
-        inferAdditionalFields({
-            user: {
-                age: {
-                    type: "number",
-                },
-                firstName: {
-                    type: "string",
-                },
-                lastName: {
-                    type: "string",
-                },
-                lastLoginMethod: {
-                    type: "string",
-                },
-                roles: {
-                    type: "string[]",
-                },
-            },
-        }),
+        // infer additional fields from the auth type for type safety and autocompletion in the app
+        inferAdditionalFields<typeof auth>(),
     ],
 });
 
@@ -70,6 +71,25 @@ export function signInWithProvider(provider: string) {
     const callback = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}${SYSTEM_CONFIG.redirectAfterSignIn}`;
     const target = `/api/auth/oauth/${provider}?callbackURL=${encodeURIComponent(callback)}`;
     window.location.href = target.replace(TRAILING_SLASH_RE, "");
+}
+
+// Helper to initiate SSO sign-in flows. Keeps web code simple and centralizes callbackURL logic.
+export function signInWithSSO(opts: { providerId?: string; domain?: string; callbackURL?: string; loginHint?: string } = {}) {
+    const callback = opts.callbackURL ?? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}${SYSTEM_CONFIG.redirectAfterSignIn}`;
+    const body: Record<string, string> = {
+        callbackURL: callback,
+    };
+    if (opts.providerId) {
+        body.providerId = opts.providerId;
+    }
+    if (opts.domain) {
+        body.domain = opts.domain;
+    }
+    if (opts.loginHint) {
+        body.loginHint = opts.loginHint;
+    }
+
+    return authClient.signIn.sso(body as unknown as Parameters<typeof authClient.signIn.sso>[0]);
 }
 
 export function signUpWithProvider(provider: string) {

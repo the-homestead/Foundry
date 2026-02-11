@@ -1,4 +1,5 @@
 import { integer, jsonb, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { games } from "../games/tables";
 
 export const projects = pgTable("projects", {
     id: uuid("id").primaryKey().notNull(),
@@ -19,7 +20,10 @@ export const projects = pgTable("projects", {
     color: varchar("color", { length: 16 }),
     created_at: timestamp("created_at", { withTimezone: true }).notNull(),
     updated_at: timestamp("updated_at", { withTimezone: true }).notNull(),
-    owner_id: uuid("owner_id").notNull(),
+    owner_id: text("owner_id").notNull(),
+    game_id: uuid("game_id")
+        .notNull()
+        .references(() => games.id),
 });
 
 export const project_files = pgTable("project_files", {
@@ -143,4 +147,28 @@ export const project_creators = pgTable("project_creators", {
     name: text("name").notNull(),
     role: text("role").notNull(),
     avatar_url: text("avatar_url"),
+});
+
+// Likes table: stores user likes/dislikes for projects
+export const project_likes = pgTable("project_likes", {
+    id: uuid("id").primaryKey().notNull(),
+    project_id: uuid("project_id")
+        .notNull()
+        .references(() => projects.id),
+    user_id: text("user_id").notNull(),
+    is_like: integer("is_like").notNull(), // 1 for like, -1 for dislike, 0 for removed
+    created_at: timestamp("created_at", { withTimezone: true }).notNull(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).notNull(),
+});
+
+// Collaborators table: stores users who can edit the project
+export const project_collaborators = pgTable("project_collaborators", {
+    id: uuid("id").primaryKey().notNull(),
+    project_id: uuid("project_id")
+        .notNull()
+        .references(() => projects.id),
+    user_id: text("user_id").notNull(),
+    permission_level: varchar("permission_level", { length: 32 }).notNull(), // 'edit', 'admin', etc.
+    added_at: timestamp("added_at", { withTimezone: true }).notNull(),
+    added_by: text("added_by").notNull(),
 });

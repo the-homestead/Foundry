@@ -62,7 +62,7 @@ export const Vortex = (props: VortexProps) => {
       const ctx = canvas.getContext("2d");
 
       if (ctx) {
-        resize(canvas, ctx);
+        resize(canvas, container);
         initParticles();
         draw(canvas, ctx);
       }
@@ -187,14 +187,18 @@ export const Vortex = (props: VortexProps) => {
     return x > canvas.width || x < 0 || y > canvas.height || y < 0;
   };
 
-  const resize = (
-    canvas: HTMLCanvasElement,
-    ctx?: CanvasRenderingContext2D,
-  ) => {
-    const { innerWidth, innerHeight } = window;
+  const resize = (canvas: HTMLCanvasElement, container: HTMLElement) => {
+    const { width, height } = container.getBoundingClientRect();
+    const nextWidth = Math.max(1, Math.floor(width));
+    const nextHeight = Math.max(1, Math.floor(height));
 
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
+    if (canvas.width !== nextWidth) {
+      canvas.width = nextWidth;
+    }
+
+    if (canvas.height !== nextHeight) {
+      canvas.height = nextHeight;
+    }
 
     center[0] = 0.5 * canvas.width;
     center[1] = 0.5 * canvas.height;
@@ -227,20 +231,22 @@ export const Vortex = (props: VortexProps) => {
     ctx.restore();
   };
 
-  const handleResize = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (canvas && ctx) {
-      resize(canvas, ctx);
-    }
-  };
-
   useEffect(() => {
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
+    if (!container || !canvas) {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      resize(canvas, container);
+    });
+
     setup();
-    window.addEventListener("resize", handleResize);
+    resizeObserver.observe(container);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
       }

@@ -11,12 +11,20 @@
             "create": "Create",
             "copy": "Copy",
             "upload": "Upload",
+            "uploading": "Uploading...",
             "remove": "Remove",
             "connect": "Connect",
             "disconnect": "Disconnect",
             "cancel": "Cancel",
             "close": "Close",
-            "open": "Open"
+            "open": "Open",
+            "search": "Search",
+            "edit": "Edit",
+            "delete": "Delete",
+            "confirm": "Confirm",
+            "submit": "Submit",
+            "next": "Next",
+            "previous": "Previous"
         },
         "status": {
             "error": "An error occurred.",
@@ -61,7 +69,16 @@
         "title": "Foundry"
     },
     "BrowsePage": {
-        "title": "Browse"
+        "title": "Browse",
+        "subtitle": "Discover and share mods, resource packs, shaders, and data packs for your favorite games.",
+        "selectGame": "Select a game to explore content.",
+        "sidebar": {
+            "title": "Sidebar",
+            "description": "Customize filters by game and collapse sections as needed.",
+            "games": {
+                "title": "Games"
+            }
+        }
     },
     "Navigation": {
         "brand": {
@@ -401,7 +418,11 @@
         "tabs": {
             "profile": "Profile",
             "security": "Security",
-            "apiKeys": "API keys"
+            "apiKeys": "API keys",
+            "sessions": "Sessions",
+            "billing": "Billing",
+            "notifications": "Notifications",
+            "contentBlocking": "Content Blocking"
         },
         "errors": {
             "loading": "Loading your account details...",
@@ -486,7 +507,9 @@
                 "pictureHelp": "PNG, JPG up to 5MB.",
                 "pictureNote": "Square images look best. Transparent PNGs keep your brand crisp.",
                 "synced": "Synced",
-                "lastUpdatedJustNow": "Last updated just now"
+                "lastUpdatedJustNow": "Last updated just now",
+                "success": "Avatar updated.",
+                "error": "Failed to upload avatar."
             },
             "connectedApps": {
                 "title": "Connected apps",
@@ -494,7 +517,9 @@
                 "app": {
                     "github": { "name": "GitHub", "description": "Code syncing and integrations." },
                     "google": { "name": "Google", "description": "Calendar and identity sync." },
-                    "discord": { "name": "Discord", "description": "Community and role sync." }
+                    "discord": { "name": "Discord", "description": "Community and role sync." },
+                    "twitch": { "name": "Twitch", "description": "Streaming and identity sync." },
+                    "gitlab": { "name": "GitLab", "description": "Code hosting and CI/CD integrations." }
                 }
             }
         },

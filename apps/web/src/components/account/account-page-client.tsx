@@ -1,63 +1,40 @@
 "use client";
 
+import { ArrowRightEndOnRectangleIcon } from "@foundry/ui/components/icons/arrow-right-end-on-rectangle";
 import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@foundry/ui/primitives/tabs";
 import { authClient, signOut, useSession } from "@foundry/web/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type * as z from "zod";
-
+import { AccountNavigation } from "./account-navigation";
 import { ApiKeysTab } from "./api-keys-tab";
+import { BillingTab } from "./billing-tab";
+import { ContentBlockingTab } from "./content-blocking-tab";
+import { NotificationsTab } from "./notifications-tab";
 import { ProfileTab } from "./profile-tab";
 import { SecurityTab } from "./security-tab";
+import { SessionsTab } from "./sessions-tab";
 import { ACCOUNT_TABS, API_KEY_PROFILES } from "./types/constants";
 import { accountSchema } from "./types/schema";
 import type { AccountDefaults, AccountTab, ApiKeyEntry, FieldErrorMap, StatusMessage } from "./types/types";
-
-import { buildErrorMap, parseAge, toSecondsFromDays } from "./utils";
-
-const saveAccountSettings = async (values: z.infer<typeof accountSchema>, refresh: () => Promise<void>) => {
-    const updateResult = await authClient.updateUser({
-        name: values.fullName.trim(),
-        username: values.username.trim(),
-        firstName: values.firstName?.trim() || undefined,
-        lastName: values.lastName?.trim() || undefined,
-        age: parseAge(values.age),
-    });
-
-    if (updateResult?.error) {
-        return { type: "error", message: updateResult.error.message ?? "Failed to update profile." } as const;
-    }
-
-    const shouldChangePassword = Boolean(values.newPassword || values.currentPassword || values.confirmPassword);
-    if (shouldChangePassword) {
-        const passwordResult = await authClient.changePassword({
-            currentPassword: values.currentPassword ?? "",
-            newPassword: values.newPassword ?? "",
-            revokeOtherSessions: true,
-        });
-        if (passwordResult?.error) {
-            return { type: "error", message: passwordResult.error.message ?? "Failed to update password." } as const;
-        }
-    }
-
-    await refresh();
-    return { type: "success", messageKey: "accountUpdated" } as const;
-};
+import { buildErrorMap } from "./utils";
 
 export function AccountPageClient() {
     const t = useTranslations("AccountPage");
     const c = useTranslations("common");
-    const { data, isPending, error, refetch } = useSession();
+    const { data, isPending: sessionPending, error, refetch } = useSession();
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
+
+    // Form state
     const [fieldErrors, setFieldErrors] = useState<FieldErrorMap>({});
     const [formMessage, setFormMessage] = useState<StatusMessage | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+
+    // API Keys state
     const [apiKeys, setApiKeys] = useState<ApiKeyEntry[]>([]);
     const [apiKeyMessage, setApiKeyMessage] = useState<StatusMessage | null>(null);
     const [apiKeyLoading, setApiKeyLoading] = useState(false);
@@ -68,6 +45,8 @@ export function AccountPageClient() {
     const [lastCreatedKey, setLastCreatedKey] = useState<string | null>(null);
     const [apiKeyCreating, setApiKeyCreating] = useState(false);
     const [pendingRevokeId, setPendingRevokeId] = useState<string | null>(null);
+
+    // Two-factor state
     const [twoFactorPassword, setTwoFactorPassword] = useState("");
     const [twoFactorCode, setTwoFactorCode] = useState("");
     const [twoFactorMessage, setTwoFactorMessage] = useState<StatusMessage | null>(null);
@@ -75,6 +54,8 @@ export function AccountPageClient() {
     const [totpUri, setTotpUri] = useState<string | null>(null);
     const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
     const [trustDevice, setTrustDevice] = useState(true);
+
+    // Password setup state
     const [passwordSetupLoading, setPasswordSetupLoading] = useState(false);
     const [passwordSetupMessage, setPasswordSetupMessage] = useState<StatusMessage | null>(null);
 
@@ -130,10 +111,10 @@ export function AccountPageClient() {
             if (result?.error) {
                 setApiKeyMessage({ type: "error", message: result.error.message ?? c("status.error") });
                 setApiKeys([]);
-                return;
+            } else {
+                const keys = (result?.data ?? []) as ApiKeyEntry[];
+                setApiKeys(keys);
             }
-            const keys = (result?.data ?? []) as ApiKeyEntry[];
-            setApiKeys(keys);
         } catch {
             setApiKeyMessage({ type: "error", message: c("status.error") });
             setApiKeys([]);
@@ -147,20 +128,22 @@ export function AccountPageClient() {
         setLastCreatedKey(null);
         setApiKeyCreating(true);
         try {
-            const expiresIn = toSecondsFromDays(apiKeyExpiresInDays.trim());
-            const profile = API_KEY_PROFILES.find((item) => item.id === apiKeyProfileId) ?? API_KEY_PROFILES[0];
+            const expiresIn = apiKeyExpiresInDays.trim() ? Math.floor(Number(apiKeyExpiresInDays) * 24 * 60 * 60) : undefined;
+
             const { data, error } = await authClient.apiKey.create({
                 name: apiKeyName.trim() || undefined,
                 expiresIn,
                 prefix: apiKeyPrefix.trim() || undefined,
                 metadata: {
-                    profileId: profile?.id,
+                    profileId: apiKeyProfileId,
                 },
             });
+
             if (error) {
                 setApiKeyMessage({ type: "error", message: error.message ?? c("status.saveFailed") });
                 return;
             }
+
             const createdKey = (data as { key?: string } | undefined)?.key ?? null;
             setLastCreatedKey(createdKey);
             setApiKeyName("");
@@ -177,13 +160,12 @@ export function AccountPageClient() {
     const handleDeleteApiKey = useCallback(
         async (keyId: string) => {
             setApiKeyMessage(null);
-            try {
-                // If this is the first click, set pending revoke id to show inline confirmation
-                if (pendingRevokeId !== keyId) {
-                    setPendingRevokeId(keyId);
-                    return;
-                }
+            if (pendingRevokeId !== keyId) {
+                setPendingRevokeId(keyId);
+                return;
+            }
 
+            try {
                 const result = await authClient.apiKey.delete({ keyId });
                 if (result?.error) {
                     setApiKeyMessage({ type: "error", message: result.error.message ?? c("status.saveFailed") });
@@ -226,7 +208,10 @@ export function AccountPageClient() {
             const payload = result?.data as { totpURI?: string; backupCodes?: string[] } | null;
             setTotpUri(payload?.totpURI ?? null);
             setBackupCodes(payload?.backupCodes ?? null);
-            setTwoFactorMessage({ type: "success", message: "Scan the QR code and verify your code to finish setup." });
+            setTwoFactorMessage({
+                type: "success",
+                message: "Scan the QR code and verify your code to finish setup.",
+            });
         } catch {
             setTwoFactorMessage({ type: "error", message: "Failed to enable two-factor." });
         } finally {
@@ -339,7 +324,6 @@ export function AccountPageClient() {
         try {
             const { error } = await authClient.requestPasswordReset({
                 email,
-                // Redirect to the in-app reset page; the token will be appended by the backend
                 redirectTo: `${window.location.origin}/auth/reset`,
             });
 
@@ -363,8 +347,11 @@ export function AccountPageClient() {
                   username?: string | null;
                   email?: string | null;
                   firstName?: string | null;
+                  firstNamePublic?: boolean | null;
                   lastName?: string | null;
+                  lastNamePublic?: boolean | null;
                   age?: number | null;
+                  agePublic?: boolean | null;
               }
             | undefined;
 
@@ -373,8 +360,11 @@ export function AccountPageClient() {
             username: user?.username ?? "",
             email: user?.email ?? "",
             firstName: user?.firstName ?? "",
+            firstNamePublic: user?.firstNamePublic ?? false,
             lastName: user?.lastName ?? "",
+            lastNamePublic: user?.lastNamePublic ?? false,
             age: user?.age != null ? String(user.age) : "",
+            agePublic: user?.agePublic ?? false,
             currentPassword: "",
             newPassword: "",
             confirmPassword: "",
@@ -398,21 +388,42 @@ export function AccountPageClient() {
 
             setIsSaving(true);
             try {
-                const result = await saveAccountSettings(parsed.data, refetch);
-                // Localize known success messages or map server-provided keys
-                if (result?.type === "success") {
-                    // server returns messageKey when available
-                    const message =
-                        result && (result as { messageKey?: string }).messageKey === "accountUpdated"
-                            ? t("success.accountUpdated")
-                            : (result?.message ?? t("success.accountUpdated"));
-                    setFormMessage({ type: result.type, message });
-                } else if (result?.type === "error") {
-                    // If server returned a message, show it; otherwise use generic failure
-                    setFormMessage({ type: "error", message: result.message ?? c("status.saveFailed") });
-                } else {
-                    setFormMessage(result as StatusMessage);
+                const updateData: Record<string, string> = {};
+                if (parsed.data.fullName) {
+                    updateData.name = parsed.data.fullName;
                 }
+                if (parsed.data.email) {
+                    updateData.email = parsed.data.email;
+                }
+                if (parsed.data.firstName !== undefined) {
+                    updateData.firstName = parsed.data.firstName;
+                }
+                if (parsed.data.lastName !== undefined) {
+                    updateData.lastName = parsed.data.lastName;
+                }
+                if (parsed.data.age !== undefined) {
+                    updateData.age = String(parsed.data.age);
+                }
+
+                const result = await authClient.updateUser(updateData);
+                if (result?.error) {
+                    setFormMessage({ type: "error", message: result.error.message ?? c("status.saveFailed") });
+                    return;
+                }
+
+                if (parsed.data.newPassword && parsed.data.currentPassword) {
+                    const passwordResult = await authClient.changePassword({
+                        currentPassword: parsed.data.currentPassword,
+                        newPassword: parsed.data.newPassword,
+                    });
+                    if (passwordResult?.error) {
+                        setFormMessage({ type: "error", message: passwordResult.error.message ?? c("status.saveFailed") });
+                        return;
+                    }
+                }
+
+                setFormMessage({ type: "success", message: t("success.accountUpdated") });
+                await refetch();
             } catch {
                 setFormMessage({ type: "error", message: c("status.saveFailed") });
             } finally {
@@ -440,10 +451,10 @@ export function AccountPageClient() {
         if (!data?.user) {
             return;
         }
-        loadApiKeys().catch(() => undefined);
+        loadApiKeys();
     }, [data?.user, loadApiKeys]);
 
-    if (isPending) {
+    if (sessionPending) {
         return (
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-8">
                 <Card>
@@ -480,103 +491,117 @@ export function AccountPageClient() {
     }
 
     return (
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="space-y-2">
-                    <h1 className="font-semibold text-2xl">{t("heading")}</h1>
-                    <p className="text-muted-foreground">{t("description")}</p>
+        <div className="container mx-auto max-w-[1600px] px-4 py-8 md:px-6 lg:px-8">
+            {/* Sticky Header */}
+            <div className="sticky top-0 z-10 mb-6 flex flex-wrap items-center justify-between gap-4 bg-background/95 pb-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:mb-8">
+                <div className="space-y-1">
+                    <h1 className="font-bold text-2xl tracking-tight md:text-3xl">{t("heading")}</h1>
+                    <p className="text-muted-foreground text-sm md:text-base">{t("description")}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                    {activeTab === "profile" ? (
+                    {activeTab === "profile" && (
                         <>
-                            <Button disabled={isSaving} onClick={handleAccountSubmit} type="button">
-                                {isSaving ? c("buttons.saving") : c("buttons.save")}
-                            </Button>
-                            <Button disabled={isSaving} onClick={handleAccountReset} type="button" variant="outline">
+                            <Button className="hidden sm:flex" disabled={isSaving} onClick={handleAccountReset} size="default" type="button" variant="outline">
                                 {c("buttons.reset")}
                             </Button>
+                            <Button disabled={isSaving} onClick={handleAccountSubmit} size="default" type="button">
+                                {isSaving ? c("buttons.saving") : c("buttons.save")}
+                            </Button>
                         </>
-                    ) : null}
-                    <Button onClick={() => signOut()} type="button" variant="outline">
-                        {c("buttons.signOut")}
+                    )}
+                    <Button onClick={() => signOut()} size="default" type="button" variant="outline">
+                        <ArrowRightEndOnRectangleIcon className="mr-2 h-4 w-4" />
+                        <span className="hidden sm:inline">{c("buttons.signOut")}</span>
+                        <span className="sm:hidden">Sign Out</span>
                     </Button>
                 </div>
             </div>
 
-            <Tabs className="space-y-6" onValueChange={handleTabChange} value={activeTab}>
-                <TabsList className="grid w-full max-w-xl grid-cols-3">
-                    {ACCOUNT_TABS.map((tab) => (
-                        <TabsTrigger key={tab} type="button" value={tab}>
-                            {t(`tabs.${tab}`)}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+            {/* Navigation & Content */}
+            <AccountNavigation
+                activeTab={activeTab}
+                avatarFallback={avatarData.avatarFallback}
+                avatarUrl={avatarData.avatarUrl}
+                onTabChange={handleTabChange}
+                twoFactorEnabled={twoFactorEnabled}
+                userEmail={(data?.user as { email?: string | null })?.email ?? null}
+                userName={(data?.user as { name?: string | null })?.name ?? null}
+            >
+                <div className="space-y-6">
+                    {activeTab === "profile" && (
+                        <ProfileTab
+                            avatarFallback={avatarData.avatarFallback}
+                            avatarUrl={avatarData.avatarUrl}
+                            clearFieldError={clearFieldError}
+                            fieldErrors={fieldErrors}
+                            form={form}
+                            formMessage={formMessage}
+                            onSubmit={handleAccountSubmit}
+                        />
+                    )}
 
-                <TabsContent className="space-y-6" value="profile">
-                    <ProfileTab
-                        avatarFallback={avatarData.avatarFallback}
-                        avatarUrl={avatarData.avatarUrl}
-                        clearFieldError={clearFieldError}
-                        fieldErrors={fieldErrors}
-                        form={form}
-                        formMessage={formMessage}
-                        onSubmit={handleAccountSubmit}
-                    />
-                </TabsContent>
+                    {activeTab === "security" && (
+                        <SecurityTab
+                            backupCodes={backupCodes}
+                            clearFieldError={clearFieldError}
+                            fieldErrors={fieldErrors}
+                            form={form}
+                            formMessage={formMessage}
+                            isSaving={isSaving}
+                            onDisableTwoFactor={handleDisableTwoFactor}
+                            onEnableTwoFactor={handleEnableTwoFactor}
+                            onGenerateBackupCodes={handleGenerateBackupCodes}
+                            onGetTotpUri={handleGetTotpUri}
+                            onReset={handleAccountReset}
+                            onSendPasswordSetup={handleSendPasswordSetup}
+                            onSubmit={handleAccountSubmit}
+                            onVerifyTotp={handleVerifyTotp}
+                            passwordSetupLoading={passwordSetupLoading}
+                            passwordSetupMessage={passwordSetupMessage}
+                            setTrustDevice={setTrustDevice}
+                            setTwoFactorCode={setTwoFactorCode}
+                            setTwoFactorPassword={setTwoFactorPassword}
+                            totpUri={totpUri}
+                            trustDevice={trustDevice}
+                            twoFactorCode={twoFactorCode}
+                            twoFactorEnabled={twoFactorEnabled}
+                            twoFactorLoading={twoFactorLoading}
+                            twoFactorMessage={twoFactorMessage}
+                            twoFactorPassword={twoFactorPassword}
+                        />
+                    )}
 
-                <TabsContent className="space-y-6" value="security">
-                    <SecurityTab
-                        backupCodes={backupCodes}
-                        clearFieldError={clearFieldError}
-                        fieldErrors={fieldErrors}
-                        form={form}
-                        formMessage={formMessage}
-                        isSaving={isSaving}
-                        onDisableTwoFactor={handleDisableTwoFactor}
-                        onEnableTwoFactor={handleEnableTwoFactor}
-                        onGenerateBackupCodes={handleGenerateBackupCodes}
-                        onGetTotpUri={handleGetTotpUri}
-                        onReset={handleAccountReset}
-                        onSendPasswordSetup={handleSendPasswordSetup}
-                        onSubmit={handleAccountSubmit}
-                        onVerifyTotp={handleVerifyTotp}
-                        passwordSetupLoading={passwordSetupLoading}
-                        passwordSetupMessage={passwordSetupMessage}
-                        setTrustDevice={setTrustDevice}
-                        setTwoFactorCode={setTwoFactorCode}
-                        setTwoFactorPassword={setTwoFactorPassword}
-                        totpUri={totpUri}
-                        trustDevice={trustDevice}
-                        twoFactorCode={twoFactorCode}
-                        twoFactorEnabled={twoFactorEnabled}
-                        twoFactorLoading={twoFactorLoading}
-                        twoFactorMessage={twoFactorMessage}
-                        twoFactorPassword={twoFactorPassword}
-                    />
-                </TabsContent>
+                    {activeTab === "apiKeys" && (
+                        <ApiKeysTab
+                            apiKeyCreating={apiKeyCreating}
+                            apiKeyExpiresInDays={apiKeyExpiresInDays}
+                            apiKeyLoading={apiKeyLoading}
+                            apiKeyMessage={apiKeyMessage}
+                            apiKeyName={apiKeyName}
+                            apiKeyPrefix={apiKeyPrefix}
+                            apiKeyProfileId={apiKeyProfileId}
+                            apiKeys={apiKeys}
+                            lastCreatedKey={lastCreatedKey}
+                            onCopyKey={handleCopyKey}
+                            onCreateApiKey={handleCreateApiKey}
+                            onDeleteApiKey={handleDeleteApiKey}
+                            onLoadApiKeys={loadApiKeys}
+                            setApiKeyExpiresInDays={setApiKeyExpiresInDays}
+                            setApiKeyName={setApiKeyName}
+                            setApiKeyPrefix={setApiKeyPrefix}
+                            setApiKeyProfileId={setApiKeyProfileId}
+                        />
+                    )}
 
-                <TabsContent className="space-y-6" value="apiKeys">
-                    <ApiKeysTab
-                        apiKeyCreating={apiKeyCreating}
-                        apiKeyExpiresInDays={apiKeyExpiresInDays}
-                        apiKeyLoading={apiKeyLoading}
-                        apiKeyMessage={apiKeyMessage}
-                        apiKeyName={apiKeyName}
-                        apiKeyPrefix={apiKeyPrefix}
-                        apiKeyProfileId={apiKeyProfileId}
-                        apiKeys={apiKeys}
-                        lastCreatedKey={lastCreatedKey}
-                        onCopyKey={handleCopyKey}
-                        onCreateApiKey={handleCreateApiKey}
-                        onDeleteApiKey={handleDeleteApiKey}
-                        onLoadApiKeys={loadApiKeys}
-                        setApiKeyExpiresInDays={setApiKeyExpiresInDays}
-                        setApiKeyName={setApiKeyName}
-                        setApiKeyPrefix={setApiKeyPrefix}
-                        setApiKeyProfileId={setApiKeyProfileId}
-                    />
-                </TabsContent>
-            </Tabs>
+                    {activeTab === "sessions" && <SessionsTab />}
+
+                    {activeTab === "billing" && <BillingTab />}
+
+                    {activeTab === "notifications" && <NotificationsTab />}
+
+                    {activeTab === "contentBlocking" && <ContentBlockingTab />}
+                </div>
+            </AccountNavigation>
         </div>
     );
 }

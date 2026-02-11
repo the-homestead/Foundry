@@ -10,6 +10,8 @@ import { accountTable, apikeyTable, sessionTable, twoFactorTable, userTable, ver
 
 export * from "./projects/queries";
 export * from "./schemas";
+export * from "./schemas/projects/queries";
+export * from "./utils/users";
 
 const schema = {
     ...schemaModules,
@@ -20,6 +22,7 @@ const schema = {
     twofactor: twoFactorTable,
     apikey: apikeyTable,
     passkey: schemaModules.passkeyTable,
+    ssoProvider: schemaModules.ssoProviderTable,
 } as const;
 
 export { schema };

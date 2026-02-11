@@ -122,6 +122,16 @@ export const apikeyTable = pgTable(
         updatedAt: timestamp("updated_at").notNull(),
         permissions: text("permissions"),
         metadata: text("metadata"),
+        // New fields for enhanced API key management
+        usageCount: integer("usage_count").default(0),
+        lastUsedAt: timestamp("last_used_at"),
+        tags: text("tags").array(),
+        ipWhitelist: text("ip_whitelist").array(),
+        ipBlacklist: text("ip_blacklist").array(),
+        rateLimitPerMinute: integer("rate_limit_per_minute"),
+        rateLimitPerHour: integer("rate_limit_per_hour"),
+        rateLimitPerDay: integer("rate_limit_per_day"),
+        scopes: text("scopes").array(),
     },
     (table) => [index("apikey_key_idx").on(table.key), index("apikey_userId_idx").on(table.userId)]
 );
@@ -235,4 +245,25 @@ export const invitationTable = pgTable(
             .references(() => userTable.id, { onDelete: "cascade" }),
     },
     (table) => [index("invitation_organizationId_idx").on(table.organizationId), index("invitation_email_idx").on(table.email)]
+);
+
+export const ssoProviderTable = pgTable(
+    "sso_provider",
+    {
+        id: text("id").primaryKey(),
+        issuer: text("issuer"),
+        domain: text("domain"),
+        domainVerified: boolean("domain_verified").default(false),
+        oidcConfig: text("oidc_config"),
+        samlConfig: text("saml_config"),
+        userId: text("user_id").references(() => userTable.id, { onDelete: "cascade" }),
+        providerId: text("provider_id").notNull(),
+        organizationId: text("organization_id").references(() => organizationTable.id, { onDelete: "cascade" }),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at")
+            .defaultNow()
+            .$onUpdate(() => /* @__PURE__ */ new Date())
+            .notNull(),
+    },
+    (table) => [index("ssoProvider_providerId_idx").on(table.providerId), index("ssoProvider_domain_idx").on(table.domain)]
 );

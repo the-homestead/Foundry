@@ -2,7 +2,7 @@ import type { CLI_PUBLIC_KEY } from "@foundry/types/permissions/api-key";
 import type { FormAsyncValidateOrFn, FormValidateOrFn, ReactFormExtendedApi } from "@tanstack/react-form";
 import type * as z from "zod";
 
-import type { ACCOUNT_TABS } from "../constants";
+import type { ACCOUNT_TABS } from "./constants";
 import type { accountSchema } from "./schema";
 
 export interface FieldErrorMap {
@@ -19,8 +19,19 @@ export interface ApiKeyEntry {
     enabled?: boolean | null;
     remaining?: number | null;
     rateLimitEnabled?: boolean | null;
+    lastUsedAt?: string | Date | null;
+    usageCount?: number | null;
+    tags?: string[] | null;
     metadata?: {
         profile?: string | null;
+        ipWhitelist?: string[] | null;
+        ipBlacklist?: string[] | null;
+        rateLimit?: {
+            requestsPerMinute?: number | null;
+            requestsPerHour?: number | null;
+            requestsPerDay?: number | null;
+        } | null;
+        scopes?: string[] | null;
     } | null;
 }
 
@@ -43,8 +54,11 @@ export interface AccountDefaults {
     username: string;
     email: string;
     firstName?: string;
+    firstNamePublic?: boolean;
     lastName?: string;
+    lastNamePublic?: boolean;
     age?: string;
+    agePublic?: boolean;
     currentPassword?: string;
     newPassword?: string;
     confirmPassword?: string;

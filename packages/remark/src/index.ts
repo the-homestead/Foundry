@@ -11,12 +11,15 @@ import { h } from "hastscript";
 import type { Root } from "mdast";
 import type { Plugin } from "unified";
 import { visit } from "unist-util-visit";
+import { handleAdmonitionDirective } from "./directives/admonition.js";
 import { handleBadgeDirective } from "./directives/badge.js";
 import { handleImageDirective } from "./directives/image.js";
 import { handleLinkDirective } from "./directives/link.js";
 import { handleVideoDirective } from "./directives/video.js";
 import type { Options } from "./types.js";
 import { createDirectiveRegex } from "./utils.js";
+
+const ADMONITION_REGEX = /^(note|tip|warning|danger)$/;
 
 /**
  * A remark plugin built on top of {@link https://github.com/remarkjs/remark-directive remark-directive},
@@ -37,7 +40,7 @@ import { createDirectiveRegex } from "./utils.js";
  * @see https://github.com/lin-stephanie/remark-directive-sugar
  */
 const remarkDirectiveSugar: Plugin<[Options?], Root> = (options) => {
-    const { image = {}, video = {}, link = {}, badge = {} } = options || {};
+    const { image = {}, video = {}, link = {}, badge = {}, admonition = {} } = options || {};
 
     return (tree: Root) => {
         // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <Def>
@@ -56,6 +59,9 @@ const remarkDirectiveSugar: Plugin<[Options?], Root> = (options) => {
                     handleVideoDirective(node, video, videoDirectiveRegex);
                 } else if (imageDirectiveRegex.test(node.name)) {
                     handleImageDirective(node, image, imageDirectiveRegex);
+                } else if (node.type === "containerDirective" && ADMONITION_REGEX.test(node.name)) {
+                    // Handle admonitions
+                    handleAdmonitionDirective(node);
                 } else {
                     if (!node.data) {
                         node.data = {};

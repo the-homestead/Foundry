@@ -1,156 +1,145 @@
-// import type {
-//     GanttFeature,
-//     GanttMarker,
-//     KanbanCard,
-//     KanbanColumn,
-//     ProjectActivityEntry,
-//     ProjectCreator,
-//     ProjectFile,
-//     ProjectGalleryImage,
-//     ProjectIssueTemplate,
-//     ProjectLink,
-//     ProjectPost,
-// } from "@foundry/types";
-// import { eq } from "drizzle-orm";
-// import { db } from "../index";
-// import {
-//     project_activity,
-//     project_creators,
-//     project_files,
-//     project_gallery,
-//     project_gantt,
-//     project_gantt_markers,
-//     project_issue_templates,
-//     project_kanban_cards,
-//     project_kanban_columns,
-//     project_links,
-//     project_posts,
-// } from "../schemas/projects/tables";
+import { eq } from "drizzle-orm";
+import { createSelectSchema } from "drizzle-zod";
+import type { z } from "zod";
+import { db } from "../index";
+import { games } from "../schemas/games/tables";
+import {
+    project_activity,
+    project_creators,
+    project_files,
+    project_gallery,
+    project_gantt,
+    project_gantt_markers,
+    project_issue_templates,
+    project_kanban_cards,
+    project_kanban_columns,
+    project_links,
+    project_posts,
+    projects,
+} from "../schemas/projects/tables";
 
-// export async function getProjectFiles(projectId: string): Promise<ProjectFile[]> {
-//     const rows = await db.select().from(project_files).where(eq(project_files.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         name: row.name,
-//         version: row.version,
-//         size: row.size,
-//         uploaded: row.uploaded instanceof Date ? row.uploaded.toISOString() : String(row.uploaded),
-//         downloads: row.downloads,
-//         unique_downloads: row.unique_downloads === null ? undefined : row.unique_downloads,
-//         channel: row.channel,
-//         last_downloaded: row.last_downloaded instanceof Date ? row.last_downloaded.toISOString() : row.last_downloaded ? String(row.last_downloaded) : undefined,
-//         banner_url: row.banner_url,
-//         dependencies: row.dependencies,
-//     }));
-// }
+// Generate Zod schemas from Drizzle tables
+const projectSelectSchema = createSelectSchema(projects);
+const gameSelectSchema = createSelectSchema(games);
+const projectFileSelectSchema = createSelectSchema(project_files);
+const projectGanttSelectSchema = createSelectSchema(project_gantt);
+const projectGanttMarkerSelectSchema = createSelectSchema(project_gantt_markers);
+const projectKanbanColumnSelectSchema = createSelectSchema(project_kanban_columns);
+const projectKanbanCardSelectSchema = createSelectSchema(project_kanban_cards);
+const projectGallerySelectSchema = createSelectSchema(project_gallery);
+const projectPostSelectSchema = createSelectSchema(project_posts);
+const projectIssueTemplateSelectSchema = createSelectSchema(project_issue_templates);
+const projectActivitySelectSchema = createSelectSchema(project_activity);
+const projectLinkSelectSchema = createSelectSchema(project_links);
+const projectCreatorSelectSchema = createSelectSchema(project_creators);
 
-// export async function getProjectGantt(projectId: string): Promise<GanttFeature[]> {
-//     const rows = await db.select().from(project_gantt).where(eq(project_gantt.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         name: row.name,
-//         startAt: row.start_at instanceof Date ? row.start_at.toISOString() : String(row.start_at),
-//         endAt: row.end_at instanceof Date ? row.end_at.toISOString() : String(row.end_at),
-//         status: row.status as GanttFeature["status"],
-//         lane: row.lane,
-//         metadata: row.metadata,
-//     }));
-// }
+// Infer TypeScript types from Zod schemas
+export type ProjectSelect = z.infer<typeof projectSelectSchema>;
+export type GameSelect = z.infer<typeof gameSelectSchema>;
+export type ProjectFileSelect = z.infer<typeof projectFileSelectSchema>;
+export type ProjectGanttSelect = z.infer<typeof projectGanttSelectSchema>;
+export type ProjectGanttMarkerSelect = z.infer<typeof projectGanttMarkerSelectSchema>;
+export type ProjectKanbanColumnSelect = z.infer<typeof projectKanbanColumnSelectSchema>;
+export type ProjectKanbanCardSelect = z.infer<typeof projectKanbanCardSelectSchema>;
+export type ProjectGallerySelect = z.infer<typeof projectGallerySelectSchema>;
+export type ProjectPostSelect = z.infer<typeof projectPostSelectSchema>;
+export type ProjectIssueTemplateSelect = z.infer<typeof projectIssueTemplateSelectSchema>;
+export type ProjectActivitySelect = z.infer<typeof projectActivitySelectSchema>;
+export type ProjectLinkSelect = z.infer<typeof projectLinkSelectSchema>;
+export type ProjectCreatorSelect = z.infer<typeof projectCreatorSelectSchema>;
 
-// export async function getProjectGanttMarkers(projectId: string): Promise<GanttMarker[]> {
-//     const rows = await db.select().from(project_gantt_markers).where(eq(project_gantt_markers.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         label: row.label,
-//         date: row.date instanceof Date ? row.date.toISOString() : String(row.date),
-//     }));
-// }
+// Combined type for project with game data
+export interface ProjectWithGame {
+    project: ProjectSelect;
+    game: GameSelect | null;
+}
 
-// export async function getProjectKanbanColumns(projectId: string): Promise<KanbanColumn[]> {
-//     const rows = await db.select().from(project_kanban_columns).where(eq(project_kanban_columns.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         name: row.name,
-//     }));
-// }
+export async function getProjectBySlug(slug: string): Promise<ProjectWithGame | null> {
+    const [row] = await db.select().from(projects).where(eq(projects.slug, slug)).limit(1);
+    if (!row) {
+        return null;
+    }
 
-// export async function getProjectKanbanCards(projectId: string): Promise<KanbanCard[]> {
-//     const rows = await db.select().from(project_kanban_cards).where(eq(project_kanban_cards.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         name: row.name,
-//         column: row.column,
-//     }));
-// }
+    const project = projectSelectSchema.parse(row);
 
-// export async function getProjectGallery(projectId: string): Promise<ProjectGalleryImage[]> {
-//     const rows = await db.select().from(project_gallery).where(eq(project_gallery.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         title: row.title,
-//         tone: row.tone,
-//         aspect: row.aspect,
-//         image: row.image === null ? undefined : row.image,
-//     }));
-// }
+    // Fetch game data
+    const [gameRow] = await db.select().from(games).where(eq(games.id, project.game_id)).limit(1);
+    const game = gameRow ? gameSelectSchema.parse(gameRow) : null;
 
-// export async function getProjectPosts(projectId: string): Promise<ProjectPost[]> {
-//     const rows = await db.select().from(project_posts).where(eq(project_posts.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         title: row.title,
-//         date: row.date instanceof Date ? row.date.toISOString() : String(row.date),
-//         excerpt: row.excerpt,
-//         content: row.content,
-//         comments: row.comments,
-//     }));
-// }
+    return { project, game };
+}
 
-// export async function getProjectIssueTemplates(projectId: string): Promise<ProjectIssueTemplate[]> {
-//     const rows = await db.select().from(project_issue_templates).where(eq(project_issue_templates.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         title: row.title,
-//         description: row.description,
-//     }));
-// }
+export async function getProjectFiles(projectId: string): Promise<ProjectFileSelect[]> {
+    const rows = await db.select().from(project_files).where(eq(project_files.project_id, projectId));
+    return rows.map((row) => projectFileSelectSchema.parse(row));
+}
 
-// export async function getProjectActivity(projectId: string): Promise<ProjectActivityEntry[]> {
-//     const rows = await db.select().from(project_activity).where(eq(project_activity.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         title: row.title,
-//         content: row.content,
-//         created_at: row.created_at instanceof Date ? row.created_at.toISOString() : String(row.created_at),
-//     }));
-// }
+export async function getProjectGantt(projectId: string): Promise<ProjectGanttSelect[]> {
+    const rows = await db.select().from(project_gantt).where(eq(project_gantt.project_id, projectId));
+    return rows.map((row) => projectGanttSelectSchema.parse(row));
+}
 
-// export async function getProjectLinks(projectId: string): Promise<ProjectLink[]> {
-//     const rows = await db.select().from(project_links).where(eq(project_links.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         label: row.label,
-//         url: row.url,
-//     }));
-// }
+export async function getProjectGanttMarkers(projectId: string): Promise<ProjectGanttMarkerSelect[]> {
+    const rows = await db.select().from(project_gantt_markers).where(eq(project_gantt_markers.project_id, projectId));
+    return rows.map((row) => projectGanttMarkerSelectSchema.parse(row));
+}
 
-// export async function getProjectCreators(projectId: string): Promise<ProjectCreator[]> {
-//     const rows = await db.select().from(project_creators).where(eq(project_creators.project_id, projectId));
-//     return rows.map((row) => ({
-//         id: row.id,
-//         project_id: row.project_id,
-//         name: row.name,
-//         role: row.role,
-//         avatar_url: row.avatar_url,
-//     }));
-// }
+export async function getProjectKanbanColumns(projectId: string): Promise<ProjectKanbanColumnSelect[]> {
+    const rows = await db.select().from(project_kanban_columns).where(eq(project_kanban_columns.project_id, projectId));
+    return rows.map((row) => projectKanbanColumnSelectSchema.parse(row));
+}
+
+export async function getProjectKanbanCards(projectId: string): Promise<ProjectKanbanCardSelect[]> {
+    const rows = await db.select().from(project_kanban_cards).where(eq(project_kanban_cards.project_id, projectId));
+    return rows.map((row) => projectKanbanCardSelectSchema.parse(row));
+}
+
+export async function getProjectGallery(projectId: string): Promise<ProjectGallerySelect[]> {
+    const rows = await db.select().from(project_gallery).where(eq(project_gallery.project_id, projectId));
+    return rows.map((row) => projectGallerySelectSchema.parse(row));
+}
+
+export async function getProjectPosts(projectId: string): Promise<ProjectPostSelect[]> {
+    const rows = await db.select().from(project_posts).where(eq(project_posts.project_id, projectId));
+    return rows.map((row) => projectPostSelectSchema.parse(row));
+}
+
+export async function getProjectIssueTemplates(projectId: string): Promise<ProjectIssueTemplateSelect[]> {
+    const rows = await db.select().from(project_issue_templates).where(eq(project_issue_templates.project_id, projectId));
+    return rows.map((row) => projectIssueTemplateSelectSchema.parse(row));
+}
+
+export async function getProjectActivity(projectId: string): Promise<ProjectActivitySelect[]> {
+    const rows = await db.select().from(project_activity).where(eq(project_activity.project_id, projectId));
+    return rows.map((row) => projectActivitySelectSchema.parse(row));
+}
+
+export async function getProjectLinks(projectId: string): Promise<ProjectLinkSelect[]> {
+    const rows = await db.select().from(project_links).where(eq(project_links.project_id, projectId));
+    return rows.map((row) => projectLinkSelectSchema.parse(row));
+}
+
+export async function getProjectCreators(projectId: string): Promise<ProjectCreatorSelect[]> {
+    const rows = await db.select().from(project_creators).where(eq(project_creators.project_id, projectId));
+    return rows.map((row) => projectCreatorSelectSchema.parse(row));
+}
+
+export interface ProjectStats {
+    totalDownloads: number;
+    uniqueDownloads: number;
+    fileCount: number;
+}
+
+export async function getProjectStats(projectId: string): Promise<ProjectStats> {
+    const files = await db.select().from(project_files).where(eq(project_files.project_id, projectId));
+
+    const totalDownloads = files.reduce((sum, file) => sum + file.downloads, 0);
+    const uniqueDownloads = files.reduce((sum, file) => sum + (file.unique_downloads ?? 0), 0);
+    const fileCount = files.length;
+
+    return {
+        totalDownloads,
+        uniqueDownloads,
+        fileCount,
+    };
+}

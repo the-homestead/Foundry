@@ -5,6 +5,8 @@
         "paths": {
             "@foundry/ui/*": ["./src/*"]
         },
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
         "jsx": "react-jsx"
     },
     "include": ["."],

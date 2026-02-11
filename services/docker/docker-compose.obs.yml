@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - infra
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./storage/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - infra
+
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    networks:
+      - infra
+
+  otel:
+    image: otel/opentelemetry-collector
+    command: ["--config=/etc/otel-config.yml"]
+    volumes:
+      - ./storage/otel/otel-config.yml:/etc/otel-config.yml
+    ports:
+      - "4317:4317"
+    networks:
+      - infra
+
+networks:
+  infra:
+    driver: bridge

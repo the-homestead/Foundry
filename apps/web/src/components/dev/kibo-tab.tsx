@@ -156,8 +156,8 @@ export function KiboTab() {
     return (
         <>
             <SectionHeader
-                description="Kibo UI showcases for advanced layout and data interactions."
-                title="Kibo UI"
+                description="Components showcases for advanced layout and data interactions."
+                title="Components"
                 tooltip="Includes kanban, lists, trees, color picking, QR, and Gantt."
             />
 
@@ -285,8 +285,8 @@ export function KiboTab() {
                     </CardHeader>
                     <CardContent>
                         <ColorPicker defaultValue="#7c3aed">
-                            <div className="grid gap-3 sm:grid-cols-[1.1fr_0.9fr]">
-                                <ColorPickerSelection className="h-32 rounded-md" />
+                            <div className="grid gap-4 sm:grid-cols-[1fr_1fr]">
+                                <ColorPickerSelection className="h-64 rounded-md border-2" />
                                 <div className="space-y-3">
                                     <ColorPickerHue />
                                     <ColorPickerAlpha />

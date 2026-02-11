@@ -1,6 +1,6 @@
 ---
 description: 'Description of the custom chat mode.'
-tools: ["changes", "codebase", "edit/editFiles", "extensions", "fetch", "githubRepo", "new", "openSimpleBrowser", "problems", "runCommands", "runNotebooks", "runTasks", "runTests", "search", "searchResults", "terminalLastCommand", "terminalSelection", "testFailure", "usages", "vscodeAPI", "get-library-docs", "browser_eval", "nextjs_docs", "nextjs_runtime"]
+tools: ['edit', 'runNotebooks', 'search', 'new/runVscodeCommand', 'new/getProjectSetupInfo', 'new/installExtension', 'runCommands', 'runTasks', 'context7/*', 'next-devtools-mcp/*', 'docker-mcp/get-logs', 'docker-mcp/list-containers', 'cloudflare/*', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos']
 ---
 
 # Expert Next.js Developer

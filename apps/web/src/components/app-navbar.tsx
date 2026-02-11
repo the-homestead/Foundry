@@ -1,5 +1,6 @@
 "use client";
 import { MobileNav, MobileNavHeader, MobileNavMenu, MobileNavToggle, NavBody, Navbar, NavbarButton, NavbarLogo, NavItems } from "@foundry/ui/components/navbar";
+import { Avatar, AvatarFallback, AvatarImage } from "@foundry/ui/primitives/avatar";
 import type { Locale } from "next-intl";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -7,7 +8,7 @@ import { useSession } from "../lib/auth-client";
 import LocaleSwitcher from "./locale-switcher";
 import { ThemeSheet } from "./theme/theme-sheet";
 
-export function NavbarDemo({ children, changeLocaleAction, locale }: { children: React.ReactNode; changeLocaleAction: (locale: Locale) => Promise<void>; locale: Locale }) {
+export function AppNavbar({ children, changeLocaleAction, locale }: { children: React.ReactNode; changeLocaleAction: (locale: Locale) => Promise<void>; locale: Locale }) {
     const t = useTranslations("Navigation");
     const common = useTranslations("common");
     const navItems = [
@@ -44,9 +45,21 @@ export function NavbarDemo({ children, changeLocaleAction, locale }: { children:
             </NavbarButton>
         );
     } else if (data?.user) {
+        const name = data.user.name || data.user.username;
+        const initials = name
+            .split(" ")
+            .map((n: string) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
+
         desktopUserButton = (
-            <NavbarButton href="/account" variant="primary">
-                {`${data.user.name || data.user.username}`}
+            <NavbarButton className="flex items-center gap-2" href="/account" variant="primary">
+                <Avatar className="h-6 w-6">
+                    <AvatarImage alt={name} src={data.user.image || undefined} />
+                    <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+                </Avatar>
+                <span>{name}</span>
             </NavbarButton>
         );
     } else {
@@ -65,9 +78,21 @@ export function NavbarDemo({ children, changeLocaleAction, locale }: { children:
             </NavbarButton>
         );
     } else if (data?.user) {
+        const name = data.user.name || data.user.username;
+        const initials = name
+            .split(" ")
+            .map((n: string) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
+
         mobileUserButton = (
-            <NavbarButton className="w-full" onClick={() => setIsMobileMenuOpen(false)} variant="primary">
-                {t("actions.welcome", { name: data.user.name || data.user.username })}
+            <NavbarButton className="flex w-full items-center justify-center gap-2" onClick={() => setIsMobileMenuOpen(false)} variant="primary">
+                <Avatar className="h-6 w-6">
+                    <AvatarImage alt={name} src={data.user.image || undefined} />
+                    <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+                </Avatar>
+                <span>{t("actions.welcome", { name })}</span>
             </NavbarButton>
         );
     } else {

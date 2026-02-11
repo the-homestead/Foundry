@@ -1,8 +1,8 @@
 {
     "editor.defaultFormatter": "biomejs.biome",
     "typescript.tsdk": "node_modules/typescript/lib",
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": true,
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
     "emmet.showExpandedAbbreviation": "never",
     "[javascript]": {
         "editor.defaultFormatter": "biomejs.biome"
@@ -41,7 +41,7 @@
         "editor.defaultFormatter": "biomejs.biome"
     },
     "[markdown]": {
-        "editor.defaultFormatter": "biomejs.biome"
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
     },
     "[mdx]": {
         "editor.defaultFormatter": "biomejs.biome"
@@ -50,6 +50,12 @@
         "source.fixAll.biome": "explicit",
         "source.organizeImports.biome": "explicit"
     },
+    "typescript.preferences.importModuleSpecifierEnding": "minimal",
+    "javascript.preferences.importModuleSpecifierEnding": "minimal",
+    "shadcnImportHelper.componentFolder": "../packages/ui/src/primitives",
+    "shadcnImportHelper.packageManager": "pnpm",
+    "npm.packageManager": "pnpm",
+    "npm.fetchOnlinePackageInfo": true,
     "css.lint.unknownAtRules": "ignore",
     "scss.lint.unknownAtRules": "ignore" // Also for SCSS files if needed
 }

@@ -178,6 +178,19 @@ export interface ImageDirectiveConfig {
     stripParagraph?: boolean;
 }
 
+export interface AdmonitionDirectiveConfig {
+    /**
+     * Alias for the admonition type.
+     */
+    alias?: string | string[] | null | undefined;
+
+    /**
+     * Element mappings for container types.
+     * e.g., { note: 'aside', tip: 'div' }
+     */
+    elementMap?: Record<string, string>;
+}
+
 export interface Options {
     /**
      * Configures the `:badge-[*]` directive.
@@ -198,4 +211,14 @@ export interface Options {
      * Configures the `:::image-*` directive.
      */
     image?: ImageDirectiveConfig;
+
+    /**
+     * Configures custom directives.
+     */
+    custom?: Record<string, unknown> | null | undefined;
+
+    /**
+     * Configuration for admonition/container directives.
+     */
+    admonition?: AdmonitionDirectiveConfig | null | undefined;
 }

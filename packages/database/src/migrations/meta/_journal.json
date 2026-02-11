@@ -57,6 +57,48 @@
             "when": 1769591893601,
             "tag": "0007_messy_blue_shield",
             "breakpoints": true
+        },
+        {
+            "idx": 8,
+            "version": "7",
+            "when": 1770509107625,
+            "tag": "0008_nice_eternity",
+            "breakpoints": true
+        },
+        {
+            "idx": 9,
+            "version": "7",
+            "when": 1770543011952,
+            "tag": "0009_rapid_blade",
+            "breakpoints": true
+        },
+        {
+            "idx": 10,
+            "version": "7",
+            "when": 1770615066993,
+            "tag": "0010_marvelous_thunderball",
+            "breakpoints": true
+        },
+        {
+            "idx": 11,
+            "version": "7",
+            "when": 1770623938031,
+            "tag": "0011_unusual_karen_page",
+            "breakpoints": true
+        },
+        {
+            "idx": 12,
+            "version": "7",
+            "when": 1770626277133,
+            "tag": "0012_slippery_edwin_jarvis",
+            "breakpoints": true
+        },
+        {
+            "idx": 13,
+            "version": "7",
+            "when": 1770773767762,
+            "tag": "0013_sturdy_pestilence",
+            "breakpoints": true
         }
     ]
 }

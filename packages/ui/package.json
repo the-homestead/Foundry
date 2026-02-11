@@ -139,9 +139,7 @@
             "./src/primitives/*.ts",
             "./src/primitives/*.tsx"
         ],
-        "./typography/*": [
-            "./src/typography/*.ts",
-            "./src/typography/*.tsx"
-        ]
+        "./typography": "./src/typography/index.ts",
+        "./typography/*": "./src/typography/*.tsx"
     }
 }

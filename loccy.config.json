@@ -2,7 +2,7 @@
     "resources": {
         "paths": {
             "include": ["apps/web/messages/**/*.json"],
-            "exclude": []
+            "exclude": ["**/node_modules/**"]
         },
         "file": {
             "structure": "nested",
@@ -11,25 +11,25 @@
     },
     "usages": {
         "paths": {
-            "include": ["**/*.{js,ts,jsx,tsx}"],
-            "exclude": []
+            "include": ["apps/web/**/*.{js,ts,jsx,tsx}"],
+            "exclude": ["**/*.test.*", "**/*.spec.*", "**/node_modules/**"]
         },
         "tFunction": {
             "preset": "next-intl",
             "customFunctionNames": []
         },
-        "detectKeysInStrings": true,
+        "detectKeysInStrings": false,
         "quoteType": "single"
     },
     "ai": {
         "translations": {
             "autoConsistency": true,
-            "customInstructions": "",
+            "customInstructions": "Prefer reusing existing keys under common.* for shared UI copy (actions, buttons, labels, navigation, statuses, errors). Only introduce page-specific keys when the text is clearly unique to that page and would not make sense elsewhere. Never duplicate common strings inside page-specific namespaces.",
             "customInstructionsPerLocale": {}
         },
         "keypaths": {
             "autoConsistency": true,
-            "customInstructions": ""
+            "customInstructions": "Default to placing reusable strings under common.* with clear subcategories (e.g. actions, labels, states, errors). If a string is page-specific, create a page namespace and add the key there. Avoid creating page-specific keys for generic UI text that already exists or could live in common."
         },
         "useCodeContext": true
     }

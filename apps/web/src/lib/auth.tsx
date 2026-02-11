@@ -2,6 +2,7 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: <Def> */
 /** biome-ignore-all lint/suspicious/useAwait: <Def> */
 import { passkey } from "@better-auth/passkey";
+import { sso } from "@better-auth/sso";
 import { stripe } from "@better-auth/stripe";
 import { db, schema } from "@foundry/database";
 import { LAUNCHER_FREE, toApiKeyPermissions } from "@foundry/types/permissions/api-key";
@@ -12,7 +13,7 @@ import VerifyEmail from "@foundry/web/emails/user/verify-email";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { admin, apiKey, haveIBeenPwned, lastLoginMethod, organization, twoFactor, username } from "better-auth/plugins";
+import { admin, apiKey, haveIBeenPwned, lastLoginMethod, multiSession, organization, twoFactor, username } from "better-auth/plugins";
 import { createTranslator } from "next-intl";
 import { Resend } from "resend";
 import Stripe from "stripe";
@@ -98,6 +99,22 @@ if (process.env.AUTH_DISCORD_ID && process.env.AUTH_DISCORD_SECRET) {
     };
 }
 
+if (process.env.AUTH_GITLAB_ID && process.env.AUTH_GITLAB_SECRET) {
+    socialProviders.gitlab = {
+        clientId: process.env.AUTH_GITLAB_ID,
+        clientSecret: process.env.AUTH_GITLAB_SECRET,
+        scope: ["read_user"],
+    };
+}
+
+if (process.env.AUTH_TWITCH_ID && process.env.AUTH_TWITCH_SECRET) {
+    socialProviders.twitch = {
+        clientId: process.env.AUTH_TWITCH_ID,
+        clientSecret: process.env.AUTH_TWITCH_SECRET,
+        scope: ["user:read:email"],
+    };
+}
+
 // biome-ignore lint/style/noNonNullAssertion: <Stripe>
 const stripeClient = new Stripe(process.env.STRIPE_WEBHOOK_SECRET_TEST!, {
     apiVersion: "2025-11-17.clover", // Latest API version as of Stripe SDK v20.0.0
@@ -113,6 +130,39 @@ export const auth = betterAuth({
         provider: "pg",
         schema,
     }),
+
+    user: {
+        additionalFields: {
+            age: {
+                type: "number",
+                input: false,
+            },
+            agePublic: {
+                type: "boolean",
+                input: false,
+            },
+            firstName: {
+                type: "string",
+                input: false,
+            },
+            firstNamePublic: {
+                type: "boolean",
+                input: false,
+            },
+            lastName: {
+                type: "string",
+                input: false,
+            },
+            lastNamePublic: {
+                type: "boolean",
+                input: false,
+            },
+            bio: {
+                type: "string",
+                input: false,
+            },
+        },
+    },
 
     emailAndPassword: {
         enabled: true,
@@ -183,11 +233,20 @@ export const auth = betterAuth({
 
     oauth: {
         defaultCallbackUrl: SYSTEM_CONFIG.redirectAfterSignIn,
-        errorCallbackUrl: "/auth/error",
+        errorCallbackUrl: "/account?tab=profile&error=link_failed",
         linkAccountsByEmail: true,
     },
 
+    account: {
+        accountLinking: {
+            enabled: true,
+            trustedProviders: ["google", "github", "discord", "gitlab", "twitch"],
+            allowDifferentEmails: true, // Allow linking accounts even if emails don't match
+        },
+    },
+
     plugins: [
+        sso(),
         apiKey({
             enableSessionForAPIKeys: true,
             enableMetadata: true,
@@ -203,6 +262,7 @@ export const auth = betterAuth({
             adminUserIds,
             defaultRole: "user",
         }),
+        multiSession(),
         haveIBeenPwned({ customPasswordCompromisedMessage: "Please choose a more secure password." }),
         lastLoginMethod({ storeInDatabase: true }),
         passkey({ origin: appOrigin, rpID, rpName: "Foundry" }),
@@ -438,7 +498,6 @@ export const auth = betterAuth({
     ],
 
     secret: process.env.AUTH_SECRET,
-
     socialProviders,
 });
 

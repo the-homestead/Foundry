@@ -1,6 +1,6 @@
 import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@foundry/ui/primitives/card";
-import { H1, P } from "@foundry/ui/typography/index";
+import { H1, P } from "@foundry/ui/typography";
 import Link from "next/link";
 
 export interface ErrorProps {

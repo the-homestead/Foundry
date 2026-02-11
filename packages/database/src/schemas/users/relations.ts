@@ -7,6 +7,7 @@ import {
     organizationTable,
     passkeyTable,
     sessionTable,
+    ssoProviderTable,
     teamMemberTable,
     teamTable,
     twoFactorTable,
@@ -19,6 +20,7 @@ export const userRelations = relations(userTable, ({ many }) => ({
     apikeys: many(apikeyTable),
     passkeys: many(passkeyTable),
     twoFactors: many(twoFactorTable),
+    ssoProviders: many(ssoProviderTable),
     teamMembers: many(teamMemberTable),
     members: many(memberTable),
     invitations: many(invitationTable),
@@ -103,5 +105,16 @@ export const invitationRelations = relations(invitationTable, ({ one }) => ({
     user: one(userTable, {
         fields: [invitationTable.inviterId],
         references: [userTable.id],
+    }),
+}));
+
+export const ssoProviderRelations = relations(ssoProviderTable, ({ one }) => ({
+    user: one(userTable, {
+        fields: [ssoProviderTable.userId],
+        references: [userTable.id],
+    }),
+    organization: one(organizationTable, {
+        fields: [ssoProviderTable.organizationId],
+        references: [organizationTable.id],
     }),
 }));

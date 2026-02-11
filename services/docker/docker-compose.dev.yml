@@ -1,0 +1,39 @@
+services:
+  hoppscotch:
+    container_name: ${HOPP_CONT_NAME:-hoppscotch}
+    image: hoppscotch/hoppscotch:latest
+    ports:
+      - "${HOPP_PORT:-3501}:3000"
+    networks:
+      - infra
+
+  redis-insight:
+    container_name: ${RED_IN_CONT_NAME:-redisinsight}
+    image: redis/redisinsight
+    ports:
+      - "${RED_IN_PORT:-3502}:5540"
+    networks:
+      - infra
+
+  pgadmin:
+    container_name: ${PGADMIN_CONT_NAME:-pgadmin}
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-support@homestead.systems}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-Rickandstitch}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+
+    ports:
+      - "${PGADMIN_PORT:-3503}:80"
+    networks:
+      - infra
+    restart: unless-stopped
+
+networks:
+  infra:
+    driver: bridge
+
+volumes:
+  pgadmin:

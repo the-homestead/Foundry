@@ -7,13 +7,16 @@ export const accountSchema = z
         username: z.string().min(3, "Username must be at least 3 characters").max(20),
         email: z.string().email("Enter a valid email"),
         firstName: z.string().optional(),
+        firstNamePublic: z.boolean().optional(),
         lastName: z.string().optional(),
+        lastNamePublic: z.boolean().optional(),
         age: z
             .string()
             .optional()
             .refine((value) => (value ? !Number.isNaN(Number(value)) : true), {
                 message: "Enter a valid age",
             }),
+        agePublic: z.boolean().optional(),
         currentPassword: z.string().optional(),
         newPassword: z.string().optional(),
         confirmPassword: z.string().optional(),

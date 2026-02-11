@@ -11,7 +11,8 @@
         "db:check": "drizzle-kit check",
         "db:migrate": "drizzle-kit migrate",
         "db:pull": "drizzle-kit pull",
-        "db:generate": "drizzle-kit generate"
+        "db:generate": "drizzle-kit generate",
+        "db:studio": "drizzle-kit studio"
     },
     "devDependencies": {
         "@foundry/config_ts": "workspace:*",
@@ -25,7 +26,9 @@
         "dotenv": "catalog:",
         "dotenv-mono": "catalog:",
         "drizzle-orm": "catalog:",
-        "pg": "catalog:"
+        "drizzle-zod": "^0.8.3",
+        "pg": "catalog:",
+        "zod": "catalog:"
     },
     "exports": {
         ".": "./dist/index.js",

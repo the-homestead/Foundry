@@ -30,6 +30,10 @@ const nextConfig: NextConfig = {
         // loaderFile: "./scripts/image-loader.ts",
         formats: ["image/avif", "image/webp"],
         remotePatterns: [
+            { hostname: "**.amazonaws.com", protocol: "https" },
+            { hostname: "**.bing.com", protocol: "https" },
+            { hostname: "**.discordapp.com", protocol: "https" },
+            { hostname: "**.fbcdn.net", protocol: "https" },
             { hostname: "**.githubassets.com", protocol: "https" },
             { hostname: "**.github.com", protocol: "https" },
             { hostname: "github.com", protocol: "https" },
@@ -45,6 +49,10 @@ const nextConfig: NextConfig = {
             { hostname: "picsum.photos", protocol: "https" },
             { hostname: "cdn.discordapp.com", protocol: "https" },
             { hostname: "i.pravatar.cc", protocol: "https" },
+            { hostname: "**.vercel.com", protocol: "https" },
+            { hostname: "**.placeholder.com", protocol: "https" },
+            { hostname: "**.homestead.systems", protocol: "https" },
+            { hostname: "images.placeholders.dev", protocol: "https" },
         ],
     },
 };

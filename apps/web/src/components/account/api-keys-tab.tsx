@@ -1,32 +1,23 @@
 "use client";
 
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@foundry/ui/primitives/alert-dialog";
-import { Badge } from "@foundry/ui/primitives/badge";
 import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@foundry/ui/primitives/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@foundry/ui/primitives/dropdown-menu";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@foundry/ui/primitives/empty";
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@foundry/ui/primitives/field";
 import { Input } from "@foundry/ui/primitives/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@foundry/ui/primitives/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@foundry/ui/primitives/table";
-import { MoreHorizontalIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { ApiKeysStats } from "./api-keys-stats";
+import { ApiKeysTable } from "./api-keys-table";
 import { FieldHint } from "./field-hint";
+import { IpRestrictionsDialog } from "./ip-restrictions-dialog";
+import { KeyDetailsDialog } from "./key-details-dialog";
+import { RateLimitsDialog } from "./rate-limits-dialog";
+import { ScopesDialog } from "./scopes-dialog";
 import { API_KEY_PROFILES } from "./types/constants";
 import type { ApiKeyEntry, StatusMessage } from "./types/types";
-import { formatDate, getProfileLabel } from "./utils";
 
 interface ApiKeysTabProps {
     apiKeyExpiresInDays: string;
@@ -73,38 +64,15 @@ export function ApiKeysTab({
 }: ApiKeysTabProps) {
     const t = useTranslations("AccountPage");
     const c = useTranslations("common");
-    const [search, setSearch] = useState("");
-    const [filterProfile, setFilterProfile] = useState("all");
     const [createOpen, setCreateOpen] = useState(false);
     const [showCreatedKey, setShowCreatedKey] = useState(false);
 
-    const profiles = API_KEY_PROFILES;
-    const filteredKeys = useMemo(() => {
-        const q = search.trim().toLowerCase();
-        return apiKeys.filter((k) => {
-            if (filterProfile !== "all" && k.metadata?.profile !== filterProfile) {
-                return false;
-            }
-            if (!q) {
-                return true;
-            }
-            const name = (k.name ?? "").toLowerCase();
-            const prefix = (k.prefix ?? k.start ?? "").toLowerCase();
-            return name.includes(q) || prefix.includes(q);
-        });
-    }, [apiKeys, search, filterProfile]);
-
-    const copyPrefix = async (prefix?: string | null) => {
-        if (!prefix) {
-            return;
-        }
-        try {
-            await navigator.clipboard?.writeText(prefix);
-            toast.success(String(t("success.apiKeyCopied")));
-        } catch {
-            toast.error(String(t("apiKeys.create.copyFailed")));
-        }
-    };
+    // Dialog states for key management
+    const [ipDialogOpen, setIpDialogOpen] = useState(false);
+    const [rateLimitDialogOpen, setRateLimitDialogOpen] = useState(false);
+    const [scopesDialogOpen, setScopesDialogOpen] = useState(false);
+    const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+    const [selectedKey, setSelectedKey] = useState<ApiKeyEntry | null>(null);
 
     useEffect(() => {
         if (!apiKeyMessage) {
@@ -129,23 +97,91 @@ export function ApiKeysTab({
         toast.success(String(t("success.apiKeyCreated")));
     }, [lastCreatedKey, t]);
 
-    const getRelativeDays = (dateInput?: string | Date | null) => {
-        if (!dateInput) {
-            return "—";
+    // Handlers for the table actions
+    const handleIpRestrictions = (key: ApiKeyEntry) => {
+        setSelectedKey(key);
+        setIpDialogOpen(true);
+    };
+
+    const handleRateLimits = (key: ApiKeyEntry) => {
+        setSelectedKey(key);
+        setRateLimitDialogOpen(true);
+    };
+
+    const handleScopes = (key: ApiKeyEntry) => {
+        setSelectedKey(key);
+        setScopesDialogOpen(true);
+    };
+
+    const handleViewDetails = (key: ApiKeyEntry) => {
+        setSelectedKey(key);
+        setDetailsDialogOpen(true);
+    };
+
+    const handleSaveIpRestrictions = async (keyId: string, whitelist: string[], blacklist: string[]) => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_APP_URL}/api-keys/${keyId}/ip-restrictions`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ whitelist, blacklist }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update IP restrictions");
+            }
+
+            toast.success("IP restrictions updated");
+            onLoadApiKeys(); // Refresh the list
+        } catch (_error) {
+            toast.error("Failed to update IP restrictions");
         }
-        const d = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
-        if (Number.isNaN(d.getTime())) {
-            return "—";
+    };
+
+    const handleSaveRateLimits = async (keyId: string, limits: { requestsPerMinute?: number | null; requestsPerHour?: number | null; requestsPerDay?: number | null }) => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_APP_URL}/api-keys/${keyId}/rate-limits`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify(limits),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update rate limits");
+            }
+
+            toast.success("Rate limits updated");
+            onLoadApiKeys(); // Refresh the list
+        } catch (_error) {
+            toast.error("Failed to update rate limits");
         }
-        const diffMs = d.getTime() - Date.now();
-        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-        if (diffDays === 0) {
-            return String(c("dates.today"));
+    };
+
+    const handleSaveScopes = async (keyId: string, scopes: string[]) => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_APP_URL}/api-keys/${keyId}/scopes`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ scopes }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update scopes");
+            }
+
+            toast.success("Scopes updated");
+            onLoadApiKeys(); // Refresh the list
+        } catch (_error) {
+            toast.error("Failed to update scopes");
         }
-        if (diffDays > 0) {
-            return String(t("apiKeys.list.inDays", { n: diffDays }));
-        }
-        return String(t("apiKeys.list.daysAgo", { n: Math.abs(diffDays) }));
     };
 
     return (
@@ -156,26 +192,13 @@ export function ApiKeysTab({
                     <CardDescription className="text-center">{t("apiKeys.list.description")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                    {/* Analytics Stats */}
+                    <ApiKeysStats apiKeys={apiKeys} />
+
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex items-center gap-3">
-                            <Input className="w-64" onChange={(e) => setSearch(e.target.value)} placeholder={String(c("placeholders.search"))} value={search} />
-                            <Select onValueChange={setFilterProfile} value={filterProfile}>
-                                <SelectTrigger className="w-48" id="profileFilter">
-                                    <SelectValue placeholder={String(t("apiKeys.list.allProfiles"))} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">{String(t("apiKeys.list.allProfiles"))}</SelectItem>
-                                    {profiles.map((p) => (
-                                        <SelectItem key={p.id} value={p.id}>
-                                            {p.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <p className="text-muted-foreground text-sm">
-                                {filteredKeys.length} {t("apiKeys.list.keysLabel")}
-                            </p>
-                        </div>
+                        <p className="text-muted-foreground text-sm">
+                            {apiKeys.length} {t("apiKeys.list.keysLabel")}
+                        </p>
                         <div className="flex items-center gap-2">
                             <Button disabled={apiKeyLoading} onClick={onLoadApiKeys} type="button" variant="outline">
                                 {apiKeyLoading ? c("buttons.refreshing") : c("buttons.refresh")}
@@ -281,104 +304,21 @@ export function ApiKeysTab({
                             </Dialog>
                         </div>
                     </div>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>{t("apiKeys.list.columns.name")}</TableHead>
-                                <TableHead>{t("apiKeys.list.columns.prefix")}</TableHead>
-                                <TableHead>{t("apiKeys.list.columns.profile")}</TableHead>
-                                <TableHead>{t("apiKeys.list.columns.created")}</TableHead>
-                                <TableHead>{t("apiKeys.list.columns.expires")}</TableHead>
-                                <TableHead>{t("apiKeys.list.columns.status")}</TableHead>
-                                <TableHead className="text-right">{t("apiKeys.list.columns.actions")}</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredKeys.length === 0 ? (
-                                <TableRow>
-                                    <TableCell className="py-6 text-muted-foreground" colSpan={7}>
-                                        <div className="py-6">
-                                            <Empty>
-                                                <EmptyMedia variant="default" />
-                                                <EmptyHeader>
-                                                    <EmptyTitle>{String(t("apiKeys.list.title"))}</EmptyTitle>
-                                                    <EmptyDescription>{t("apiKeys.list.noKeys")}</EmptyDescription>
-                                                    <EmptyContent>
-                                                        <Button onClick={() => setCreateOpen(true)}>{t("apiKeys.create.createButton")}</Button>
-                                                    </EmptyContent>
-                                                </EmptyHeader>
-                                            </Empty>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                filteredKeys.map((key) => (
-                                    <TableRow key={key.id}>
-                                        <TableCell className="font-medium">{key.name || t("apiKeys.list.untitled")}</TableCell>
-                                        <TableCell>{key.prefix || key.start || "—"}</TableCell>
-                                        <TableCell>{getProfileLabel(key.metadata?.profile ?? null)}</TableCell>
-                                        <TableCell>
-                                            <div className="flex flex-col">
-                                                <span className="font-mono text-sm">{formatDate(key.createdAt)}</span>
-                                                <span className="text-muted-foreground text-xs">{getRelativeDays(key.createdAt)}</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex flex-col">
-                                                <span className="font-mono text-sm">{formatDate(key.expiresAt)}</span>
-                                                <span className="text-muted-foreground text-xs">{getRelativeDays(key.expiresAt)}</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {key.enabled === false ? <Badge variant="outline">{c("fields.disabled")}</Badge> : <Badge>{c("fields.active")}</Badge>}
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button aria-label={t("apiKeys.list.columns.actions")} size="sm" variant="ghost">
-                                                            <MoreHorizontalIcon />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem onSelect={() => copyPrefix(key.prefix ?? key.start ?? null)}>
-                                                            {String(c("buttons.copy"))}
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem data-variant="destructive" onSelect={() => setPendingRevokeId?.(key.id)}>
-                                                            {t("apiKeys.list.revoke")}
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
 
-                    {/* Revoke confirmation modal */}
-                    <AlertDialog onOpenChange={(open) => !open && setPendingRevokeId?.(null)} open={Boolean(pendingRevokeId)}>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>{t("apiKeys.list.revokeConfirmTitle")}</AlertDialogTitle>
-                                <AlertDialogDescription>{t("apiKeys.list.revokeConfirmDescription")}</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <div className="flex items-center justify-end gap-2">
-                                <AlertDialogCancel>{String(c("buttons.cancel"))}</AlertDialogCancel>
-                                <AlertDialogAction
-                                    onClick={() => {
-                                        if (pendingRevokeId) {
-                                            onDeleteApiKey(pendingRevokeId);
-                                        }
-                                    }}
-                                >
-                                    {t("apiKeys.list.revoke")}
-                                </AlertDialogAction>
-                            </div>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                    {/* TanStack Table Component */}
+                    <ApiKeysTable
+                        data={apiKeys}
+                        onDelete={onDeleteApiKey}
+                        onIpRestrictions={handleIpRestrictions}
+                        onRateLimits={handleRateLimits}
+                        onRefresh={onLoadApiKeys}
+                        onScopes={handleScopes}
+                        onViewDetails={handleViewDetails}
+                        pendingRevokeId={pendingRevokeId}
+                        setPendingRevokeId={setPendingRevokeId}
+                    />
+
+                    {/* Dialog for displaying created key */}
                     <Dialog onOpenChange={setShowCreatedKey} open={showCreatedKey}>
                         <DialogContent>
                             <DialogHeader>
@@ -408,6 +348,46 @@ export function ApiKeysTab({
                             </div>
                         </DialogContent>
                     </Dialog>
+
+                    {/* IP Restrictions Dialog */}
+                    {selectedKey ? (
+                        <IpRestrictionsDialog
+                            apiKeyId={selectedKey.id}
+                            apiKeyName={selectedKey.name ?? "Unnamed Key"}
+                            blacklist={selectedKey.metadata?.ipBlacklist ?? []}
+                            onOpenChange={setIpDialogOpen}
+                            onSave={handleSaveIpRestrictions}
+                            open={ipDialogOpen}
+                            whitelist={selectedKey.metadata?.ipWhitelist ?? []}
+                        />
+                    ) : null}
+
+                    {/* Rate Limits Dialog */}
+                    {selectedKey ? (
+                        <RateLimitsDialog
+                            apiKeyId={selectedKey.id}
+                            apiKeyName={selectedKey.name ?? "Unnamed Key"}
+                            currentLimits={selectedKey.metadata?.rateLimit ?? null}
+                            onOpenChange={setRateLimitDialogOpen}
+                            onSave={handleSaveRateLimits}
+                            open={rateLimitDialogOpen}
+                        />
+                    ) : null}
+
+                    {/* Scopes Dialog */}
+                    {selectedKey ? (
+                        <ScopesDialog
+                            apiKeyId={selectedKey.id}
+                            apiKeyName={selectedKey.name ?? "Unnamed Key"}
+                            onOpenChange={setScopesDialogOpen}
+                            onSave={handleSaveScopes}
+                            open={scopesDialogOpen}
+                            selectedScopes={selectedKey.metadata?.scopes ?? []}
+                        />
+                    ) : null}
+
+                    {/* Key Details Dialog */}
+                    <KeyDetailsDialog apiKey={selectedKey} onOpenChange={setDetailsDialogOpen} open={detailsDialogOpen} />
                 </CardContent>
             </Card>
         </div>

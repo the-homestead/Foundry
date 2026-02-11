@@ -224,6 +224,7 @@ import { MagnifyingGlassMinusIcon, type MagnifyingGlassMinusIconHandle } from ".
 import { MagnifyingGlassPlusIcon, type MagnifyingGlassPlusIconHandle } from "./magnifying-glass-plus";
 import { MapIcon, type MapIconHandle } from "./map";
 import { MapPinIcon, type MapPinIconHandle } from "./map-pin";
+import { MinecraftChicken } from "./mc-chicken";
 import { MegaphoneIcon, type MegaphoneIconHandle } from "./megaphone";
 import { MicrophoneIcon, type MicrophoneIconHandle } from "./microphone";
 import { MinusIcon, type MinusIconHandle } from "./minus";
@@ -641,6 +642,7 @@ const ICON_MAP: Record<string, ElementType> = {
     wrench: WrenchIcon,
     "x-circle": XCircleIcon,
     "x-mark": XMarkIcon,
+    "mc-chicken": MinecraftChicken,
 };
 
 export const getIconList = (): IconListItem[] => {
@@ -652,6 +654,7 @@ export const getIconList = (): IconListItem[] => {
 };
 
 export {
+    MinecraftChicken,
     AcademicCapIcon,
     type AcademicCapIconHandle,
     AdjustmentsHorizontalIcon,

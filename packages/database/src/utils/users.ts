@@ -1,8 +1,6 @@
 import "server-only";
 import { eq } from "drizzle-orm";
-import type { User } from "src/schemas";
-import { userTable } from "src/schemas";
-import { db } from "..";
+import { accountTable, db, type User, userTable } from "..";
 
 /**
  * Fetches a user from the database by their ID.
@@ -18,5 +16,39 @@ export async function getUserById(userId: string): Promise<null | User> {
     } catch (error) {
         console.error("Failed to fetch user by ID:", error);
         return null;
+    }
+}
+
+export interface LinkedAccount {
+    id: string;
+    accountId: string;
+    providerId: string;
+    userId: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+/**
+ * Fetches all linked OAuth accounts for a user.
+ * @param userId - The ID of the user to fetch linked accounts for.
+ * @returns Array of linked account objects with provider info.
+ */
+export async function getLinkedAccountsByUserId(userId: string): Promise<LinkedAccount[]> {
+    try {
+        const accounts = await db.query.accountTable.findMany({
+            where: eq(accountTable.userId, userId),
+            columns: {
+                id: true,
+                accountId: true,
+                providerId: true,
+                userId: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+        return accounts;
+    } catch (error) {
+        console.error("Failed to fetch linked accounts:", error);
+        return [];
     }
 }

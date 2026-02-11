@@ -1,3 +1,5 @@
+"use client";
+
 import remarkDirectiveSugar, { rehypeCustomComments, remarkCodeFilename } from "@foundry/remark";
 import remarkJoinHtmlComments from "@foundry/remark/src/join-html-comments";
 import {
@@ -15,11 +17,17 @@ import {
     GlimpseTrigger,
 } from "@foundry/ui/components";
 import { cn } from "@foundry/ui/lib/utils";
+import { Alert } from "@foundry/ui/primitives/alert";
 import { Badge, type badgeVariants } from "@foundry/ui/primitives/badge";
-import { BlockQuote, H1, H2, H3, H4, List, P } from "@foundry/ui/typography/index";
+import { Card, CardContent, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
+import { Separator } from "@foundry/ui/primitives/separator";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@foundry/ui/primitives/table";
+import { BlockQuote, H1, H2, H3, H4, List, P } from "@foundry/ui/typography";
 import type { VariantProps } from "class-variance-authority";
+import { Flame, Info, Lightbulb, TriangleAlert } from "lucide-react";
 import Image from "next/image";
 import type { ComponentProps, CSSProperties, JSX, ReactNode } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeUnwrapImages from "rehype-unwrap-images";
@@ -27,7 +35,6 @@ import remarkCapitalizeHeadings from "remark-capitalize-headings";
 import remarkDirective from "remark-directive";
 import remarkEmoji from "remark-emoji";
 import remarkFlexibleCodeTitles from "remark-flexible-code-titles";
-import remarkFlexibleContainers from "remark-flexible-containers";
 import remarkFlexibleMarkers from "remark-flexible-markers";
 import remarkFlexibleParagraphs from "remark-flexible-paragraphs";
 import remarkFlexibleToc from "remark-flexible-toc";
@@ -103,6 +110,70 @@ function preprocessComments(md: string): string {
     });
 }
 
+// Client component that fetches glimpse data
+function GlimpseLink({ href, image, text }: GlimpseLinkProps) {
+    const [metadata, setMetadata] = useState<{ title: string | null; description: string | null; image: string | null } | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchMetadata() {
+            try {
+                // Use our API route to fetch metadata (avoids CORS issues)
+                const response = await fetch("/api/glimpse", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url: href }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch: ${response.status}`);
+                }
+
+                const data = await response.json();
+                setMetadata(data);
+            } catch (error) {
+                console.error("Failed to fetch glimpse metadata:", error);
+                setMetadata({ title: null, description: null, image: null });
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        if (href.startsWith("http")) {
+            fetchMetadata();
+        } else {
+            setLoading(false);
+        }
+    }, [href]);
+
+    const displayImage = metadata?.image || image || "";
+    const displayTitle = metadata?.title || text;
+    const displayDescription = metadata?.description || href;
+
+    return (
+        <Glimpse closeDelay={0} openDelay={0}>
+            <GlimpseTrigger asChild>
+                <a className="font-medium text-primary underline" href={href} rel="noopener" target="_blank">
+                    {displayTitle}
+                </a>
+            </GlimpseTrigger>
+            <GlimpseContent className="w-80">
+                {loading ? (
+                    <div className="flex h-40 items-center justify-center">
+                        <span className="text-muted-foreground text-sm">Loading...</span>
+                    </div>
+                ) : (
+                    <>
+                        <GlimpseImage alt={displayTitle} src={displayImage} />
+                        <GlimpseTitle>{displayTitle}</GlimpseTitle>
+                        <GlimpseDescription>{displayDescription}</GlimpseDescription>
+                    </>
+                )}
+            </GlimpseContent>
+        </Glimpse>
+    );
+}
+
 export default function MarkdownViewer({ content }: { content: string }) {
     interface MarkdownComponentMap {
         h1: React.ComponentType<ComponentProps<typeof H1>>;
@@ -121,6 +192,7 @@ export default function MarkdownViewer({ content }: { content: string }) {
         figcaption: (props: FigcaptionProps) => JSX.Element;
         figure: (props: FigureProps) => JSX.Element;
         "glimpse-link": (props: GlimpseLinkProps) => JSX.Element;
+        admonition: (props: { type: string; title?: string; children?: ReactNode } & React.HTMLAttributes<HTMLDivElement>) => JSX.Element;
     }
 
     const components: MarkdownComponentMap & Record<string, unknown> = {
@@ -144,6 +216,82 @@ export default function MarkdownViewer({ content }: { content: string }) {
                 </div>
             );
         },
+        admonition: ({ type, title, children, className, ...props }) => {
+            let Icon = Info;
+            let containerTitle = title;
+            let iconColorClass = "text-foreground";
+
+            if (type === "note") {
+                Icon = Info;
+                if (!containerTitle) {
+                    containerTitle = "Note";
+                }
+                iconColorClass = "text-blue-500";
+            } else if (type === "tip") {
+                Icon = Lightbulb;
+                if (!containerTitle) {
+                    containerTitle = "Tip";
+                }
+                iconColorClass = "text-yellow-500";
+            } else if (type === "warning") {
+                Icon = TriangleAlert;
+                if (!containerTitle) {
+                    containerTitle = "Warning";
+                }
+                iconColorClass = "text-orange-500";
+            } else if (type === "danger") {
+                Icon = Flame;
+                if (!containerTitle) {
+                    containerTitle = "Danger";
+                }
+                iconColorClass = "text-red-500";
+            }
+
+            return (
+                <Card className={cn("mx-auto my-4 max-w-[350px] gap-0 rounded-lg py-0 shadow-none", className)} {...props}>
+                    <CardHeader className="px-3 py-2">
+                        <div className="flex items-center gap-2">
+                            <Icon className={cn("h-4 w-4", iconColorClass)} />
+                            <CardTitle className="font-medium text-sm">{containerTitle}</CardTitle>
+                        </div>
+                    </CardHeader>
+                    <Separator />
+                    <CardContent className="px-3 py-2 text-sm">{children}</CardContent>
+                </Card>
+            );
+        },
+        table: ({ children, className, ...props }: React.ComponentProps<"table">) => (
+            <div className="my-6 w-full overflow-y-auto">
+                <Table className={className} {...props}>
+                    {children}
+                </Table>
+            </div>
+        ),
+        thead: ({ children, className, ...props }: React.ComponentProps<"thead">) => (
+            <TableHeader className={className} {...props}>
+                {children}
+            </TableHeader>
+        ),
+        tbody: ({ children, className, ...props }: React.ComponentProps<"tbody">) => (
+            <TableBody className={className} {...props}>
+                {children}
+            </TableBody>
+        ),
+        tr: ({ children, className, ...props }: React.ComponentProps<"tr">) => (
+            <TableRow className={className} {...props}>
+                {children}
+            </TableRow>
+        ),
+        th: ({ children, className, ...props }: React.ComponentProps<"th">) => (
+            <TableHead className={className} {...props}>
+                {children}
+            </TableHead>
+        ),
+        td: ({ children, className, ...props }: React.ComponentProps<"td">) => (
+            <TableCell className={className} {...props}>
+                {children}
+            </TableCell>
+        ),
         h1: (props: React.ComponentProps<typeof H1>) => <H1 {...props} />,
         h2: (props: React.ComponentProps<typeof H2>) => <H2 {...props} />,
         h3: (props: React.ComponentProps<typeof H3>) => <H3 {...props} />,
@@ -233,7 +381,46 @@ export default function MarkdownViewer({ content }: { content: string }) {
                 </span>
             );
         },
+        // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <Def>
         div: ({ className, children, ...props }: DivProps) => {
+            if (className?.includes("remark-container")) {
+                const type =
+                    className
+                        .split(" ")
+                        .find((c) => c !== "remark-container")
+                        ?.replace("remark-container-", "") || "note";
+                let Icon = Info;
+                let variant: "default" | "destructive" = "default";
+
+                if (type === "note") {
+                    Icon = Info;
+                    variant = "default";
+                } else if (type === "tip") {
+                    Icon = Lightbulb;
+                    variant = "default";
+                } else if (type === "warning") {
+                    Icon = TriangleAlert;
+                    variant = "destructive";
+                } else if (type === "danger") {
+                    Icon = Flame;
+                    variant = "destructive";
+                }
+
+                return (
+                    <Alert className={cn("mx-auto my-4 flex max-w-[400px] gap-3", className)} variant={variant} {...props} style={{ display: "flex" }}>
+                        <Icon className="mt-0.5 h-5 w-5 shrink-0" />
+                        <div className="flex-1 overflow-hidden [&>div.remark-container-title]:mb-1 [&>div.remark-container-title]:font-semibold">{children}</div>
+                    </Alert>
+                );
+            }
+            if (className?.includes("remark-container-title")) {
+                return (
+                    <div className={cn("text-lg", className)} {...props}>
+                        {children}
+                    </div>
+                );
+            }
+
             const layout = props["data-image-layout"] ?? props["data-layout"];
             let layoutClassName = "";
             if (layout === "row") {
@@ -299,20 +486,7 @@ export default function MarkdownViewer({ content }: { content: string }) {
             </figure>
         ),
         "glimpse-link": ({ href, image, text }: GlimpseLinkProps) => {
-            return (
-                <Glimpse closeDelay={0} openDelay={0}>
-                    <GlimpseTrigger asChild>
-                        <a className="font-medium text-primary underline" href={href} rel="noopener" target="_blank">
-                            {text}
-                        </a>
-                    </GlimpseTrigger>
-                    <GlimpseContent className="w-80">
-                        <GlimpseImage alt={text} src={image ?? ""} />
-                        <GlimpseTitle>{text}</GlimpseTitle>
-                        <GlimpseDescription>{href}</GlimpseDescription>
-                    </GlimpseContent>
-                </Glimpse>
-            );
+            return <GlimpseLink href={href} image={image} text={text} />;
         },
     };
 
@@ -326,7 +500,6 @@ export default function MarkdownViewer({ content }: { content: string }) {
                 remarkCodeFilename,
                 remarkGfm,
                 [remarkEmoji, { accessible: true, emoticon: true }],
-                remarkFlexibleContainers,
                 remarkFlexibleMarkers,
                 remarkFlexibleParagraphs,
                 remarkFlexibleToc,
@@ -338,10 +511,12 @@ export default function MarkdownViewer({ content }: { content: string }) {
                 [
                     remarkDirectiveSugar,
                     {
+                        admonition: {},
                         badge: {
                             presets: {
                                 a: { text: "ARTICLE" },
                                 v: { text: "VIDEO", props: { className: ["custom"] } },
+                                c: { text: "CUSTOM", props: { className: ["custom"] } },
                             },
                         },
                         image: {
