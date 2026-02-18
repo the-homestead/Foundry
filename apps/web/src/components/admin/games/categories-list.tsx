@@ -1,6 +1,7 @@
 "use client";
 
 import type { Category } from "@foundry/database";
+import { TreeExpander, TreeLabel, TreeNode, TreeNodeContent, TreeNodeTrigger, TreeProvider, TreeView, TreeIcon as UiTreeIcon } from "@foundry/ui/components";
 import { getIconList } from "@foundry/ui/icons";
 import {
     AlertDialog,
@@ -12,11 +13,12 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@foundry/ui/primitives/alert-dialog";
+import { Badge } from "@foundry/ui/primitives/badge";
 import { Button } from "@foundry/ui/primitives/button";
 import { deleteCategory } from "@foundry/web/actions/categories";
 import { CategoryFormDialog } from "@foundry/web/components/admin/games/category-form";
-import { Link } from "@foundry/web/i18n/navigation";
-import { ChevronRight, Edit, FolderIcon, icons, Trash2 } from "lucide-react";
+// navigation
+import { Edit, FolderIcon, icons, Plus, Trash2 } from "lucide-react";
 import type { ComponentType } from "react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -34,7 +36,7 @@ interface CategoriesListProps {
 }
 
 // Helper component to render icons dynamically
-function CategoryIcon({ iconName, className = "h-5 w-5" }: { iconName?: string | null; className?: string }) {
+function CategoryIcon({ iconName, className = "h-4 w-4" }: { iconName?: string | null; className?: string }) {
     const animatedIcons = useMemo(() => getIconList(), []);
 
     if (!iconName) {
@@ -67,10 +69,106 @@ function CategoryIcon({ iconName, className = "h-5 w-5" }: { iconName?: string |
     return <FolderIcon className={className} />;
 }
 
+function CategoryTreeNode({
+    category,
+    allCategories,
+    gameId,
+    gameName,
+    onDelete,
+    isLast = false,
+}: {
+    category: CategoryWithSubcategories;
+    allCategories: Category[];
+    gameId: string;
+    gameName: string;
+    onDelete: (c: CategoryWithSubcategories) => void;
+    isLast?: boolean;
+}) {
+    const subcats = category.subcategories ?? [];
+    const hasChildren = subcats.length > 0;
+
+    return (
+        <TreeNode isLast={isLast} key={category.id} nodeId={category.id}>
+            <TreeNodeTrigger className="px-2 py-1 text-sm">
+                <TreeExpander hasChildren={hasChildren} />
+                <UiTreeIcon hasChildren={hasChildren} icon={<CategoryIcon iconName={category.icon} />} />
+                <TreeLabel>
+                    <div className="flex items-center gap-2">
+                        <span className="truncate font-medium">{category.name}</span>
+                        <span className="font-mono text-muted-foreground text-xs">({category.slug})</span>
+                    </div>
+                    {category.description ? <div className="mt-1 truncate text-muted-foreground text-xs">{category.description}</div> : null}
+                </TreeLabel>
+
+                <div className="ml-2 flex items-center gap-1">
+                    {hasChildren ? (
+                        <Badge className="text-xs" variant="secondary">
+                            {subcats.length}
+                        </Badge>
+                    ) : null}
+
+                    <CategoryFormDialog
+                        allCategories={allCategories}
+                        gameId={gameId}
+                        gameName={gameName}
+                        parentId={category.id}
+                        trigger={
+                            <Button aria-label="Add subcategory" onClick={(e) => e.stopPropagation()} size="icon" variant="ghost">
+                                <Plus className="h-4 w-4" />
+                            </Button>
+                        }
+                    />
+
+                    <CategoryFormDialog
+                        allCategories={allCategories}
+                        category={category}
+                        gameId={gameId}
+                        gameName={gameName}
+                        trigger={
+                            <Button aria-label="Edit category" onClick={(e) => e.stopPropagation()} size="icon" variant="ghost">
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                        }
+                    />
+
+                    <Button
+                        aria-label="Delete category"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(category);
+                        }}
+                        size="icon"
+                        variant="ghost"
+                    >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                </div>
+            </TreeNodeTrigger>
+
+            {hasChildren && (
+                <TreeNodeContent className="ml-2" hasChildren>
+                    {subcats.map((sub, i) => (
+                        <CategoryTreeNode
+                            allCategories={allCategories}
+                            category={sub}
+                            gameId={gameId}
+                            gameName={gameName}
+                            isLast={i === subcats.length - 1}
+                            key={sub.id}
+                            onDelete={onDelete}
+                        />
+                    ))}
+                </TreeNodeContent>
+            )}
+        </TreeNode>
+    );
+}
+
 export function CategoriesList({ categories, allCategories = [], gameId, gameName, level = 0 }: CategoriesListProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState<{ id: string; name: string } | null>(null);
     const [deleting, setDeleting] = useState(false);
+    // top-level no-expanded state needed for stable inline list
 
     const handleDeleteClick = (category: CategoryWithSubcategories) => {
         if (category.subcategories && category.subcategories.length > 0) {
@@ -101,60 +199,32 @@ export function CategoriesList({ categories, allCategories = [], gameId, gameNam
 
     if (categories.length === 0 && level === 0) {
         return (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-                <FolderIcon className="mb-4 h-12 w-12 text-muted-foreground opacity-50" />
-                <h3 className="mb-2 font-semibold">No categories yet</h3>
-                <p className="mb-4 text-muted-foreground text-sm">Get started by creating your first category.</p>
+            <div className="flex flex-col items-center justify-center rounded-md border border-dashed p-6 text-center text-sm">
+                <FolderIcon className="mb-3 h-10 w-10 text-muted-foreground opacity-50" />
+                <h3 className="mb-1 font-semibold">No categories yet</h3>
+                <p className="mb-3 text-muted-foreground text-xs">Get started by creating your first category.</p>
                 <CategoryFormDialog allCategories={allCategories} gameId={gameId} gameName={gameName} />
             </div>
         );
     }
-
+    // render tree
     return (
         <>
-            <div className={level === 0 ? "space-y-2" : "mt-2 ml-6 space-y-2 border-border border-l-2 pl-4"}>
-                {categories.map((category) => (
-                    <div className="space-y-2" key={category.id}>
-                        <div className="group flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50">
-                            <div className="flex items-center gap-3">
-                                <CategoryIcon className="h-5 w-5 text-muted-foreground" iconName={category.icon} />
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-medium">{category.name}</span>
-                                        <span className="font-mono text-muted-foreground text-xs">({category.slug})</span>
-                                    </div>
-                                    {category.description ? <p className="text-muted-foreground text-sm">{category.description}</p> : null}
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <CategoryFormDialog
-                                    allCategories={allCategories}
-                                    gameId={gameId}
-                                    gameName={gameName}
-                                    parentId={category.id}
-                                    trigger={
-                                        <Button size="sm" variant="ghost">
-                                            <ChevronRight className="mr-1 h-3 w-3" />
-                                            Add Sub
-                                        </Button>
-                                    }
-                                />
-                                <Link href={`/adash/games/${gameId}/categories/${category.id}/edit`}>
-                                    <Button size="sm" variant="ghost">
-                                        <Edit className="h-3 w-3" />
-                                    </Button>
-                                </Link>
-                                <Button onClick={() => handleDeleteClick(category)} size="sm" variant="ghost">
-                                    <Trash2 className="h-3 w-3 text-destructive" />
-                                </Button>
-                            </div>
-                        </div>
-                        {category.subcategories && category.subcategories.length > 0 ? (
-                            <CategoriesList allCategories={allCategories} categories={category.subcategories} gameId={gameId} gameName={gameName} level={level + 1} />
-                        ) : null}
-                    </div>
-                ))}
-            </div>
+            <TreeProvider animateExpand className={level === 0 ? "rounded-md border p-1 text-sm" : "ml-2 text-sm"} indent={14} selectable={false} showIcons showLines>
+                <TreeView>
+                    {categories.map((c, i) => (
+                        <CategoryTreeNode
+                            allCategories={allCategories}
+                            category={c}
+                            gameId={gameId}
+                            gameName={gameName}
+                            isLast={i === categories.length - 1}
+                            key={c.id}
+                            onDelete={handleDeleteClick}
+                        />
+                    ))}
+                </TreeView>
+            </TreeProvider>
 
             <AlertDialog onOpenChange={setDeleteDialogOpen} open={deleteDialogOpen}>
                 <AlertDialogContent>

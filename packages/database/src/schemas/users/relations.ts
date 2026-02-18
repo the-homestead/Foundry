@@ -4,26 +4,34 @@ import {
     apikeyTable,
     invitationTable,
     memberTable,
+    oauthAccessTokenTable,
+    oauthApplicationTable,
+    oauthConsentTable,
     organizationTable,
     passkeyTable,
     sessionTable,
-    ssoProviderTable,
     teamMemberTable,
     teamTable,
     twoFactorTable,
+    userNotificationSettingsTable,
     userTable,
 } from "./tables";
 
-export const userRelations = relations(userTable, ({ many }) => ({
+export const userRelations = relations(userTable, ({ one, many }) => ({
     sessions: many(sessionTable),
     accounts: many(accountTable),
+    oauthApplications: many(oauthApplicationTable),
+    oauthAccessTokens: many(oauthAccessTokenTable),
+    oauthConsents: many(oauthConsentTable),
     apikeys: many(apikeyTable),
     passkeys: many(passkeyTable),
     twoFactors: many(twoFactorTable),
-    ssoProviders: many(ssoProviderTable),
     teamMembers: many(teamMemberTable),
     members: many(memberTable),
     invitations: many(invitationTable),
+    // One-to-one relation to per-user notification preferences
+    // (not every project includes the migration; keep mapping available)
+    notificationSettings: one(userNotificationSettingsTable),
 }));
 
 export const sessionRelations = relations(sessionTable, ({ one }) => ({
@@ -36,6 +44,37 @@ export const sessionRelations = relations(sessionTable, ({ one }) => ({
 export const accountRelations = relations(accountTable, ({ one }) => ({
     user: one(userTable, {
         fields: [accountTable.userId],
+        references: [userTable.id],
+    }),
+}));
+
+export const oauthApplicationRelations = relations(oauthApplicationTable, ({ one, many }) => ({
+    user: one(userTable, {
+        fields: [oauthApplicationTable.userId],
+        references: [userTable.id],
+    }),
+    oauthAccessTokens: many(oauthAccessTokenTable),
+    oauthConsents: many(oauthConsentTable),
+}));
+
+export const oauthAccessTokenRelations = relations(oauthAccessTokenTable, ({ one }) => ({
+    oauthApplication: one(oauthApplicationTable, {
+        fields: [oauthAccessTokenTable.clientId],
+        references: [oauthApplicationTable.clientId],
+    }),
+    user: one(userTable, {
+        fields: [oauthAccessTokenTable.userId],
+        references: [userTable.id],
+    }),
+}));
+
+export const oauthConsentRelations = relations(oauthConsentTable, ({ one }) => ({
+    oauthApplication: one(oauthApplicationTable, {
+        fields: [oauthConsentTable.clientId],
+        references: [oauthApplicationTable.clientId],
+    }),
+    user: one(userTable, {
+        fields: [oauthConsentTable.userId],
         references: [userTable.id],
     }),
 }));
@@ -105,16 +144,5 @@ export const invitationRelations = relations(invitationTable, ({ one }) => ({
     user: one(userTable, {
         fields: [invitationTable.inviterId],
         references: [userTable.id],
-    }),
-}));
-
-export const ssoProviderRelations = relations(ssoProviderTable, ({ one }) => ({
-    user: one(userTable, {
-        fields: [ssoProviderTable.userId],
-        references: [userTable.id],
-    }),
-    organization: one(organizationTable, {
-        fields: [ssoProviderTable.organizationId],
-        references: [organizationTable.id],
     }),
 }));

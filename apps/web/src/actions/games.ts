@@ -127,8 +127,8 @@ export async function updateGame(gameId: string, data: GameFormData) {
             })
             .where(eq(games.id, gameId));
 
-        revalidatePath("/adash/games");
-        revalidatePath(`/adash/games/${gameId}`);
+        revalidatePath("/management/games");
+        revalidatePath(`/management/games/${gameId}`);
         return { success: true };
     } catch (e: unknown) {
         console.error("Failed to update game", e);
@@ -136,5 +136,26 @@ export async function updateGame(gameId: string, data: GameFormData) {
             return { error: "Slug already exists" };
         }
         return { error: "Failed to update game." };
+    }
+}
+
+export async function isGameSlugAvailable(gameId: string, slug: string) {
+    try {
+        const rows = await db.select().from(games).where(eq(games.slug, slug));
+
+        if (rows.length === 0) {
+            return { available: true };
+        }
+
+        // If the only matching row is the current game, it's available
+        const first = rows[0];
+        if (first && first.id === gameId) {
+            return { available: true };
+        }
+
+        return { available: false };
+    } catch (e: unknown) {
+        console.error("Failed to check slug availability", e);
+        return { available: false };
     }
 }

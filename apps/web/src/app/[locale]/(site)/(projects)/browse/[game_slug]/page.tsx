@@ -1,9 +1,4 @@
 import { db, eq, games } from "@foundry/database";
-import { BrowseControls } from "@foundry/web/components/browse/browse-controls";
-import { BrowseSidebar } from "@foundry/web/components/browse/browse-sidebar";
-import { ProjectCard } from "@foundry/web/components/browse/project-card";
-import { CreateProjectDialog } from "@foundry/web/components/projects/create-project-dialog";
-import { Box } from "lucide-react";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -13,8 +8,8 @@ interface PageProps {
     }>;
 }
 
-export default async function GameBrowsePage({ params }: PageProps) {
-    const { game_slug } = await params;
+export default async function GameBrowsePage({ params, searchParams }: PageProps & { searchParams?: { [key: string]: string | string[] | undefined } }) {
+    const { game_slug, locale } = await params;
 
     const game = await db.query.games.findFirst({
         where: eq(games.slug, game_slug),
@@ -28,61 +23,56 @@ export default async function GameBrowsePage({ params }: PageProps) {
         notFound();
     }
 
-    // Parse capabilities
-    const capabilities = game.capabilities as { versions: string[]; modloaders: string[] };
+    // (capabilities are available on the game object if needed)
+
+    // apply filters from URL search params (categories, q)
+    // `searchParams` can be a Promise in some Next.js runtimes — resolve it first
+    const resolvedSearchParams = (await Promise.resolve(searchParams)) as ({ [key: string]: string | string[] | undefined } & Record<string, unknown>) | undefined;
+
+    const selectedCategoriesParam = resolvedSearchParams?.categories;
+    let selectedCategorySlugs: string[] = [];
+    if (Array.isArray(selectedCategoriesParam)) {
+        selectedCategorySlugs = selectedCategoriesParam.flatMap((s) => s.split(",")).filter(Boolean);
+    } else if (typeof selectedCategoriesParam === "string") {
+        selectedCategorySlugs = selectedCategoriesParam.split(",").filter(Boolean);
+    }
+
+    // convert URL slugs -> category IDs for comparing against project.categories (which store IDs)
+    const slugToId = new Map((game.categories || []).map((c: { id: string; slug: string }) => [c.slug, c.id]));
+    // support either slugs or legacy UUID ids in the URL
+    const idSet = new Set((game.categories || []).map((c: { id: string }) => c.id));
+    const selectedCategories = selectedCategorySlugs.map((t) => slugToId.get(t) ?? (idSet.has(t) ? t : undefined)).filter(Boolean) as string[];
+
+    const q = typeof resolvedSearchParams?.q === "string" ? resolvedSearchParams.q.trim().toLowerCase() : "";
+
+    const allProjects = game.projects ?? [];
+    const filteredProjects = allProjects.filter((project) => {
+        // categories filter (OR semantics)
+        if (selectedCategories.length > 0) {
+            const projCats = (project.categories || []) as string[];
+            if (!selectedCategories.some((c) => projCats.includes(c))) {
+                return false;
+            }
+        }
+
+        // simple text search against name/slug/description
+        if (q) {
+            const hay = `${project.name} ${project.slug} ${project.description || ""}`.toLowerCase();
+            if (!hay.includes(q)) {
+                return false;
+            }
+        }
+
+        return true;
+    });
 
     return (
-        <div className="flex min-h-[calc(100vh-4rem)] border-t border-b">
-            {/* Sidebar Area */}
-            <aside className="sticky top-0 hidden h-[calc(100vh-4rem)] w-80 border-r bg-muted/10 md:block">
-                <div className="h-full overflow-y-auto">
-                    <BrowseSidebar categories={game.categories} gameName={game.name} modLoaders={capabilities.modloaders || []} versions={capabilities.versions || []} />
+        <div className="w-full p-6">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
+                <div className="w-full">
+                    <main className="flex-1 space-y-6 p-6" />
                 </div>
-            </aside>
-
-            {/* Main Content Area */}
-            <main className="flex-1 space-y-6 p-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="font-bold text-3xl tracking-tight">Browse Projects</h1>
-                        <p className="text-muted-foreground">
-                            Browse and filter {(game.stats as { project_count?: number })?.project_count || 0} projects for {game.name}
-                        </p>
-                    </div>
-                    <CreateProjectDialog categories={game.categories} gameId={game.id} gameName={game.name} />
-                </div>
-
-                <BrowseControls totalProjects={(game.stats as { project_count?: number })?.project_count || 0} />
-
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {/* Real Project Grid would map here. Using a placeholder card loop for UI dev. */}
-                    {game.projects && game.projects.length > 0 ? (
-                        game.projects.map((project) => {
-                            // Transform database project to match ProjectCard's expected type
-                            const transformedProject = {
-                                ...project,
-                                metadata: (project.metadata || {}) as Record<string, unknown>,
-                                categories: (project.categories || []) as unknown as string[],
-                                sub_categories: (project.sub_categories || []) as unknown as string[],
-                            };
-
-                            return (
-                                <ProjectCard
-                                    downloads={0}
-                                    key={project.id}
-                                    project={transformedProject}
-                                    /* Join with project_files stats later */
-                                />
-                            );
-                        })
-                    ) : (
-                        <div className="col-span-full flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed text-muted-foreground">
-                            <Box className="mb-4 h-12 w-12 opacity-20" />
-                            <p>No projects found matching your criteria.</p>
-                        </div>
-                    )}
-                </div>
-            </main>
+            </div>
         </div>
     );
 }

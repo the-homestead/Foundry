@@ -1,0 +1,31 @@
+{
+    "name": "@foundry/email",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "email dev",
+        "build": "email build",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "@foundry/config_ts": "workspace:*",
+        "@foundry/configs": "workspace:*",
+        "@react-email/components": "1.0.6",
+        "next": "catalog:",
+        "next-intl": "^4.7.0",
+        "react": "catalog:",
+        "react-dom": "catalog:"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.3.15",
+        "@react-email/preview-server": "5.2.5",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "react-email": "5.2.5",
+        "typescript": "catalog:"
+    },
+    "author": "ItzDabbzz",
+    "license": "ISC",
+    "packageManager": "pnpm@10.28.0"
+}

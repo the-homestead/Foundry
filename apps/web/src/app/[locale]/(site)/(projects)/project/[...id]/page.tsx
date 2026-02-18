@@ -23,7 +23,7 @@ import {
     type ProjectSelect,
     type ProjectStats,
 } from "@foundry/database";
-import { auth } from "@foundry/web/lib/auth";
+import { getServerSession } from "@foundry/web/lib/get-server-session";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { ProjectHeader } from "./project-header";
@@ -209,7 +209,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     const { project, game, stats, files, ganttFeatures, ganttMarkers, kanbanColumns, kanbanCards, gallery, posts, issueTemplates, activity, links, creators } = data;
 
     // Check if current user is the owner
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
     const isOwner = session?.user?.id === project.owner_id;
 
     // Transform database types to UI types

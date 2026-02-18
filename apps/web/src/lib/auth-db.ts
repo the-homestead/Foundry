@@ -1,178 +1,298 @@
-import { execa } from "execa";
-import fs from "fs-extra";
-import MagicString from "magic-string";
-import path from "pathe";
+// import { execa } from "execa";
+// import fs from "fs-extra";
+// import MagicString from "magic-string";
+// import path from "pathe";
 
-const IMPORT_FROM_TABLES_REGEX = /import\s*{\s*([^}]+)\s*}\s*from\s*["']\.\/tables["'];?/;
+// /* -------------------------------------------------------------------------- */
+// /*                                   CONFIG                                   */
+// /* -------------------------------------------------------------------------- */
 
-const configPath = "./src/lib/auth.tsx";
+// /**
+//  * Central configuration for the auth schema generator.
+//  *
+//  * Keep paths here so the rest of the file stays logic-only.
+//  */
+// const CONFIG = {
+//     authConfigPath: "./src/lib/auth.tsx",
 
-// IMPORTANT: make this relative, not absolute
-const schemaPathRelative = path.join("..", "..", "packages", "database", "src", "schemas", "users", "tables.ts");
+//     /**
+//      * Must remain RELATIVE for better-auth CLI.
+//      */
+//     schemaPathRelative: path.join("..", "..", "packages", "database", "src", "schemas", "users", "tables.ts"),
+// };
 
-// For *your* fs work later, keep an absolute version
-const schemaPathAbsolute = path.resolve(schemaPathRelative);
+// const schemaPathAbsolute = path.resolve(CONFIG.schemaPathRelative);
 
-/* biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <Def> */
-async function extractAndMergeRelationBlocks(schemaPath: string, content: string) {
-    const relationBlockRegex = /export const\s+\w+\s*=\s*relations\([\s\S]*?\}\s*\)\s*;?/g;
-    const relationBlocks = Array.from(content.matchAll(relationBlockRegex)).map((m) => m[0]);
-    if (relationBlocks.length === 0) {
-        return content;
-    }
+// /* -------------------------------------------------------------------------- */
+// /*                                   LOGGING                                  */
+// /* -------------------------------------------------------------------------- */
 
-    // Remove relation blocks from the tables content
-    let modified = content.replace(relationBlockRegex, "");
+// const log = {
+//     header(title: string) {
+//         console.log(`\n┌─ ${title}`);
+//     },
+//     step(msg: string) {
+//         console.log(`├─ ${msg}`);
+//     },
+//     ok(msg: string) {
+//         console.log(`│  ✔ ${msg}`);
+//     },
+//     warn(msg: string) {
+//         console.log(`│  ⚠ ${msg}`);
+//     },
+//     done() {
+//         console.log("└─ Done\n");
+//     },
+// };
 
-    // Remove any trailing orphaned fragments after the last table closing `);`
-    const lastCloseIdx = modified.lastIndexOf(");");
-    if (lastCloseIdx !== -1) {
-        const after = modified.slice(lastCloseIdx + 2);
-        if (after.trim().length > 0) {
-            modified = `${modified.slice(0, lastCloseIdx + 2)}\n`;
-        }
-    }
+// /* -------------------------------------------------------------------------- */
+// /*                                   REGEXES                                  */
+// /* -------------------------------------------------------------------------- */
 
-    const relationsPath = path.resolve(path.dirname(schemaPath), "relations.ts");
+// const IMPORT_FROM_TABLES_REGEX = /import\s*{\s*([^}]+)\s*}\s*from\s*["']\.\/tables["'];?/;
 
-    // Collect table identifiers referenced in the relation blocks
-    const usedNames = new Set<string>();
-    const findNameRegexes = [/relations\(\s*([A-Za-z_]\w*)\s*,/g, /many\(\s*([A-Za-z_]\w*)\s*\)/g, /one\(\s*([A-Za-z_]\w*)\s*,/g, /\b([A-Za-z_]\w*)\s*\./g];
+// /* -------------------------------------------------------------------------- */
+// /*                              GENERAL HELPERS                               */
+// /* -------------------------------------------------------------------------- */
 
-    for (const block of relationBlocks) {
-        for (const rx of findNameRegexes) {
-            for (const m of block.matchAll(rx)) {
-                if (m[1]) {
-                    usedNames.add(m[1]);
-                }
-            }
-        }
-    }
+// /** Normalize whitespace for safe comparison */
+// function normalizeCode(input: string): string {
+//     return input.replace(/\s+/g, " ").trim();
+// }
 
-    if (await fs.pathExists(relationsPath)) {
-        let relationsContent = await fs.readFile(relationsPath, "utf8");
+// /** Extract table export names from generated schema */
+// function extractTableNames(content: string): string[] {
+//     return Array.from(content.matchAll(/export const (\w+) = pgTable/g)).map((m) => m[1]);
+// }
 
-        const importMatch = relationsContent.match(IMPORT_FROM_TABLES_REGEX);
-        const existingImports = (importMatch?.[1] ?? "")
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean);
-        const combined = new Set([...existingImports, ...Array.from(usedNames)]);
-        const newImportLine = `import { ${Array.from(combined).join(", ")} } from "./tables";`;
+// /** Ensure all table exports end in `Table` */
+// function renameTableExports(content: string): string {
+//     return content.replace(/export const (\w+) = pgTable/g, (_m, name) => `export const ${name.endsWith("Table") ? name : `${name}Table`} = pgTable`);
+// }
 
-        if (importMatch) {
-            relationsContent = relationsContent.replace(importMatch[0], newImportLine);
-        } else {
-            relationsContent = `import { relations } from "drizzle-orm";\n${newImportLine}\n\n${relationsContent}`;
-        }
+// /* -------------------------------------------------------------------------- */
+// /*                        RELATION BLOCK EXTRACTION                           */
+// /* -------------------------------------------------------------------------- */
 
-        // Append new relation blocks, avoid duplicates by normalized comparison
-        const normalize = (s: string) => s.replace(/\s+/g, " ").trim();
-        const existingNormalized = new Set<string>();
-        for (const m of relationsContent.matchAll(/export const\s+\w+\s*=\s*relations\([\s\S]*?\}\s*\)\s*;?/g)) {
-            existingNormalized.add(normalize(m[0]));
-        }
-        for (const block of relationBlocks) {
-            if (!existingNormalized.has(normalize(block))) {
-                relationsContent = `${relationsContent.trimEnd()}\n\n${block}\n`;
-            }
-        }
+// /**
+//  * Safely extracts full:
+//  *
+//  * `export const X = relations(...)`
+//  *
+//  * blocks by walking parentheses depth.
+//  *
+//  * WHY:
+//  * Regex cannot safely parse nested function bodies.
+//  */
+// function extractRelationBlocks(content: string): {
+//     blocks: string[];
+//     stripped: string;
+// } {
+//     const blocks: string[] = [];
+//     let stripped = "";
+//     let i = 0;
 
-        await fs.writeFile(relationsPath, relationsContent, "utf8");
-        console.log("√ Merged generated relations into relations.ts");
-    } else {
-        const relationsContent = `import { relations } from "drizzle-orm";\nimport { ${Array.from(usedNames).join(", ")} } from "./tables";\n\n${relationBlocks.join("\n\n")}\n`;
-        await fs.writeFile(relationsPath, relationsContent, "utf8");
-        console.log("√ Created relations.ts from generated relation blocks");
-    }
+//     while (i < content.length) {
+//         const exportIdx = content.indexOf("export const", i);
 
-    return modified;
-}
+//         if (exportIdx === -1) {
+//             stripped += content.slice(i);
+//             break;
+//         }
 
-async function main() {
-    await execa("npx", ["@better-auth/cli@latest", "generate", "--config", configPath, "--output", schemaPathRelative, "-y"], { stdio: "inherit" });
+//         stripped += content.slice(i, exportIdx);
 
-    const originalContent = await fs.readFile(schemaPathAbsolute, "utf8");
-    const modifiedContent = await extractAndMergeRelationBlocks(schemaPathAbsolute, originalContent);
-    const s = new MagicString(modifiedContent);
+//         const relIdx = content.indexOf("relations(", exportIdx);
+//         if (relIdx === -1) {
+//             stripped += content.slice(exportIdx);
+//             break;
+//         }
 
-    const notice = `/**
- * THIS FILE IS AUTO-GENERATED - DO NOT EDIT DIRECTLY
- *
- * To modify the schema, edit src/lib/auth.ts instead,
- * then run your project's regenerating script to regenerate this file.
- *
- * Any direct changes to this file will be overwritten.
- */
+//         // Ensure this export actually contains relations(...)
+//         const lineEnd = content.indexOf("\n", exportIdx);
+//         if (lineEnd !== -1 && relIdx > lineEnd + 200) {
+//             stripped += "export const";
+//             i = exportIdx + "export const".length;
+//             continue;
+//         }
 
-`;
-    s.prepend(notice);
+//         // walk parentheses
+//         let pos = relIdx + "relations(".length;
+//         let depth = 1;
 
-    s.replace(/export const (\w+) = pgTable/g, (_match, tableName) => {
-        const finalName = tableName.endsWith("Table") ? tableName : `${tableName}Table`;
-        return `export const ${finalName} = pgTable`;
-    });
+//         while (pos < content.length && depth > 0) {
+//             const ch = content[pos];
 
-    const tableNames: string[] = [];
-    const tableMatches = originalContent.matchAll(/export const (\w+) = pgTable/g);
+//             if (ch === "(") depth++;
+//             else if (ch === ")") depth--;
 
-    for (const match of tableMatches) {
-        if (match[1]) {
-            tableNames.push(match[1]);
-        }
-    }
+//             pos++;
+//         }
 
-    console.log("√ Ensured better-auth tables:", tableNames);
+//         // consume trailing whitespace + semicolon
+//         while (/\s/.test(content[pos] ?? "")) pos++;
+//         if (content[pos] === ";") pos++;
 
-    for (const tableName of tableNames) {
-        s.replace(new RegExp(`\\(\\)\\s*=>\\s*${tableName}\\s*\\.`, "g"), (match) => match.replace(tableName, `${tableName}Table`));
-    }
-    const relationsPath = path.resolve(path.dirname(schemaPathAbsolute), "relations.ts");
+//         const block = content.slice(exportIdx, pos);
+//         blocks.push(block);
 
-    if (await fs.pathExists(relationsPath)) {
-        const relationsContent = await fs.readFile(relationsPath, "utf8");
-        const r = new MagicString(relationsContent);
+//         i = pos;
+//     }
 
-        // 1) Fix imports from ./tables
-        r.replace(/import\s*{\s*([^}]+)\s*}\s*from\s*["']\.\/tables["'];?/g, (_match, imports) => {
-            const fixed = imports
-                .split(",")
-                .map((s: string) => s.trim())
-                .map((name: string) => (name.endsWith("Table") ? name : `${name}Table`))
-                .join(", ");
-            return `import { ${fixed} } from "./tables";`;
-        });
+//     return { blocks, stripped };
+// }
 
-        // 2) Fix all bare table identifiers
-        for (const tableName of tableNames) {
-            const tableTable = `${tableName}Table`;
+// /* -------------------------------------------------------------------------- */
+// /*                             RELATION MERGING                               */
+// /* -------------------------------------------------------------------------- */
 
-            // relations(user, ...) → relations(userTable, ...)
-            r.replace(new RegExp(`relations\\(\\s*${tableName}\\s*,`, "g"), `relations(${tableTable},`);
+// /**
+//  * Extract relations from tables.ts and merge them into relations.ts.
+//  */
+// async function extractAndMergeRelations(schemaPath: string, content: string): Promise<string> {
+//     const { blocks: relationBlocks, stripped } = extractRelationBlocks(content);
 
-            // many(session) → many(sessionTable)
-            r.replace(new RegExp(`many\\(\\s*${tableName}\\s*\\)`, "g"), `many(${tableTable})`);
+//     if (!relationBlocks.length) return content;
 
-            // one(user, ...) → one(userTable, ...)
-            r.replace(new RegExp(`one\\(\\s*${tableName}\\s*,`, "g"), `one(${tableTable},`);
+//     const relationsPath = path.resolve(path.dirname(schemaPath), "relations.ts");
 
-            // session.userId → sessionTable.userId
-            r.replace(new RegExp(`\\b${tableName}\\.`, "g"), `${tableTable}.`);
-        }
+//     // determine table names referenced
+//     const usedNames = new Set<string>();
+//     const refs = [/relations\(\s*([A-Za-z_]\w*)\s*,/g, /many\(\s*([A-Za-z_]\w*)\s*\)/g, /one\(\s*([A-Za-z_]\w*)\s*,/g, /\b([A-Za-z_]\w*)\s*\./g];
 
-        await fs.writeFile(relationsPath, r.toString(), "utf8");
-        console.log("√ Rewrote relations.ts to use *Table symbols");
-    } else {
-        console.warn("⚠ relations.ts not found, skipping relation rewrite");
-    }
-    await fs.writeFile(schemaPathAbsolute, s.toString(), "utf8");
-}
+//     for (const block of relationBlocks) {
+//         for (const rx of refs) {
+//             for (const m of block.matchAll(rx)) {
+//                 if (m[1]) usedNames.add(m[1]);
+//             }
+//         }
+//     }
 
-(async () => {
-    try {
-        await main();
-    } catch (error) {
-        console.error("Error:", error);
-        process.exit(1);
-    }
-})();
+//     let relationsContent = "";
+
+//     if (await fs.pathExists(relationsPath)) {
+//         relationsContent = await fs.readFile(relationsPath, "utf8");
+//     } else {
+//         relationsContent = `import { relations } from "drizzle-orm";\n`;
+//     }
+
+//     // merge imports
+//     const importMatch = relationsContent.match(IMPORT_FROM_TABLES_REGEX);
+//     const existing = (importMatch?.[1] ?? "")
+//         .split(",")
+//         .map((s) => s.trim())
+//         .filter(Boolean);
+
+//     const mergedImports = Array.from(new Set([...existing, ...usedNames])).join(", ");
+
+//     const newImport = `import { ${mergedImports} } from "./tables";`;
+
+//     if (importMatch) {
+//         relationsContent = relationsContent.replace(importMatch[0], newImport);
+//     } else {
+//         relationsContent += `${newImport}\n\n`;
+//     }
+
+//     // avoid duplicate blocks
+//     const existingNormalized = new Set(Array.from(relationsContent.matchAll(/export const[\s\S]*?;\s*/g)).map((m) => normalizeCode(m[0])));
+
+//     for (const block of relationBlocks) {
+//         if (!existingNormalized.has(normalizeCode(block))) {
+//             relationsContent += `\n${block}\n`;
+//         }
+//     }
+
+//     await fs.writeFile(relationsPath, relationsContent.trimEnd() + "\n");
+//     log.ok("Merged relations into relations.ts");
+
+//     return stripped;
+// }
+
+// /* -------------------------------------------------------------------------- */
+// /*                        RELATION FILE REWRITES                              */
+// /* -------------------------------------------------------------------------- */
+
+// /**
+//  * Rewrite relations.ts so all table symbols use *Table naming.
+//  */
+// async function rewriteRelationsFile(schemaDir: string, tableNames: string[]) {
+//     const relationsPath = path.resolve(schemaDir, "relations.ts");
+
+//     if (!(await fs.pathExists(relationsPath))) {
+//         log.warn("relations.ts not found — skipping rewrite");
+//         return;
+//     }
+
+//     const content = await fs.readFile(relationsPath, "utf8");
+//     const s = new MagicString(content);
+
+//     // fix imports
+//     s.replace(IMPORT_FROM_TABLES_REGEX, (_m, imports) => {
+//         const fixed = imports
+//             .split(",")
+//             .map((x: string) => (x.trim().endsWith("Table") ? x.trim() : `${x.trim()}Table`))
+//             .join(", ");
+//         return `import { ${fixed} } from "./tables";`;
+//     });
+
+//     for (const name of tableNames) {
+//         const table = `${name}Table`;
+
+//         s.replace(new RegExp(`relations\\(\\s*${name}\\s*,`, "g"), `relations(${table},`);
+//         s.replace(new RegExp(`many\\(\\s*${name}\\s*\\)`, "g"), `many(${table})`);
+//         s.replace(new RegExp(`one\\(\\s*${name}\\s*,`, "g"), `one(${table},`);
+//         s.replace(new RegExp(`\\b${name}\\.`, "g"), `${table}.`);
+//     }
+
+//     await fs.writeFile(relationsPath, s.toString(), "utf8");
+//     log.ok("Rewrote relations.ts symbols");
+// }
+
+// /* -------------------------------------------------------------------------- */
+// /*                                    MAIN                                    */
+// /* -------------------------------------------------------------------------- */
+
+// async function main() {
+//     log.header("Better Auth Schema Generator");
+
+//     log.step("Generating schema via better-auth CLI…");
+//     await execa("npx", ["@better-auth/cli@latest", "generate", "--config", CONFIG.authConfigPath, "--output", CONFIG.schemaPathRelative, "-y"], { stdio: "inherit" });
+//     log.ok("CLI generation complete");
+
+//     log.step("Processing tables…");
+
+//     const original = await fs.readFile(schemaPathAbsolute, "utf8");
+
+//     const stripped = await extractAndMergeRelations(schemaPathAbsolute, original);
+
+//     const renamed = renameTableExports(stripped);
+
+//     const s = new MagicString(renamed);
+
+//     const tableNames = extractTableNames(original);
+
+//     // fix references in tables file
+//     for (const tableName of tableNames) {
+//         s.replace(new RegExp(`\\(\\)\\s*=>\\s*${tableName}\\s*\\.`, "g"), (m) => m.replace(tableName, `${tableName}Table`));
+//     }
+
+//     await fs.writeFile(schemaPathAbsolute, s.toString(), "utf8");
+
+//     await rewriteRelationsFile(path.dirname(schemaPathAbsolute), tableNames);
+
+//     log.ok(`Processed ${tableNames.length} tables`);
+//     log.done();
+// }
+
+// /* -------------------------------------------------------------------------- */
+// /*                                   RUNNER                                   */
+// /* -------------------------------------------------------------------------- */
+
+// (async () => {
+//     try {
+//         await main();
+//     } catch (err) {
+//         console.error("\n✖ Generator failed:", err);
+//         process.exit(1);
+//     }
+// })();

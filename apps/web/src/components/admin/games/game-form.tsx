@@ -37,7 +37,7 @@ export function GameForm() {
 
                 // Redirect after a short delay
                 setTimeout(() => {
-                    window.location.href = "/adash/games";
+                    window.location.href = "/management/games";
                 }, 1500);
             }
         },

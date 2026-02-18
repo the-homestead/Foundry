@@ -1,12 +1,3 @@
-/**
- * THIS FILE IS AUTO-GENERATED - DO NOT EDIT DIRECTLY
- *
- * To modify the schema, edit src/lib/auth.ts instead,
- * then run your project's regenerating script to regenerate this file.
- *
- * Any direct changes to this file will be overwritten.
- */
-
 import { boolean, index, integer, pgTable, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
@@ -20,18 +11,22 @@ export const userTable = pgTable("user", {
         .defaultNow()
         .$onUpdate(() => /* @__PURE__ */ new Date())
         .notNull(),
+    role: text("role"),
+    banned: boolean("banned").default(false),
+    banReason: text("ban_reason"),
+    banExpires: timestamp("ban_expires"),
     lastLoginMethod: text("last_login_method"),
     twoFactorEnabled: boolean("two_factor_enabled").default(false),
     username: text("username").unique(),
     displayUsername: text("display_username"),
     stripeCustomerId: text("stripe_customer_id"),
-    role: text("role"),
-    banned: boolean("banned").default(false),
-    banReason: text("ban_reason"),
-    banExpires: timestamp("ban_expires"),
-    firstName: text("first_name"),
-    lastName: text("last_name"),
     age: integer("age"),
+    agePublic: boolean("age_public"),
+    firstName: text("first_name"),
+    firstNamePublic: boolean("first_name_public"),
+    lastName: text("last_name"),
+    lastNamePublic: boolean("last_name_public"),
+    bio: text("bio"),
 });
 
 export const sessionTable = pgTable(
@@ -96,6 +91,68 @@ export const verificationTable = pgTable(
     (table) => [index("verification_identifier_idx").on(table.identifier)]
 );
 
+export const jwksTable = pgTable("jwks", {
+    id: text("id").primaryKey(),
+    publicKey: text("public_key").notNull(),
+    privateKey: text("private_key").notNull(),
+    createdAt: timestamp("created_at").notNull(),
+    expiresAt: timestamp("expires_at"),
+});
+
+export const oauthApplicationTable = pgTable(
+    "oauth_application",
+    {
+        id: text("id").primaryKey(),
+        name: text("name"),
+        icon: text("icon"),
+        metadata: text("metadata"),
+        clientId: text("client_id").unique(),
+        clientSecret: text("client_secret"),
+        redirectUrls: text("redirect_urls"),
+        type: text("type"),
+        disabled: boolean("disabled").default(false),
+        userId: text("user_id").references(() => userTable.id, { onDelete: "cascade" }),
+        createdAt: timestamp("created_at"),
+        updatedAt: timestamp("updated_at"),
+    },
+    (table) => [index("oauthApplication_userId_idx").on(table.userId)]
+);
+
+export const oauthAccessTokenTable = pgTable(
+    "oauth_access_token",
+    {
+        id: text("id").primaryKey(),
+        accessToken: text("access_token").unique(),
+        refreshToken: text("refresh_token").unique(),
+        accessTokenExpiresAt: timestamp("access_token_expires_at"),
+        refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+        clientId: text("client_id").references(() => oauthApplicationTable.clientId, {
+            onDelete: "cascade",
+        }),
+        userId: text("user_id").references(() => userTable.id, { onDelete: "cascade" }),
+        scopes: text("scopes"),
+        createdAt: timestamp("created_at"),
+        updatedAt: timestamp("updated_at"),
+    },
+    (table) => [index("oauthAccessToken_clientId_idx").on(table.clientId), index("oauthAccessToken_userId_idx").on(table.userId)]
+);
+
+export const oauthConsentTable = pgTable(
+    "oauth_consent",
+    {
+        id: text("id").primaryKey(),
+        clientId: text("client_id").references(() => oauthApplicationTable.clientId, {
+            onDelete: "cascade",
+        }),
+        userId: text("user_id").references(() => userTable.id, { onDelete: "cascade" }),
+        scopes: text("scopes"),
+        createdAt: timestamp("created_at"),
+        updatedAt: timestamp("updated_at"),
+        consentGiven: boolean("consent_given"),
+    },
+    (table) => [index("oauthConsent_clientId_idx").on(table.clientId), index("oauthConsent_userId_idx").on(table.userId)]
+);
+
 export const apikeyTable = pgTable(
     "apikey",
     {
@@ -122,16 +179,6 @@ export const apikeyTable = pgTable(
         updatedAt: timestamp("updated_at").notNull(),
         permissions: text("permissions"),
         metadata: text("metadata"),
-        // New fields for enhanced API key management
-        usageCount: integer("usage_count").default(0),
-        lastUsedAt: timestamp("last_used_at"),
-        tags: text("tags").array(),
-        ipWhitelist: text("ip_whitelist").array(),
-        ipBlacklist: text("ip_blacklist").array(),
-        rateLimitPerMinute: integer("rate_limit_per_minute"),
-        rateLimitPerHour: integer("rate_limit_per_hour"),
-        rateLimitPerDay: integer("rate_limit_per_day"),
-        scopes: text("scopes").array(),
     },
     (table) => [index("apikey_key_idx").on(table.key), index("apikey_userId_idx").on(table.userId)]
 );
@@ -247,23 +294,31 @@ export const invitationTable = pgTable(
     (table) => [index("invitation_organizationId_idx").on(table.organizationId), index("invitation_email_idx").on(table.email)]
 );
 
-export const ssoProviderTable = pgTable(
-    "sso_provider",
+// Stores per-user notification / email preferences. Keep security-critical
+// messages enabled by default (password resets, verification, 2FA) while
+// allowing users to opt out of non-essential notifications (marketing,
+// organization notices they don't want, etc.). The table uses the user's
+// id as the primary key for a 1:1 relation with `user`.
+export const userNotificationSettingsTable = pgTable(
+    "user_notification_settings",
     {
-        id: text("id").primaryKey(),
-        issuer: text("issuer"),
-        domain: text("domain"),
-        domainVerified: boolean("domain_verified").default(false),
-        oidcConfig: text("oidc_config"),
-        samlConfig: text("saml_config"),
-        userId: text("user_id").references(() => userTable.id, { onDelete: "cascade" }),
-        providerId: text("provider_id").notNull(),
-        organizationId: text("organization_id").references(() => organizationTable.id, { onDelete: "cascade" }),
+        userId: text("user_id")
+            .primaryKey()
+            .references(() => userTable.id, { onDelete: "cascade" }),
+        // Security / required notifications (defaults = true)
+        emailSecurity: boolean("email_security").default(true).notNull(), // login alerts, password reset notices, 2FA
+        emailAccountUpdates: boolean("email_account_updates").default(true).notNull(),
+
+        // Optional / user-controlled notifications
+        emailOrganization: boolean("email_organization").default(true).notNull(),
+        emailApiKey: boolean("email_apikey").default(true).notNull(),
+        emailMarketing: boolean("email_marketing").default(false).notNull(),
+
+        // Timestamps
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at")
-            .defaultNow()
             .$onUpdate(() => /* @__PURE__ */ new Date())
             .notNull(),
     },
-    (table) => [index("ssoProvider_providerId_idx").on(table.providerId), index("ssoProvider_domain_idx").on(table.domain)]
+    (table) => [index("userNotification_userId_idx").on(table.userId)]
 );

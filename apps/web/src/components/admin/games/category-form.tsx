@@ -107,7 +107,7 @@ export function CategoryForm({ gameId, gameName, category, parentId, allCategori
             if (onSuccess) {
                 onSuccess();
             } else {
-                router.push(`/adash/games/${gameId}`);
+                router.push(`/management/games/${gameId}`);
             }
         }
     };

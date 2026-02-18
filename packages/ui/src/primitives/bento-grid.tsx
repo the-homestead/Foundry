@@ -23,29 +23,36 @@ export const BentoGridItem = ({
   className,
   title,
   description,
-  header,
+  header, 
   icon,
+  animation
 }: {
   className?: string;
   title?: string | React.ReactNode;
   description?: string | React.ReactNode;
   header?: React.ReactNode;
   icon?: React.ReactNode;
+  animation?: boolean;
 }) => {
   return (
     <div
       className={cn(
-        "group/bento shadow-input row-span-1 flex flex-col justify-between space-y-4 rounded-xl border border-neutral-200 bg-white p-4 transition duration-200 hover:shadow-xl dark:border-white/20 dark:bg-black dark:shadow-none",
+        // use shadcn / design-token classes (bg-card, text-foreground, border, etc.)
+        "group/bento shadow-input row-span-1 flex flex-col justify-between space-y-4 rounded-xl border bg-card p-4 transition duration-200 hover:shadow-xl",
         className,
       )}
+      data-slot="bento-item"
     >
       {header}
-      <div className="transition duration-200 group-hover/bento:translate-x-2">
+      <div
+        className={cn(
+          "transition duration-200 transform-gpu",
+          animation && "group-hover/bento:translate-x-2",
+        )}
+      >
         {icon}
-        <div className="mt-2 mb-2 font-sans font-bold text-neutral-600 dark:text-neutral-200">
-          {title}
-        </div>
-        <div className="font-sans text-xs font-normal text-neutral-600 dark:text-neutral-300">
+        <div className="mt-2 mb-2 font-sans font-bold text-foreground">{title}</div>
+        <div className="font-sans text-xs font-normal text-muted-foreground">
           {description}
         </div>
       </div>

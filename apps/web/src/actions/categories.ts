@@ -36,8 +36,8 @@ export async function createCategory(data: CreateCategoryInput) {
             icon: data.icon || null,
         });
 
-        revalidatePath(`/adash/games/${data.gameId}`);
-        revalidatePath("/adash/games");
+        revalidatePath(`/management/games/${data.gameId}`);
+        revalidatePath("/management/games");
 
         return { success: true, categoryId };
     } catch (e: unknown) {
@@ -63,8 +63,8 @@ export async function updateCategory(data: UpdateCategoryInput) {
             })
             .where(eq(categories.id, data.id));
 
-        revalidatePath(`/adash/games/${data.gameId}`);
-        revalidatePath("/adash/games");
+        revalidatePath(`/management/games/${data.gameId}`);
+        revalidatePath("/management/games");
 
         return { success: true };
     } catch (e: unknown) {
@@ -87,8 +87,8 @@ export async function deleteCategory(categoryId: string, gameId: string) {
 
         await db.delete(categories).where(eq(categories.id, categoryId));
 
-        revalidatePath(`/adash/games/${gameId}`);
-        revalidatePath("/adash/games");
+        revalidatePath(`/management/games/${gameId}`);
+        revalidatePath("/management/games");
 
         return { success: true };
     } catch (e: unknown) {

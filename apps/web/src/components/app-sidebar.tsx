@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/suspicious/noShadowRestrictedNames: IconName */
 "use client";
 
+import { NavUser } from "@foundry/ui/components";
 import { CloudIcon } from "@foundry/ui/icons";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
 import { useSession } from "@foundry/web/lib/auth-client";
@@ -11,7 +12,6 @@ import type React from "react";
 import { useEffect } from "react";
 import { NavMain } from "./nav/nav-main";
 import { NavSecondary } from "./nav/nav-secondary";
-import { NavUser } from "./nav/nav-user";
 
 export function AppSidebar({
     changeLocaleAction,

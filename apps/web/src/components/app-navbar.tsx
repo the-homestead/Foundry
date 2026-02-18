@@ -1,12 +1,14 @@
 "use client";
+import { NavUser } from "@foundry/ui/components";
 import { MobileNav, MobileNavHeader, MobileNavMenu, MobileNavToggle, NavBody, Navbar, NavbarButton, NavbarLogo, NavItems } from "@foundry/ui/components/navbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@foundry/ui/primitives/avatar";
+import { ThemeSheet } from "@foundry/web/components/theme/theme-sheet";
+import { signOut } from "@foundry/web/lib/auth-client";
 import type { Locale } from "next-intl";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useSession } from "../lib/auth-client";
 import LocaleSwitcher from "./locale-switcher";
-import { ThemeSheet } from "./theme/theme-sheet";
 
 export function AppNavbar({ children, changeLocaleAction, locale }: { children: React.ReactNode; changeLocaleAction: (locale: Locale) => Promise<void>; locale: Locale }) {
     const t = useTranslations("Navigation");
@@ -18,7 +20,7 @@ export function AppNavbar({ children, changeLocaleAction, locale }: { children: 
         },
         {
             name: t("items.community"),
-            link: "/community",
+            link: "https://forum.homestead.systems/",
         },
         {
             name: t("items.support"),
@@ -37,15 +39,15 @@ export function AppNavbar({ children, changeLocaleAction, locale }: { children: 
     const { data, isPending } = useSession();
     const isLoading = isPending;
 
-    let desktopUserButton: React.ReactNode;
+    let _desktopUserButton: React.ReactNode;
     if (isLoading) {
-        desktopUserButton = (
+        _desktopUserButton = (
             <NavbarButton as="button" disabled type="button" variant="secondary">
                 {common("states.loading")}
             </NavbarButton>
         );
     } else if (data?.user) {
-        const name = data.user.name || data.user.username;
+        const name = String(data.user.name ?? data.user.username ?? "");
         const initials = name
             .split(" ")
             .map((n: string) => n[0])
@@ -53,17 +55,17 @@ export function AppNavbar({ children, changeLocaleAction, locale }: { children: 
             .toUpperCase()
             .slice(0, 2);
 
-        desktopUserButton = (
+        _desktopUserButton = (
             <NavbarButton className="flex items-center gap-2" href="/account" variant="primary">
                 <Avatar className="h-6 w-6">
-                    <AvatarImage alt={name} src={data.user.image || undefined} />
+                    <AvatarImage alt={name} src={data.user.image ?? undefined} />
                     <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
                 </Avatar>
                 <span>{name}</span>
             </NavbarButton>
         );
     } else {
-        desktopUserButton = (
+        _desktopUserButton = (
             <NavbarButton href="/auth/login" variant="secondary">
                 {t("actions.login")}
             </NavbarButton>
@@ -78,7 +80,7 @@ export function AppNavbar({ children, changeLocaleAction, locale }: { children: 
             </NavbarButton>
         );
     } else if (data?.user) {
-        const name = data.user.name || data.user.username;
+        const name = String(data.user.name ?? data.user.username ?? "");
         const initials = name
             .split(" ")
             .map((n: string) => n[0])
@@ -89,7 +91,7 @@ export function AppNavbar({ children, changeLocaleAction, locale }: { children: 
         mobileUserButton = (
             <NavbarButton className="flex w-full items-center justify-center gap-2" onClick={() => setIsMobileMenuOpen(false)} variant="primary">
                 <Avatar className="h-6 w-6">
-                    <AvatarImage alt={name} src={data.user.image || undefined} />
+                    <AvatarImage alt={name} src={data.user.image ?? undefined} />
                     <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
                 </Avatar>
                 <span>{t("actions.welcome", { name })}</span>
@@ -108,19 +110,23 @@ export function AppNavbar({ children, changeLocaleAction, locale }: { children: 
             <Navbar>
                 {/* Desktop Navigation */}
                 <NavBody>
-                    <NavbarLogo title={t("brand.title")} url="/foundry.png" />
+                    <NavbarLogo size="lg" url="/logo.png" />
                     <NavItems items={navItems} />
-                    <div className="ml-auto flex items-center gap-3">
-                        <ThemeSheet />
-                        <LocaleSwitcher changeLocaleAction={changeLocaleAction} locale={locale} variant="navbar" />
-                        {desktopUserButton}
+                    <div className="ml-auto flex items-center gap-3 justify-self-end">
+                        <NavUser
+                            accountHref={`${process.env.NEXT_PUBLIC_AUTH_URL ?? "https://auth.homestead.systems"}/account`}
+                            onSignOut={() => signOut()}
+                            renderLocaleControl={<LocaleSwitcher changeLocaleAction={changeLocaleAction} locale={locale} variant="navbar" />}
+                            renderThemeControl={<ThemeSheet />}
+                            user={{ name: data?.user?.name ?? data?.user?.username ?? null, email: data?.user?.email ?? null, avatar: data?.user?.image ?? null }}
+                        />
                     </div>
                 </NavBody>
 
                 {/* Mobile Navigation */}
                 <MobileNav>
                     <MobileNavHeader>
-                        <NavbarLogo title={t("brand.title")} url="/foundry.png" />
+                        <NavbarLogo size="lg" title={t("brand.title")} url="/foundry.png" />
                         <MobileNavToggle isOpen={isMobileMenuOpen} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
                     </MobileNavHeader>
 
@@ -130,6 +136,10 @@ export function AppNavbar({ children, changeLocaleAction, locale }: { children: 
                                 <span className="block">{item.name}</span>
                             </a>
                         ))}
+                        <div className="flex w-full items-center gap-3">
+                            <ThemeSheet />
+                            <LocaleSwitcher changeLocaleAction={changeLocaleAction} locale={locale} variant="navbar" />
+                        </div>
                         <div className="flex w-full flex-col gap-4">{mobileUserButton}</div>
                     </MobileNavMenu>
                 </MobileNav>

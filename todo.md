@@ -8,7 +8,7 @@ This checklist tracks the admin dashboard redesign, game configuration, and brow
 - [ ] Define the core entities to manage in admin: games, categories, tags, projects, modpacks, packs, loaders, versions.
 - [ ] Align on moderation & visibility rules (adult content, launcher support, verified status).
 
-## 🧩 Admin dashboard (adash) redesign
+## 🧩 Admin dashboard (management) redesign
 
 - [ ] Create a dashboard shell with modular sections (games, categories, projects, modpacks, packs, users, reports).
 - [ ] Add a navigation system (left rail + search) for quick switching between admin modules.
@@ -69,5 +69,5 @@ This checklist tracks the admin dashboard redesign, game configuration, and brow
 ## 🧭 Next decisions
 
 - [ ] Decide how admin permissions map to roles and organizations.
-- [ ] Decide where the sidebar schema editor lives (adash vs separate admin route).
+- [ ] Decide where the sidebar schema editor lives (management vs separate admin route).
 - [ ] Decide on analytics capture (sorting, filters, search usage).

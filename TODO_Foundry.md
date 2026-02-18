@@ -67,7 +67,7 @@
         - [ ] Configure Sidebar options per game
 - [ ] Category Management
 - [ ] Project Management (Review/Edit)
-- [ ] User Management Reference (Integrate `adash` fully)
+- [ ] User Management Reference (Integrate `management` fully)
 
 ## 4. Advanced Features (Todo)
 

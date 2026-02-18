@@ -124,7 +124,7 @@ export function UserDetailsView({ userId }: { userId: string }) {
                 setUser(data.users[0] as unknown as AdminUser);
             } else {
                 toast.error("User not found");
-                router.push("/adash/users");
+                router.push("/management/users");
             }
         } catch (error) {
             console.error(error);

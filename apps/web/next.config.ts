@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     typedRoutes: true,
     poweredByHeader: false,
     crossOrigin: "use-credentials",
+    allowedDevOrigins: ["auth.homestead.systems", "*.homestead.systems"],
     turbopack: {
         root: path.join(import.meta.dirname, "..", ".."),
     },

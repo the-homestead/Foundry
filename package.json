@@ -24,10 +24,10 @@
     "devDependencies": {
         "@biomejs/biome": "catalog:",
         "@types/node": "catalog:",
+        "@typescript/native-preview": "7.0.0-dev.20260213.1",
         "lefthook": "catalog:",
         "shadcn": "catalog:",
         "turbo": "catalog:",
-        "typescript": "catalog:",
         "ultracite": "catalog:"
     }
 }

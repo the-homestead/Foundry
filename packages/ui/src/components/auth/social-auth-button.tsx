@@ -3,7 +3,6 @@
 import { PhDiscordLogoDuotone, PhGithubLogoDuotone, PhGitlabLogoDuotone, PhGoogleLogoDuotone, PhTwitchLogoDuotone } from "@foundry/ui/components/cicons";
 import { Badge } from "@foundry/ui/primitives/badge";
 import { Button } from "@foundry/ui/primitives/button";
-import { LogInIcon } from "lucide-react";
 
 const PROVIDERS = [
     { id: "github", name: "GitHub", icon: PhGithubLogoDuotone },
@@ -11,7 +10,6 @@ const PROVIDERS = [
     { id: "discord", name: "Discord", icon: PhDiscordLogoDuotone },
     { id: "gitlab", name: "GitLab", icon: PhGitlabLogoDuotone },
     { id: "twitch", name: "Twitch", icon: PhTwitchLogoDuotone },
-    { id: "keycloak", name: "Keycloak", icon: LogInIcon },
 ];
 
 export default function SocialAuthButtons({ lastUsedMethod, onClick }: { lastUsedMethod?: string | null; onClick: (provider: string) => void }) {

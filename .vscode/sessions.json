@@ -9,6 +9,7 @@
             {
                 "name": "Root Shell",
                 "autoExecuteCommands": false,
+                "joinOperator": "&&",
                 "icon": "terminal",
                 "color": "terminal.ansiBrightBlue",
                 "commands": [""]
@@ -19,34 +20,39 @@
             {
                 "name": "Turbo Dev",
                 "autoExecuteCommands": true,
+                "joinOperator": "&&",
                 "icon": "rocket",
                 "color": "terminal.ansiRed",
                 "commands": ["pnpm turbo dev"]
             },
             {
                 "name": "Web",
-                "autoExecuteCommands": false,
+                "autoExecuteCommands": true,
+                "joinOperator": "&&",
                 "icon": "globe",
                 "color": "terminal.ansiBlue",
                 "commands": ["cd apps/web", "pnpm dev"]
             },
             {
                 "name": "Desktop",
-                "autoExecuteCommands": false,
+                "autoExecuteCommands": true,
+                "joinOperator": "&&",
                 "icon": "device-desktop",
                 "color": "terminal.ansiCyan",
                 "commands": ["cd apps/desktop", "pnpm dev"]
             },
             {
                 "name": "Backend",
-                "autoExecuteCommands": false,
+                "autoExecuteCommands": true,
+                "joinOperator": "&&",
                 "icon": "server",
                 "color": "terminal.ansiGreen",
                 "commands": ["cd services/backend", "pnpm dev"]
             },
             {
                 "name": "Discord",
-                "autoExecuteCommands": false,
+                "autoExecuteCommands": true,
+                "joinOperator": "&&",
                 "icon": "comment",
                 "color": "terminal.ansiMagenta",
                 "commands": ["cd services/discord", "pnpm dev"]
@@ -56,24 +62,43 @@
         "Packages": [
             {
                 "name": "UI Package",
-                "autoExecuteCommands": false,
+                "autoExecuteCommands": true,
+                "joinOperator": "&&",
                 "icon": "paintcan",
                 "color": "terminal.ansiYellow",
-                "commands": ["cd packages/ui", "pnpm dev"]
+                "commands": ["cd packages/ui"]
             },
             {
                 "name": "Types Package",
-                "autoExecuteCommands": false,
+                "autoExecuteCommands": true,
+                "joinOperator": "&&",
                 "icon": "symbol-keyword",
                 "color": "terminal.ansiWhite",
-                "commands": ["cd packages/types", "pnpm build --watch"]
+                "commands": ["cd packages/types"]
             },
             {
                 "name": "Config TS",
-                "autoExecuteCommands": false,
+                "autoExecuteCommands": true,
+                "joinOperator": "&&",
                 "icon": "settings-gear",
                 "color": "terminal.ansiBrightBlack",
-                "commands": ["cd packages/config_ts", "pnpm build --watch"]
+                "commands": ["cd packages/config_ts"]
+            },
+            {
+                "name": "Database Package",
+                "autoExecuteCommands": true,
+                "joinOperator": "&&",
+                "icon": "database",
+                "color": "terminal.ansiBrightGreen",
+                "commands": ["cd packages/database"]
+            },
+            {
+                "name": "Remark Package",
+                "autoExecuteCommands": true,
+                "joinOperator": "&&",
+                "icon": "markdown",
+                "color": "terminal.ansiBrightBlue",
+                "commands": ["cd packages/remark"]
             }
         ],
 
@@ -81,6 +106,7 @@
             {
                 "name": "Chech (Ultracite)",
                 "autoExecuteCommands": false,
+                "joinOperator": "&&",
                 "icon": "checklist",
                 "color": "terminal.ansiGreen",
                 "commands": ["pnpm turbo check"]
@@ -88,6 +114,7 @@
             {
                 "name": "Lint (Ultracite)",
                 "autoExecuteCommands": false,
+                "joinOperator": "&&",
                 "icon": "check",
                 "color": "terminal.ansiGreen",
                 "commands": ["pnpm turbo lint"]
@@ -95,6 +122,7 @@
             {
                 "name": "Format (Biome)",
                 "autoExecuteCommands": false,
+                "joinOperator": "&&",
                 "icon": "lightbulb-autofix",
                 "color": "terminal.ansiBlue",
                 "commands": ["pnpm biome check . --write"]
@@ -102,6 +130,7 @@
             {
                 "name": "Typecheck",
                 "autoExecuteCommands": false,
+                "joinOperator": "&&",
                 "icon": "symbol-class",
                 "color": "terminal.ansiYellow",
                 "commands": ["pnpm turbo typecheck"]
@@ -112,6 +141,7 @@
             {
                 "name": "Turbo Test",
                 "autoExecuteCommands": false,
+                "joinOperator": "&&",
                 "icon": "beaker",
                 "color": "terminal.ansiMagenta",
                 "commands": ["pnpm turbo test"]

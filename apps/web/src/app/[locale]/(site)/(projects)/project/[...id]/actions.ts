@@ -2,7 +2,7 @@
 
 import { canEditProject, db, eq, getProjectBySlug, getProjectGitHubLink, getProjectLikeCounts, getUserProjectLike, setProjectLike } from "@foundry/database";
 import { project_files, project_gallery, projects } from "@foundry/database/schemas/projects/tables";
-import { auth } from "@foundry/web/lib/auth";
+import { getServerSession } from "@foundry/web/lib/get-server-session";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
@@ -127,7 +127,7 @@ interface UpdateProjectData {
 export async function updateProject(projectId: string, data: UpdateProjectData) {
     try {
         // Get authenticated session
-        const session = await auth.api.getSession({ headers: await headers() });
+        const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
         if (!session?.user) {
             return { success: false, error: "You must be logged in to update a project" };
         }
@@ -182,7 +182,7 @@ export async function updateProject(projectId: string, data: UpdateProjectData) 
  * @param action 'like', 'dislike', or 'remove'
  */
 export async function toggleProjectLike(projectSlug: string, action: "like" | "dislike" | "remove") {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
 
     if (!session?.user?.id) {
         return { error: "You must be logged in to like/dislike projects" };
@@ -224,7 +224,7 @@ export async function getProjectLikeData(projectSlug: string) {
     }
 
     const { project } = result;
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
 
     const counts = await getProjectLikeCounts(project.id);
 
@@ -263,7 +263,7 @@ export async function getProjectGitHub(projectSlug: string) {
  * Check if current user can edit the project
  */
 export async function checkCanEdit(projectSlug: string) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
 
     if (!session?.user?.id) {
         return { canEdit: false };
@@ -287,7 +287,7 @@ export async function checkCanEdit(projectSlug: string) {
  * Update project title
  */
 export async function updateProjectTitle(projectSlug: string, title: string) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
 
     if (!session?.user?.id) {
         return { error: "You must be logged in" };
@@ -325,7 +325,7 @@ export async function updateProjectTitle(projectSlug: string, title: string) {
  * Update project description (summary)
  */
 export async function updateProjectDescription(projectSlug: string, description: string) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
 
     if (!session?.user?.id) {
         return { error: "You must be logged in" };
@@ -363,7 +363,7 @@ export async function updateProjectDescription(projectSlug: string, description:
  * Upload a file to the project
  */
 export async function uploadProjectFile(projectSlug: string, fileData: FormData, fileType: "files" | "images" | "optional") {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
 
     if (!session?.user?.id) {
         return { error: "You must be logged in" };
@@ -457,7 +457,7 @@ export async function uploadProjectFile(projectSlug: string, fileData: FormData,
  * Delete a file from the project
  */
 export async function deleteProjectFile(projectSlug: string, filePath: string, fileId?: string) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = await getServerSession(await headers());
 
     if (!session?.user?.id) {
         return { error: "You must be logged in" };
@@ -498,7 +498,7 @@ export async function deleteProjectFile(projectSlug: string, filePath: string, f
  * Upload gallery item (image or video)
  */
 export async function uploadGalleryItem(projectSlug: string, fileData: FormData) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = await getServerSession(await headers());
 
     if (!session?.user?.id) {
         return { error: "You must be logged in" };
@@ -584,7 +584,7 @@ export async function uploadGalleryItem(projectSlug: string, fileData: FormData)
  * Delete gallery item
  */
 export async function deleteGalleryItem(projectSlug: string, galleryId: string, imageUrl: string) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
 
     if (!session?.user?.id) {
         return { error: "You must be logged in" };
@@ -634,7 +634,7 @@ export async function deleteGalleryItem(projectSlug: string, galleryId: string, 
  * Update gallery item order
  */
 export async function updateGalleryOrder(projectSlug: string, _orderedIds: string[]) {
-    const session = await auth.api.getSession({ headers: await headers() });
+    const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
 
     if (!session?.user?.id) {
         return { error: "You must be logged in" };

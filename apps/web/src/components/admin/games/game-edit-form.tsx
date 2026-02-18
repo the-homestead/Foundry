@@ -19,9 +19,16 @@ import { toast } from "sonner";
 
 interface GameEditFormProps {
     game: Game;
+    /**
+     * Optional callback used when the form is embedded inline (prevents automatic navigation).
+     * Called after a successful update so the parent can refresh state/UI.
+     */
+    onSuccess?: () => void;
+    /** Optional cancel handler when used inline. */
+    onCancel?: () => void;
 }
 
-export function GameEditForm({ game }: GameEditFormProps) {
+export function GameEditForm({ game, onSuccess, onCancel }: GameEditFormProps) {
     const router = useRouter();
     const [uploading, setUploading] = useState(false);
 
@@ -49,7 +56,12 @@ export function GameEditForm({ game }: GameEditFormProps) {
                 toast.error(typeof result.error === "string" ? result.error : "Validation failed");
             } else {
                 toast.success("Game updated successfully");
-                router.push(`/adash/games/${game.id}`);
+                // If caller provided an onSuccess handler (inline mode), call it instead of navigating.
+                if (typeof onSuccess === "function") {
+                    onSuccess();
+                } else {
+                    router.push(`/management/games/${game.id}`);
+                }
             }
         },
     });
@@ -364,7 +376,16 @@ export function GameEditForm({ game }: GameEditFormProps) {
             </div>
 
             <div className="flex items-center justify-end gap-4 border-t pt-6">
-                <Button onClick={() => router.back()} type="button" variant="ghost">
+                <Button
+                    onClick={() => {
+                        if (typeof onCancel === "function") {
+                            return onCancel();
+                        }
+                        return router.back();
+                    }}
+                    type="button"
+                    variant="ghost"
+                >
                     Cancel
                 </Button>
                 <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>

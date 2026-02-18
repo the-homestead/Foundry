@@ -3,10 +3,11 @@
 import { ArrowRightEndOnRectangleIcon } from "@foundry/ui/components/icons/arrow-right-end-on-rectangle";
 import { Button } from "@foundry/ui/primitives/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@foundry/ui/primitives/card";
+import { getPathname } from "@foundry/web/i18n/navigation";
 import { authClient, signOut, useSession } from "@foundry/web/lib/auth-client";
 import { useForm } from "@tanstack/react-form";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AccountNavigation } from "./account-navigation";
 import { ApiKeysTab } from "./api-keys-tab";
@@ -24,6 +25,7 @@ import { buildErrorMap } from "./utils";
 export function AccountPageClient() {
     const t = useTranslations("AccountPage");
     const c = useTranslations("common");
+    const locale = useLocale();
     const { data, isPending: sessionPending, error, refetch } = useSession();
     const pathname = usePathname();
     const router = useRouter();
@@ -322,9 +324,11 @@ export function AccountPageClient() {
         setPasswordSetupLoading(true);
         setPasswordSetupMessage(null);
         try {
+            const pathname = getPathname({ href: "/auth/reset", locale });
+            const safePathname = pathname.replace(/\/undefined(?=\/|$)/g, `/${locale ?? "en"}`);
             const { error } = await authClient.requestPasswordReset({
                 email,
-                redirectTo: `${window.location.origin}/auth/reset`,
+                redirectTo: `${window.location.origin}${safePathname}`,
             });
 
             if (error) {
@@ -338,7 +342,7 @@ export function AccountPageClient() {
         } finally {
             setPasswordSetupLoading(false);
         }
-    }, [data?.user]);
+    }, [data?.user, locale]);
 
     const userDefaults = useMemo<AccountDefaults>(() => {
         const user = data?.user as
@@ -389,20 +393,48 @@ export function AccountPageClient() {
             setIsSaving(true);
             try {
                 const updateData: Record<string, string> = {};
-                if (parsed.data.fullName) {
+
+                // only include values that actually changed from the server-provided defaults
+                if (parsed.data.fullName !== undefined && parsed.data.fullName !== userDefaults.fullName) {
                     updateData.name = parsed.data.fullName;
                 }
-                if (parsed.data.email) {
+                if (parsed.data.username !== undefined && parsed.data.username !== userDefaults.username) {
+                    updateData.username = parsed.data.username;
+                }
+
+                // only send email when it actually changed — some accounts have locked emails
+                if (parsed.data.email && parsed.data.email !== userDefaults.email) {
                     updateData.email = parsed.data.email;
                 }
-                if (parsed.data.firstName !== undefined) {
+
+                if (parsed.data.firstName !== undefined && parsed.data.firstName !== userDefaults.firstName) {
                     updateData.firstName = parsed.data.firstName;
                 }
-                if (parsed.data.lastName !== undefined) {
+                if (parsed.data.lastName !== undefined && parsed.data.lastName !== userDefaults.lastName) {
                     updateData.lastName = parsed.data.lastName;
                 }
-                if (parsed.data.age !== undefined) {
+
+                // age is stored as number on the server; only send when the string changed and is non-empty
+                if (parsed.data.age !== undefined && parsed.data.age !== userDefaults.age && String(parsed.data.age).trim() !== "") {
                     updateData.age = String(parsed.data.age);
+                }
+                // public visibility flags — send only when changed
+                if (typeof parsed.data.firstNamePublic === "boolean" && parsed.data.firstNamePublic !== userDefaults.firstNamePublic) {
+                    updateData.firstNamePublic = String(parsed.data.firstNamePublic);
+                }
+                if (typeof parsed.data.lastNamePublic === "boolean" && parsed.data.lastNamePublic !== userDefaults.lastNamePublic) {
+                    updateData.lastNamePublic = String(parsed.data.lastNamePublic);
+                }
+                if (typeof parsed.data.agePublic === "boolean" && parsed.data.agePublic !== userDefaults.agePublic) {
+                    updateData.agePublic = String(parsed.data.agePublic);
+                }
+
+                // If there's nothing to update on the profile and no password change, skip the API call.
+                const hasPasswordChange = Boolean(parsed.data.currentPassword || parsed.data.newPassword || parsed.data.confirmPassword);
+                if (Object.keys(updateData).length === 0 && !hasPasswordChange) {
+                    // nothing changed — no-op (useful for autosave)
+                    setIsSaving(false);
+                    return;
                 }
 
                 const result = await authClient.updateUser(updateData);
@@ -499,16 +531,7 @@ export function AccountPageClient() {
                     <p className="text-muted-foreground text-sm md:text-base">{t("description")}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                    {activeTab === "profile" && (
-                        <>
-                            <Button className="hidden sm:flex" disabled={isSaving} onClick={handleAccountReset} size="default" type="button" variant="outline">
-                                {c("buttons.reset")}
-                            </Button>
-                            <Button disabled={isSaving} onClick={handleAccountSubmit} size="default" type="button">
-                                {isSaving ? c("buttons.saving") : c("buttons.save")}
-                            </Button>
-                        </>
-                    )}
+                    {/* profile tab autosaves on change/blur; explicit save/reset removed to avoid confusion */}
                     <Button onClick={() => signOut()} size="default" type="button" variant="outline">
                         <ArrowRightEndOnRectangleIcon className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">{c("buttons.signOut")}</span>

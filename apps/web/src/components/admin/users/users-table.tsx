@@ -246,7 +246,7 @@ export function UsersTable() {
 
                             <DropdownMenuItem
                                 onClick={() => {
-                                    router.push(`/adash/users/${user.id}`);
+                                    router.push(`/management/users/${user.id}`);
                                 }}
                             >
                                 <UserCog className="mr-2 h-4 w-4" /> View Details

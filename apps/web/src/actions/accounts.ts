@@ -1,7 +1,7 @@
 "use server";
 
 import { getLinkedAccountsByUserId, type LinkedAccount } from "@foundry/database";
-import auth from "@foundry/web/lib/auth";
+import { getServerSession } from "@foundry/web/lib/get-server-session";
 import { headers } from "next/headers";
 
 /**
@@ -11,7 +11,7 @@ import { headers } from "next/headers";
 export async function getLinkedAccounts(): Promise<LinkedAccount[]> {
     try {
         // Get the current session server-side using Better Auth
-        const session = await auth.api.getSession({ headers: await headers() });
+        const session = await getServerSession(await headers());
 
         if (!session?.user?.id) {
             throw new Error("Not authenticated");

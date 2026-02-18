@@ -1,0 +1,82 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: ${KC_CONT_NAME:-keycloak}
+    restart: unless-stopped
+    command: start --proxy-headers xforwarded --http-enabled true --hostname https://key.homestead.systems --hostname-admin https://akey.homestead.systems --hostname-backchannel-dynamic true --hostname-debug=true --hostname-strict false
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: Rickandstitch98!.
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: ${POSTGRES_DB:-foundry}
+      DB_USER: ${POSTGRES_USER:-foundry}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-eXzqK8ztWn7zGAsNY8qWuXpNIHjs2NO7}
+
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT: 'false'
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
+
+      KC_LOG_LEVEL: info
+      KC_METRICS_ENABLED: 'true'
+      KC_HEALTH_ENABLED: 'true'
+    ports:
+      - "${KC_APP_PORT:-5002}:8080"
+    depends_on:
+      - postgres
+    networks:
+      - infra
+    volumes:
+      - ./storage/keycloak/config/:/opt/keycloak/conf
+      - ./storage/keycloak/data/:/opt/keycloak/data
+      - ./storage/keycloak/providers/:/opt/keycloak/providers
+      - ./storage/keycloak/themes/:/opt/keycloak/themes
+      - ./storage/keycloak_tmp/:/tmp
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: ${REDIS_CONT_NAME:-redis}
+    restart: unless-stopped
+    command:
+      [
+        "redis-server",
+        "/usr/local/etc/redis/redis.conf",
+        "--requirepass",
+        "${REDIS_PASSWORD}",
+        "--maxmemory",
+        "${REDIS_MAXMEMORY}",
+        "--maxmemory-policy",
+        "allkeys-lru"
+      ]
+    volumes:
+      - data_redis:/data
+      - ./storage/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./storage/redis/users.acl:/usr/local/etc/redis/users.acl:ro
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    sysctls:
+      net.core.somaxconn: 1024
+    ulimits:
+      memlock: -1
+    shm_size: "512m"
+    deploy:
+      resources:
+        limits:
+          memory: ${REDIS_MAXMEMORY}
+    networks:
+      - infra
+
+
+networks:
+  infra:
+    driver: bridge
+
+volumes:
+  data_redis:

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "@foundry/ui/components/providers/theme-provider";
 import { PaintBrushIcon } from "@foundry/ui/icons";
 import { type AccentColor, type BaseTheme, THEMES } from "@foundry/ui/lib/theme-config";
 import { cn } from "@foundry/ui/lib/utils";
@@ -9,7 +10,6 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Check, Monitor, Moon, Palette, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { useTheme } from "../../providers/theme-provider";
 
 function getThemeIcon(key: string) {
     switch (key) {

@@ -11,6 +11,9 @@ import { accountTable, apikeyTable, sessionTable, twoFactorTable, userTable, ver
 export * from "./projects/queries";
 export * from "./schemas";
 export * from "./schemas/projects/queries";
+export * from "./utils/Cache";
+export * from "./utils/PubSub";
+export * from "./utils/Queue";
 export * from "./utils/users";
 
 const schema = {
@@ -22,7 +25,15 @@ const schema = {
     twofactor: twoFactorTable,
     apikey: apikeyTable,
     passkey: schemaModules.passkeyTable,
-    ssoProvider: schemaModules.ssoProviderTable,
+    jwks: schemaModules.jwksTable,
+    oauthAccessToken: schemaModules.oauthAccessTokenTable,
+    oauthConsent: schemaModules.oauthConsentTable,
+    oauthApplication: schemaModules.oauthApplicationTable,
+    team: schemaModules.teamTable,
+    teamMember: schemaModules.teamMemberTable,
+    organization: schemaModules.organizationTable,
+    member: schemaModules.memberTable,
+    invitation: schemaModules.invitationTable,
 } as const;
 
 export { schema };

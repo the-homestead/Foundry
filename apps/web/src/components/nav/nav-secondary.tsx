@@ -1,9 +1,9 @@
+import { ThemeSheet } from "@foundry/ui/components/theme/theme-sheet.js";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@foundry/ui/primitives/sidebar";
 import type { LucideIcon } from "lucide-react";
 import type { Locale } from "next-intl";
 import type * as React from "react";
 import LocaleSwitcher from "../locale-switcher";
-import { ThemeSheet } from "../theme/theme-sheet";
 
 export function NavSecondary({
     changeLocaleAction,

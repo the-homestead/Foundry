@@ -73,6 +73,7 @@
         "motion": "catalog:",
         "next-themes": "catalog:",
         "postcss": "catalog:",
+        "prism-react-renderer": "^2.4.1",
         "qrcode": "catalog:",
         "radix-ui": "catalog:",
         "react": "catalog:",

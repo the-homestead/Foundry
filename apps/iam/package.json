@@ -1,12 +1,54 @@
 {
     "name": "@foundry/iam",
-    "version": "0.0.0",
-    "description": "",
+    "version": "0.1.0",
+    "private": true,
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "dev": "next dev --port 5004",
+        "build": "next build",
+        "start": "next start --port 5004",
+        "lint": "biome check",
+        "check": "ultracite check",
+        "fix": "ultracite fix",
+        "format": "biome format --write"
     },
-    "keywords": [],
-    "author": "ItzDabbzz",
-    "license": "ISC",
-    "packageManager": "pnpm@10.28.0"
+    "dependencies": {
+        "@better-auth/oauth-provider": "^1.4.18",
+        "@better-auth/passkey": "catalog:",
+        "@better-auth/sso": "^1.4.18",
+        "@better-auth/stripe": "^1.4.18",
+        "@bunny.net/storage-sdk": "^0.3.1",
+        "@foundry/config_ts": "workspace:*",
+        "@foundry/configs": "workspace:*",
+        "@foundry/database": "workspace:*",
+        "@foundry/email": "workspace:*",
+        "@foundry/types": "workspace:*",
+        "@foundry/ui": "workspace:*",
+        "@tanstack/react-form": "catalog:",
+        "@tanstack/react-table": "^8.21.3",
+        "better-auth": "catalog:",
+        "lucide-react": "catalog:",
+        "next": "catalog:",
+        "next-intl": "^4.7.0",
+        "next-themes": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:",
+        "resend": "^6.9.1",
+        "sonner": "catalog:",
+        "stripe": "20.0.0",
+        "zod": "catalog:"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.3.15",
+        "@tailwindcss/postcss": "^4.1.18",
+        "@types/fs-extra": "catalog:",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "execa": "catalog:",
+        "fs-extra": "catalog:",
+        "magic-string": "catalog:",
+        "pathe": "catalog:",
+        "tailwindcss": "catalog:",
+        "typescript": "catalog:"
+    }
 }

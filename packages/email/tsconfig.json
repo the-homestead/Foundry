@@ -1,0 +1,14 @@
+{
+    "extends": "@foundry/config_ts/react-library.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@foundry/email/*": ["./emails/*"]
+        },
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "jsx": "react-jsx"
+    },
+    "include": ["."],
+    "exclude": ["node_modules", "dist", "build"]
+}

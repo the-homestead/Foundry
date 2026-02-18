@@ -82,7 +82,9 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
                 y: visible ? 20 : 0,
             }}
             className={cn(
-                "group/nav relative z-60 mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full bg-transparent px-4 py-2 lg:flex dark:bg-transparent",
+                "group/nav relative z-60 mx-auto hidden w-full max-w-7xl self-start rounded-full bg-transparent px-4 py-2 dark:bg-transparent",
+                // switch to a 3-column grid at large sizes to prevent center overlap
+                "lg:grid lg:grid-cols-[auto_1fr_auto] lg:items-center",
                 visible && "bg-sidebar dark:bg-sidebar",
                 className
             )}
@@ -107,7 +109,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
     return (
         <motion.div
             className={cn(
-                "hidden min-w-0 flex-1 flex-row items-center justify-center space-x-2 font-medium text-foreground text-sm transition duration-200 hover:text-muted-foreground lg:flex lg:space-x-2",
+                "hidden min-w-0 flex-1 flex-row items-center justify-center space-x-2 font-medium text-foreground text-sm transition duration-200 hover:text-muted-foreground lg:flex lg:space-x-2 lg:justify-self-center",
                 className
             )}
             onMouseLeave={() => setHovered(null)}
@@ -191,12 +193,37 @@ export const MobileNavToggle = ({ isOpen, onClick }: { isOpen: boolean; onClick:
     );
 };
 
-export const NavbarLogo = ({ url, title, children }: { url: string; title: string; children?: React.ReactNode }) => {
+export const NavbarLogo = ({
+    url,
+    title,
+    children,
+    size = "md",
+}: {
+    url: string;
+    title?: string;
+    children?: React.ReactNode;
+    /** small|medium|large visual presets — keeps API stable while allowing bigger logos */
+    size?: "sm" | "md" | "lg";
+}) => {
+    const SIZES = {
+        sm: { w: 48, h: 28 },
+        md: { w: 64, h: 42 },
+        lg: { w: 180, h: 56 },
+    } as const;
+
+    const s = SIZES[size as keyof typeof SIZES];
+    const { w, h } = s ?? SIZES.md;
+
     return (
         <div className="flex items-center">
             <a className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 font-normal text-foreground text-sm" href="/">
-                <Image alt="logo" height={30} src={url} width={30} />
-                <span className="font-medium text-foreground dark:text-foreground">{title}</span>
+                {/*
+                  next/image uses the width/height props to determine rendered size —
+                  previously this was fixed at 64x42 which is why your 1137x333 image looked small.
+                  Use the `size` prop (sm|md|lg) to pick a larger display size, or pass a new preset.
+                */}
+                <Image alt="logo" className="object-contain" height={h} src={url} width={w} />
+                {title && <span className="font-medium text-foreground dark:text-foreground">{title}</span>}
             </a>
             {children}
         </div>

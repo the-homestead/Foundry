@@ -1,0 +1,80 @@
+"use client";
+import { authClient } from "@foundry/iam/lib/auth-client";
+import LoginForm from "@foundry/ui/components/auth/login-form";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { toast } from "sonner";
+
+export default function LoginPage() {
+    const router = useRouter();
+    const t = useTranslations("AuthPage");
+    const lastUsedMethod = authClient.getLastUsedLoginMethod();
+
+    const handleSocial = async (provider: string) => {
+        await authClient.signIn.social({ provider });
+    };
+    const handlePasskey = async () => {
+        const result = await authClient.signIn.passkey({
+            autoFill: false,
+        });
+        if (result?.error) {
+            toast.error(result.error.message ?? t("login.passkeyFailed"));
+            return;
+        }
+        router.push("/");
+    };
+
+    useEffect(() => {
+        if (!PublicKeyCredential?.isConditionalMediationAvailable) {
+            return;
+        }
+        if (!PublicKeyCredential.isConditionalMediationAvailable()) {
+            return;
+        }
+        authClient.signIn
+            .passkey({
+                autoFill: true,
+                fetchOptions: {
+                    onSuccess: () => {
+                        router.push("/");
+                    },
+                },
+            })
+            .catch(() => undefined);
+    }, [router]);
+
+    return (
+        <div className="p-6">
+            <h1 className="mb-4 text-center font-semibold text-2xl">{t("login.title")}</h1>
+            <LoginForm
+                lastUsedMethod={lastUsedMethod}
+                onPasskey={handlePasskey}
+                onSocialClick={handleSocial}
+                onSubmit={async (creds: { email: string; password: string }) => {
+                    try {
+                        const { email, password } = creds;
+                        const res = await authClient.signIn.email({ email, password });
+                        if (res && typeof res === "object" && "error" in (res as Record<string, unknown>)) {
+                            const err = (res as Record<string, unknown>).error;
+                            {
+                                let message = t("login.signInFailed");
+                                if (typeof err === "string") {
+                                    message = err;
+                                } else if (err && typeof (err as { message?: unknown }).message === "string") {
+                                    message = (err as { message?: string }).message as string;
+                                }
+                                toast.error(message);
+                            }
+                            return;
+                        }
+                        router.push("/");
+                    } catch (err: unknown) {
+                        const message = (err as Error)?.message ?? t("login.signInFailed");
+                        toast.error(message);
+                    }
+                }}
+            />
+        </div>
+    );
+}

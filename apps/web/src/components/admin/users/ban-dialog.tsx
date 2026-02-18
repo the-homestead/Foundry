@@ -49,7 +49,7 @@ export function BanDialog({ user, open, onOpenChange, onSuccess }: BanDialogProp
                 toast.success(`User ${user.name} has been banned`);
                 onOpenChange(false);
                 onSuccess();
-            } catch (error) {
+            } catch (_error) {
                 toast.error("Failed to ban user");
             }
         },

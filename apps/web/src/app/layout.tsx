@@ -6,7 +6,7 @@ import "@foundry/ui/shadcn.css";
 import "@foundry/ui/catppuccin.css";
 import { routing } from "@foundry/web/i18n/routing";
 import { RootProviders } from "@foundry/web/providers/app-providers";
-import { hasLocale } from "next-intl";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -112,10 +112,18 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children, params }: Props) {
-    const { locale } = await params;
+    let { locale } = await params;
     if (!hasLocale(routing.locales, locale)) {
         // notFound();
     }
+    if (locale == null) {
+        locale = "en";
+    }
+    // Load locale messages for next-intl on the server and provide them to the client provider
+    // This ensures client components have the intl context.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const messages = (await import(`../../messages/${locale}.json`)).default;
+
     return (
         <html lang={locale} suppressHydrationWarning>
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
@@ -175,9 +183,11 @@ export default async function RootLayout({ children, params }: Props) {
 })();`,
                     }}
                 />
-                <RootProviders>
-                    <div className="min-h-screen min-w-screen">{children}</div>
-                </RootProviders>
+                <NextIntlClientProvider locale={locale} messages={messages}>
+                    <RootProviders>
+                        <div className="min-h-screen min-w-screen">{children}</div>
+                    </RootProviders>
+                </NextIntlClientProvider>
             </body>
         </html>
     );

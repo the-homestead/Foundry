@@ -1,22 +1,42 @@
 "use client";
 
-import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
+// icons (only from packages/ui/src/components/icons)
+import { CheckBadgeIcon } from "../components/icons/check-badge";
+import { InformationCircleIcon } from "../components/icons/information-circle";
+import { ExclamationCircleIcon } from "../components/icons/exclamation-circle";
+import { XCircleIcon } from "../components/icons/x-circle";
+import { ArrowPathIcon } from "../components/icons/arrow-path";
+import { BugAntIcon } from "../components/icons/bug-ant";
+import { EllipsisHorizontalCircleIcon } from "../components/icons/ellipsis-horizontal-circle";
+
+/**
+ * Enhanced Toaster wrapper for the project —
+ * - uses only icons from packages/ui/src/components/icons
+ * - provides richer colors, subtle animations, a duration progress bar and action-friendly styling
+ * - keeps Sonner API intact; call toast.*, or pass { className: 'debug' } to get debug-style toasts
+ */
 const Toaster = ({ ...props }: ToasterProps) => {
     const { theme = "system" } = useTheme();
 
     return (
         <Sonner
+            // keep a stable host class so our CSS can target Sonner internals
             className="toaster group"
+            // richer, project-specific icon set (only from our icons folder)
             icons={{
-                success: <CircleCheckIcon className="size-4" />,
-                info: <InfoIcon className="size-4" />,
-                warning: <TriangleAlertIcon className="size-4" />,
-                error: <OctagonXIcon className="size-4" />,
-                loading: <Loader2Icon className="size-4 animate-spin" />,
+                success: <CheckBadgeIcon className="h-5 w-5" />,
+                info: <InformationCircleIcon className="h-5 w-5" />,
+                warning: <ExclamationCircleIcon className="h-5 w-5" />,
+                error: <XCircleIcon className="h-5 w-5" />,
+                loading: <ArrowPathIcon className="h-5 w-5 animate-spin" />,
+                // (leave `default` to Sonner's fallback)
             }}
+            // enable Sonner's richColors so variant accents are visible
+            richColors
+            // custom CSS variables (keeps theme-aware colors)
             style={
                 {
                     "--normal-bg": "var(--popover)",

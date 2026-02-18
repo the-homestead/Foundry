@@ -1,0 +1,820 @@
+{
+    "HomePage": {
+        "title": "Fundição"
+    },
+    "common": {
+        "buttons": {
+            "save": "Save",
+            "saving": "Saving...",
+            "reset": "Reset",
+            "signOut": "Sign out",
+            "goToSignIn": "Go to Sign In",
+            "refresh": "Refresh",
+            "refreshing": "Refreshing...",
+            "create": "Create",
+            "copy": "Copy",
+            "upload": "Upload",
+            "remove": "Remove",
+            "connect": "Connect",
+            "disconnect": "Disconnect",
+            "cancel": "Cancel",
+            "close": "Close",
+            "open": "Open",
+            "uploading": "Uploading...",
+            "search": "Search",
+            "edit": "Edit",
+            "delete": "Delete",
+            "confirm": "Confirm",
+            "submit": "Submit",
+            "next": "Next",
+            "previous": "Previous"
+        },
+        "status": {
+            "error": "An error occurred.",
+            "noData": "No data available.",
+            "saveFailed": "Something went wrong while saving."
+        },
+        "fields": {
+            "optional": "optional",
+            "disabled": "Disabled",
+            "enabled": "Enabled",
+            "notEnabled": "Not enabled",
+            "connected": "Connected",
+            "notConnected": "Not connected",
+            "active": "Active",
+            "inactive": "Inactive",
+            "never": "Never"
+        },
+        "states": {
+            "saving": "Saving...",
+            "loading": "Loading..."
+        },
+        "placeholders": {
+            "search": "Search by name or prefix"
+        },
+        "dates": {
+            "today": "Today",
+            "yesterday": "Yesterday"
+        },
+        "breadcrumbs": {
+            "home": "Home",
+            "account": "Account",
+            "settings": "Settings",
+            "profile": "Profile",
+            "security": "Security",
+            "apiKeys": "API Keys",
+            "theme": "Theme",
+            "browse": "Browse",
+            "project": "Project"
+        }
+    },
+    "AccountPage": {
+        "title": "Account settings",
+        "description": "Manage your profile, security, and API access.",
+        "heading": "Account settings",
+        "tabs": {
+            "profile": "Profile",
+            "security": "Security",
+            "apiKeys": "API keys",
+            "sessions": "Sessions",
+            "billing": "Billing",
+            "notifications": "Notifications",
+            "contentBlocking": "Content Blocking"
+        },
+        "errors": {
+            "loading": "Loading your account details...",
+            "mustSignIn": "You must be signed in to update your account.",
+            "saveFailed": "Something went wrong while saving.",
+            "signInRequiredTitle": "Sign in required",
+            "signInRequiredDescription": "Please sign in to manage your account settings."
+        },
+        "success": {
+            "accountUpdated": "Account settings updated.",
+            "apiKeyCreated": "API key created.",
+            "apiKeyDeleted": "API key deleted.",
+            "apiKeyCopied": "API key copied to clipboard."
+        },
+        "apiKeys": {
+            "create": {
+                "title": "Create API key",
+                "description": "Generate keys for automation and integrations.",
+                "nameLabel": "Key name",
+                "nameHelp": "Optional label to help you recognize this key.",
+                "profileLabel": "Permission profile",
+                "profileHelp": "Select the access level for this key.",
+                "prefixLabel": "Prefix",
+                "prefixHelp": "Helps identify keys in logs (include an underscore).",
+                "expiresLabel": "Expires in (days)",
+                "expiresHelp": "Leave blank for no expiration.",
+                "createButton": "Create API key",
+                "copyButton": "Copy key",
+                "createdNote": "Save this key now — you won't see it again.",
+                "copyFailed": "Unable to copy API key.",
+                "namePlaceholder": "Production deployer",
+                "prefixPlaceholder": "fdry_"
+            },
+            "list": {
+                "title": "Active keys",
+                "description": "Keys attached to your account.",
+                "noKeys": "No API keys yet.",
+                "untitled": "Untitled key",
+                "columns": {
+                    "name": "Name",
+                    "prefix": "Prefix",
+                    "profile": "Profile",
+                    "created": "Created",
+                    "expires": "Expires",
+                    "status": "Status",
+                    "actions": "Actions"
+                },
+                "revoke": "Revoke",
+                "revokedMessage": "API key deleted.",
+                "allProfiles": "All Profiles",
+                "keysLabel": "keys",
+                "inDays": "in {n}d",
+                "daysAgo": "{n}d ago",
+                "revokeConfirmTitle": "Revoke API key",
+                "revokeConfirmDescription": "Are you sure you want to revoke this API key? This action cannot be undone and will immediately disable access."
+            }
+        },
+        "profile": {
+            "identity": {
+                "title": "Identity",
+                "description": "Core details for your profile.",
+                "displayName": "Display name",
+                "displayNameHelp": "Shown on your profile and shared across your workspace.",
+                "username": "Username",
+                "usernameHelp": "Your unique handle for sharing and mentions.",
+                "email": "Email",
+                "emailHelp": "Email updates require verification."
+            },
+            "fields": {
+                "title": "Profile fields",
+                "description": "Optional details for your workspace.",
+                "firstName": "First name",
+                "firstNameHelp": "Shown in places where your first name is preferred.",
+                "lastName": "Last name",
+                "lastNameHelp": "Used for formal identification in workspace details.",
+                "age": "Age"
+            },
+            "avatar": {
+                "title": "Avatar",
+                "description": "Update your profile image.",
+                "picture": "Profile picture",
+                "pictureHelp": "PNG, JPG up to 5MB.",
+                "pictureNote": "Square images look best. Transparent PNGs keep your brand crisp.",
+                "synced": "Synced",
+                "lastUpdatedJustNow": "Last updated just now",
+                "success": "Avatar updated.",
+                "error": "Failed to upload avatar."
+            },
+            "connectedApps": {
+                "title": "Connected apps",
+                "description": "Manage OAuth connections to external services.",
+                "app": {
+                    "github": {
+                        "name": "GitHub",
+                        "description": "Code syncing and integrations."
+                    },
+                    "google": {
+                        "name": "Google",
+                        "description": "Calendar and identity sync."
+                    },
+                    "discord": {
+                        "name": "Discord",
+                        "description": "Community and role sync."
+                    }
+                }
+            }
+        },
+        "security": {
+            "title": "Security",
+            "description": "Manage your password and account protection.",
+            "passwordLegend": "Password",
+            "currentPassword": "Current password",
+            "currentPasswordHelp": "Required to update your password.",
+            "newPassword": "New password",
+            "newPasswordHelp": "Use a strong, unique password.",
+            "confirmPassword": "Confirm password",
+            "confirmPasswordHelp": "Leave blank if you are not changing your password.",
+            "changesSync": "Changes sync to your account immediately.",
+            "createPasswordCard": {
+                "title": "Create a password",
+                "description": "OAuth users can add a password for email sign-ins.",
+                "explain": "We'll email a secure link to create your password. This is useful if you signed up with an OAuth provider and want a direct login option.",
+                "sendButton": "Send setup email",
+                "sending": "Sending..."
+            },
+            "twoFactor": {
+                "title": "Two-factor authentication",
+                "description": "Add a second verification step for sign-ins.",
+                "scanTitle": "Scan in your authenticator",
+                "scanHelp": "Use the QR code to add this account to your app.",
+                "passwordLabel": "Password",
+                "passwordHelp": "Required to enable, disable, or regenerate codes.",
+                "enableButton": "Enable 2FA",
+                "disableButton": "Disable 2FA",
+                "working": "Working...",
+                "verificationCode": "Verification code",
+                "verifyButton": "Verify code",
+                "refreshQr": "Refresh QR",
+                "trustDevice": "Trust this device for 30 days",
+                "generateBackupCodes": "Generate backup codes",
+                "showQr": "Show QR code",
+                "backupCodesTitle": "Backup codes"
+            }
+        }
+    },
+    "Theme": {
+        "labels": {
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System",
+            "latte": "Latte",
+            "mocha": "Mocha",
+            "frappe": "Frappe",
+            "macchiato": "Macchiato"
+        },
+        "sheet": {
+            "button": "Theme",
+            "title": "Theme Customization",
+            "description": "Personalize your interface appearance.",
+            "header_standard": "Standard Themes",
+            "header_catppuccin": "Catppuccin Themes",
+            "header_accent": "Accent Colors"
+        },
+        "descriptions": {
+            "light": "Clean and bright interface",
+            "dark": "Easy on the eyes at night",
+            "system": "Follows your OS preference",
+            "latte": "Warm and inviting coffee theme",
+            "mocha": "Rich dark chocolate tones",
+            "frappe": "Cool and sophisticated",
+            "macchiato": "Bold espresso layers"
+        },
+        "colors": {
+            "base": "Blue",
+            "flamingo": "Flamingo",
+            "green": "Green",
+            "lavender": "Lavender",
+            "maroon": "Maroon",
+            "mauve": "Mauve",
+            "peach": "Peach",
+            "pink": "Pink",
+            "red": "Red",
+            "rosewater": "Rosewater",
+            "sapphire": "Sapphire",
+            "sky": "Sky",
+            "teal": "Teal",
+            "yellow": "Yellow"
+        }
+    },
+    "emails": {
+        "common": {
+            "user": "User",
+            "foundry": "© Foundry - Homestead Systems LLC. All rights reserved."
+        },
+        "welcome": {
+            "subject": "Welcome to Foundry, {name}!",
+            "body": "We're excited to have you on board! Get ready to explore all the amazing features Foundry has to offer. If you have any questions, our support team is here to help.",
+            "closing": "Best regards,\nThe Foundry Team",
+            "buttonText": "Get Started",
+            "questions": "If you have any questions, feel free to reply to this email or visit our support center."
+        },
+        "passwordReset": {
+            "preview": "Reset your password",
+            "subject": "Reset your password",
+            "body": "Hi {name},\n\nWe received a request to reset your password. Click the button below to choose a new password.",
+            "buttonText": "Reset password",
+            "expires": "This link will expire in {hours} hours. If you did not request a password reset, you can safely ignore this message."
+        },
+        "verifyEmail": {
+            "preview": "Verify your email address",
+            "subject": "Verify your email",
+            "body": "Hi {name},\n\nPlease confirm your email address by clicking the button below.",
+            "buttonText": "Verify email"
+        },
+        "twoFactor": {
+            "preview": "Your two-factor authentication code",
+            "subject": "Your verification code",
+            "body": "Hi {name},\n\nUse the code below to complete sign-in.",
+            "expires": "This code expires in {minutes} minutes."
+        },
+        "accountUpdated": {
+            "preview": "Account updated",
+            "subject": "Your account was updated",
+            "body": "Hi {name},\n\nWe wanted to let you know that changes were made to your account.",
+            "changes": "Changes: {changes}",
+            "alert": "If you did not make these changes, secure your account immediately or contact support.",
+            "actionButton": "Review account"
+        },
+        "passkey": {
+            "preview": "Passkey {action}",
+            "subject": "Passkey {action}",
+            "body": "A passkey was {action} on your account for device: {device}.",
+            "manageButton": "Manage security",
+            "unknownDevice": "Unknown device"
+        },
+        "banned": {
+            "preview": "Account disabled",
+            "subject": "Your account has been disabled",
+            "bodyIntro": "We disabled your account for the following",
+            "reasonLabel": "Reason",
+            "noReason": "No reason provided",
+            "appealButton": "Appeal",
+            "appealExplain": "If you believe this was a mistake, click Appeal or contact support for help."
+        },
+        "apiKey": {
+            "preview": "API key {action}",
+            "subject": "API key {action}",
+            "body": "Hi {name},\n\nAn API key ({keyName}) was {action} for your account.",
+            "untitled": "Untitled key",
+            "prefix": "Prefix: {prefix}",
+            "createdNote": "Save this key now — you won't see it again.",
+            "manageButton": "Manage API keys"
+        },
+        "organization": {
+            "invite": {
+                "preview": "You have been invited to join {orgName}",
+                "subject": "Invitation to join {orgName}",
+                "body": "{inviter} has invited you to join {orgName} as {role}.",
+                "button": "Accept invitation",
+                "anonymous": "Someone",
+                "defaultRole": "Member"
+            },
+            "notice": {
+                "preview": "Organization update for {orgName}",
+                "subject": "Update from {orgName}",
+                "role_changed": "Your role has changed. {details}",
+                "removed": "You have been removed from the organization.",
+                "member_removed": "A member has been removed: {details}"
+            }
+        },
+        "stripe": {
+            "receipt": {
+                "preview": "Payment receipt",
+                "subject": "Your receipt",
+                "body": "Thanks for your payment — {description} — {amount}",
+                "button": "View receipt",
+                "itemLabel": "Item",
+                "totalLabel": "TOTAL"
+            },
+            "invoice": {
+                "invoiceIdLabel": "Invoice ID",
+                "invoiceDateLabel": "Invoice date",
+                "billedToLabel": "Billed to",
+                "quantityLabel": "Qty",
+                "subtotalLabel": "Subtotal",
+                "taxLabel": "Tax",
+                "totalLabel": "Total"
+            },
+            "subscription": {
+                "preview": "Subscription started",
+                "subject": "Your subscription is active",
+                "body": "Your subscription to {plan} started on {startDate}.",
+                "manageButton": "Manage billing"
+            },
+            "invoiceFailed": {
+                "preview": "Payment failed",
+                "subject": "Payment failed",
+                "body": "We were unable to process a payment of {amount}. Attempt {attempts}.",
+                "button": "Update payment method"
+            }
+        }
+    },
+    "AuthPage": {
+        "forgot": {
+            "title": "Reset password",
+            "description": "Enter your email and we will send a password reset link.",
+            "emailRequired": "Email is required",
+            "sendSuccess": "Reset link sent.",
+            "sendFailed": "Failed to send reset link"
+        },
+        "reset": {
+            "title": "Set a new password",
+            "description": "Choose a secure password for your account.",
+            "missingTokenTitle": "Invalid reset link",
+            "missingTokenDescription": "This password reset link is missing a token.",
+            "successRedirecting": "Password reset. Redirecting to login...",
+            "failed": "Failed to reset password"
+        },
+        "twoFactor": {
+            "title": "Two-factor verification",
+            "description": "Enter your verification code to finish signing in.",
+            "tabs": {
+                "authenticator": "Authenticator",
+                "otp": "One-time code",
+                "backup": "Backup code"
+            },
+            "placeholders": {
+                "totpCode": "123456",
+                "otpCode": "123456",
+                "backupCode": "ABCD-1234"
+            },
+            "errors": {
+                "enterAuthCode": "Enter your authentication code.",
+                "enterOtpCode": "Enter the one-time code.",
+                "enterBackupCode": "Enter a backup code.",
+                "verifyFailed": "Failed to verify code.",
+                "sendOtpFailed": "Failed to send one-time code.",
+                "oneTimeSent": "One-time code sent.",
+                "verifiedRedirecting": "Verified. Redirecting...",
+                "verifyBackupFailed": "Failed to verify backup code."
+            },
+            "buttons": {
+                "sendCode": "Send code",
+                "verifyCode": "Verify code",
+                "verifyBackup": "Verify backup code"
+            },
+            "trustDevice": "Trust this device for 30 days"
+        },
+        "login": {
+            "title": "Sign in",
+            "passkeyFailed": "Passkey sign-in failed",
+            "signInFailed": "Sign in failed"
+        },
+        "register": {
+            "title": "Create account",
+            "failed": "Registration failed"
+        }
+    },
+    "BrowsePage": {
+        "title": "Browse",
+        "subtitle": "Discover and share mods, resource packs, shaders, and data packs for your favorite games.",
+        "selectGame": "Select a game to explore content.",
+        "sidebar": {
+            "title": "Sidebar",
+            "description": "Customize filters by game and collapse sections as needed.",
+            "games": {
+                "title": "Games"
+            }
+        }
+    },
+    "Navigation": {
+        "brand": {
+            "title": "Foundry"
+        },
+        "items": {
+            "browse": "Browse",
+            "community": "Community",
+            "support": "Support",
+            "testing": "Testing"
+        },
+        "actions": {
+            "login": "Login",
+            "welcome": "Welcome, {name}"
+        }
+    },
+    "Sidebar": {
+        "sectionLabel": "Platform",
+        "toggle": "Toggle",
+        "brand": {
+            "title": "Foundry",
+            "subtitle": "Homestead Systems"
+        },
+        "user": {
+            "fallbackName": "User",
+            "guest": "Guest"
+        },
+        "nav": {
+            "mods": {
+                "title": "Mods",
+                "items": {
+                    "fabric": "Fabric",
+                    "neoforge": "NeoForge",
+                    "forge": "Forge",
+                    "babric": "Babric"
+                }
+            },
+            "resourcePacks": {
+                "title": "Resource Packs",
+                "items": {
+                    "addons": "Addons",
+                    "combat": "Combat",
+                    "cursed": "Cursed",
+                    "decoration": "Decoration",
+                    "entities": "Entities",
+                    "equipment": "Equipment",
+                    "environment": "Environment",
+                    "fonts": "Fonts",
+                    "gui": "GUI",
+                    "highResolution": "High-Resolution",
+                    "huds": "HUDs",
+                    "items": "Items",
+                    "loadscreens": "Loadscreens",
+                    "localization": "Localization",
+                    "modded": "Modded",
+                    "models": "Models",
+                    "realistic": "Realistic",
+                    "simplistic": "Simplistic",
+                    "themed": "Themed",
+                    "tweaks": "Tweaks",
+                    "utility": "Utility",
+                    "vanillaEnhancements": "Vanilla Enhancements"
+                }
+            },
+            "shaders": {
+                "title": "Shaders",
+                "items": {
+                    "performance": "Performance",
+                    "realistic": "Realistic",
+                    "cinematic": "Cinematic",
+                    "vanillaPlus": "Vanilla+",
+                    "stylized": "Stylized",
+                    "lightweight": "Lightweight",
+                    "weather": "Weather & Atmosphere",
+                    "night": "Night & Low-Light",
+                    "compatibility": "Compatibility"
+                }
+            },
+            "dataPacks": {
+                "title": "Data Packs",
+                "items": {
+                    "gameplay": "Gameplay Tweaks",
+                    "worldgen": "Worldgen",
+                    "structures": "Structures",
+                    "loot": "Loot & Rewards",
+                    "advancements": "Advancements",
+                    "crafting": "Crafting & Recipes",
+                    "mobs": "Mobs & AI",
+                    "bosses": "Bosses",
+                    "survival": "Survival Challenges",
+                    "quality": "Quality of Life",
+                    "technical": "Technical / Redstone",
+                    "minigames": "Mini-Games"
+                }
+            }
+        },
+        "navSecondary": {
+            "support": "Support",
+            "feedback": "Feedback"
+        },
+        "projects": {
+            "designEngineering": "Design Engineering",
+            "sales": "Sales & Marketing",
+            "travel": "Travel"
+        }
+    },
+    "UserMenu": {
+        "guest": "Guest",
+        "initialsFallback": "??",
+        "signIn": "Sign In",
+        "accessAccount": "Access your account",
+        "signUp": "Sign Up",
+        "upgrade": "Upgrade to Pro",
+        "account": "Account",
+        "billing": "Billing",
+        "notifications": "Notifications",
+        "logout": "Log out"
+    },
+    "LocaleSwitcher": {
+        "placeholder": "Language",
+        "label": "Languages"
+    },
+    "TimezoneSwitcher": {
+        "placeholder": "Select a timezone",
+        "groups": {
+            "northAmerica": "North America",
+            "europeAfrica": "Europe & Africa",
+            "asia": "Asia",
+            "australia": "Australia & Pacific",
+            "southAmerica": "South America"
+        },
+        "items": {
+            "est": "Eastern Standard Time",
+            "cst": "Central Standard Time",
+            "mst": "Mountain Standard Time",
+            "pst": "Pacific Standard Time",
+            "akst": "Alaska Standard Time",
+            "hst": "Hawaii Standard Time",
+            "gmt": "Greenwich Mean Time",
+            "cet": "Central European Time",
+            "eet": "Eastern European Time",
+            "west": "Western European Summer Time",
+            "cat": "Central Africa Time",
+            "eat": "East Africa Time",
+            "msk": "Moscow Time",
+            "ist": "India Standard Time",
+            "cstChina": "China Standard Time",
+            "jst": "Japan Standard Time",
+            "kst": "Korea Standard Time",
+            "istIndonesia": "Indonesia Central Standard Time",
+            "awst": "Australian Western Standard Time",
+            "acst": "Australian Central Standard Time",
+            "aest": "Australian Eastern Standard Time",
+            "nzst": "New Zealand Standard Time",
+            "fjt": "Fiji Time",
+            "art": "Argentina Time",
+            "bot": "Bolivia Time",
+            "brt": "Brasilia Time",
+            "clt": "Chile Standard Time"
+        }
+    },
+    "ErrorPage": {
+        "backToHome": "Back to home page",
+        "tryAgain": "Try again",
+        "titleFallback": "Error"
+    },
+    "ErrorsPage": {
+        "title": "Error pages",
+        "description": "Browse example error pages used for testing and debugging."
+    },
+    "ErrorStatus": {
+        "400": {
+            "title": "Bad request",
+            "message": "The request could not be understood by the server."
+        },
+        "401": {
+            "title": "Unauthorized",
+            "message": "You must authenticate to access this resource."
+        },
+        "403": {
+            "title": "Forbidden",
+            "message": "You do not have permission to access this resource."
+        },
+        "404": {
+            "title": "Page not found",
+            "message": "We couldn't find what you were looking for."
+        },
+        "408": {
+            "title": "Request timed out",
+            "message": "The server timed out waiting for your request."
+        },
+        "429": {
+            "title": "Too many requests",
+            "message": "You're sending too many requests. Try again later."
+        },
+        "500": {
+            "title": "Server error",
+            "message": "Something went wrong on our end."
+        },
+        "501": {
+            "title": "Not implemented",
+            "message": "This functionality is not implemented."
+        },
+        "502": {
+            "title": "Bad gateway",
+            "message": "Invalid response from the upstream server."
+        },
+        "503": {
+            "title": "Service unavailable",
+            "message": "The service is temporarily unavailable."
+        },
+        "504": {
+            "title": "Gateway timeout",
+            "message": "The upstream server failed to respond in time."
+        },
+        "unknown": {
+            "title": "Error",
+            "message": "An error occurred."
+        }
+    },
+    "AdminPage": {
+        "title": "Admin Console",
+        "description": "Manage users, roles, sessions, and security settings.",
+        "status": {
+            "admin": "Admin access",
+            "readOnly": "Read-only access",
+            "signedInAs": "Signed in as {email}",
+            "notSignedIn": "Not signed in"
+        },
+        "tabs": {
+            "users": "Users",
+            "create": "Create",
+            "update": "Update",
+            "security": "Security",
+            "sessions": "Sessions",
+            "permissions": "Permissions"
+        },
+        "users": {
+            "title": "User directory",
+            "description": "Search and review user accounts.",
+            "searchPlaceholder": "Search by email",
+            "table": {
+                "name": "Name",
+                "email": "Email",
+                "role": "Role",
+                "status": "Status",
+                "id": "ID"
+            },
+            "empty": "No users found.",
+            "noRole": "No role",
+            "unnamed": "Unnamed",
+            "noEmail": "No email",
+            "banned": "Banned",
+            "active": "Active",
+            "pagination": "Page {page} of {totalPages}",
+            "prev": "Previous",
+            "next": "Next"
+        },
+        "create": {
+            "title": "Create user",
+            "description": "Provision a new account with roles and metadata.",
+            "passwordHelp": "Use at least 8 characters.",
+            "submit": "Create user"
+        },
+        "update": {
+            "title": "Update user",
+            "description": "Patch profile fields with JSON data.",
+            "dataHelp": "Provide a JSON object with fields to update.",
+            "submit": "Update user"
+        },
+        "roles": {
+            "title": "Set role",
+            "description": "Assign one or more roles to a user.",
+            "submit": "Update role"
+        },
+        "password": {
+            "title": "Set password",
+            "description": "Force-reset a user password.",
+            "submit": "Update password"
+        },
+        "ban": {
+            "title": "Ban user",
+            "description": "Disable access with an optional reason or expiration.",
+            "expiresHelp": "Leave blank for a permanent ban.",
+            "submit": "Ban user",
+            "unban": "Unban user"
+        },
+        "impersonate": {
+            "title": "Impersonation",
+            "description": "Start or stop impersonating a user.",
+            "submit": "Impersonate",
+            "stop": "Stop impersonating"
+        },
+        "sessions": {
+            "title": "User sessions",
+            "description": "List or revoke active sessions.",
+            "list": "List sessions",
+            "revokeAll": "Revoke all sessions",
+            "table": {
+                "token": "Session token",
+                "expires": "Expires",
+                "impersonatedBy": "Impersonated by"
+            },
+            "empty": "No sessions returned.",
+            "never": "Never",
+            "none": "—",
+            "meta": "Total {total} · Limit {limit} · Offset {offset}",
+            "revokeToken": "Session token",
+            "revokeOne": "Revoke session"
+        },
+        "permissions": {
+            "title": "Permission checks",
+            "description": "Validate permissions for the current user.",
+            "permissionsJson": "Permissions JSON",
+            "help": "Provide a JSON object such as { \"project\": [\"create\"] }.",
+            "submit": "Check permissions"
+        },
+        "remove": {
+            "title": "Remove user",
+            "description": "Permanently delete a user account.",
+            "submit": "Remove user"
+        },
+        "fields": {
+            "email": "Email",
+            "name": "Name",
+            "password": "Password",
+            "role": "Role",
+            "roleHelp": "Comma-separated for multiple roles.",
+            "data": "Data",
+            "dataHelp": "Optional JSON metadata.",
+            "userId": "User ID",
+            "newPassword": "New password",
+            "reason": "Reason",
+            "expiresIn": "Expires in (seconds)"
+        },
+        "errors": {
+            "listUsers": "Unable to load users.",
+            "invalidResponse": "Unexpected response from server.",
+            "createUser": "Failed to create user.",
+            "updateUser": "Failed to update user.",
+            "setRole": "Failed to update role.",
+            "setPassword": "Failed to update password.",
+            "banUser": "Failed to ban user.",
+            "unbanUser": "Failed to unban user.",
+            "impersonate": "Failed to impersonate user.",
+            "stopImpersonating": "Failed to stop impersonation.",
+            "listSessions": "Failed to list sessions.",
+            "revokeSessions": "Failed to revoke sessions.",
+            "revokeSession": "Failed to revoke session.",
+            "removeUser": "Failed to remove user.",
+            "permissionCheck": "Failed to check permissions."
+        },
+        "success": {
+            "createUser": "User created.",
+            "updateUser": "User updated.",
+            "setRole": "Role updated.",
+            "setPassword": "Password updated.",
+            "banUser": "User banned.",
+            "unbanUser": "User unbanned.",
+            "impersonate": "Impersonation started.",
+            "stopImpersonating": "Impersonation stopped.",
+            "revokeSessions": "All sessions revoked.",
+            "revokeSession": "Session revoked.",
+            "removeUser": "User removed.",
+            "permissionAllowed": "Permission granted.",
+            "permissionDenied": "Permission denied."
+        }
+    }
+}

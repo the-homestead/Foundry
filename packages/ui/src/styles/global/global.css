@@ -20,3 +20,185 @@
 .text-muted {
     @apply text-gray-500;
 }
+
+/* Sonner (toasts) — upgraded look and feel for Foundry
+   - uses the host class `.toaster` (set in the primitive) so selectors are scoped
+   - subtle motion, variant accents, action styling and a duration/progress bar
+*/
+.toaster .sn-toast {
+    /* layout */
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-width: 18rem;
+    max-width: 28rem;
+    padding: 0.6rem 0.9rem;
+
+    /* visuals — read variables provided by the Toaster wrapper */
+    background: var(--normal-bg);
+    color: var(--normal-text);
+    border: 1px solid var(--normal-border);
+    border-radius: calc(var(--border-radius) - 2px);
+    box-shadow: 0 8px 30px rgba(2, 6, 23, 0.12);
+
+    /* motion */
+    transform-origin: right top;
+    transition:
+        transform 160ms cubic-bezier(0.2, 0.9, 0.2, 1),
+        opacity 140ms linear,
+        box-shadow 140ms linear;
+}
+
+.toaster .sn-toast .sn-icon {
+    flex: 0 0 auto;
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 0.45rem;
+    background: rgba(150, 150, 150, 0.04);
+    color: inherit;
+}
+
+.toaster .sn-toast .sn-body {
+    flex: 1 1 auto;
+}
+
+.toaster .sn-title {
+    font-weight: 600;
+    font-size: 0.925rem;
+    line-height: 1rem;
+}
+
+.toaster .sn-description {
+    margin-top: 0.25rem;
+    color: inherit;
+    opacity: 0.85;
+    font-size: 0.875rem;
+}
+
+/* Variant accents (icon background + subtle left accent) */
+.toaster .sn-toast[data-type="success"] .sn-icon {
+    background: rgba(16, 185, 129, 0.08);
+    color: rgb(16, 185, 129);
+}
+.toaster .sn-toast[data-type="info"] .sn-icon {
+    background: rgba(59, 130, 246, 0.06);
+    color: rgb(59, 130, 246);
+}
+.toaster .sn-toast[data-type="warning"] .sn-icon {
+    background: rgba(245, 158, 11, 0.06);
+    color: rgb(245, 158, 11);
+}
+.toaster .sn-toast[data-type="error"] .sn-icon {
+    background: rgba(239, 68, 68, 0.06);
+    color: rgb(239, 68, 68);
+}
+
+/* debug / custom style: use by passing `className: 'debug'` to toast(...) */
+.toaster .sn-toast.debug {
+    border-left: 4px solid #7c3aed; /* violet */
+    background: linear-gradient(180deg, rgba(124, 58, 237, 0.03), transparent);
+}
+.toaster .sn-toast.debug .sn-icon {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7c3aed;
+}
+
+/* Actions & dismiss */
+.toaster .sn-action button {
+    @apply inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm font-medium;
+    background: transparent;
+    border: 1px solid transparent;
+    color: inherit;
+    transition:
+        background-color 120ms linear,
+        transform 120ms ease;
+}
+.toaster .sn-action button:hover {
+    transform: translateY(-1px);
+    background: rgba(0, 0, 0, 0.04);
+}
+.toaster .sn-dismiss {
+    margin-left: 0.25rem;
+    opacity: 0.8;
+}
+
+/* Duration / progress bar (shown when a toast has a duration)
+   Sonner may render a `.sn-progress` element — style that, and also provide
+   a fallback pseudo-element animation for toasts that expose `data-duration`.
+*/
+.toaster .sn-progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+.toaster .sn-progress > span {
+    display: block;
+    height: 100%;
+    transform-origin: left center;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.95), rgba(99, 102, 241, 0.9));
+    animation-name: sn-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    /* Sonner may set --duration on the toast; fallback to 5s */
+    animation-duration: var(--duration, 5000ms);
+}
+
+@keyframes sn-progress {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+/* fallback: when Sonner exposes a data-duration attribute on the toast */
+.toaster .sn-toast[data-duration]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.9), rgba(59, 130, 246, 0.9));
+    transform-origin: left center;
+    animation-name: sn-progress;
+    animation-duration: attr(data-duration ms, 5000ms);
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+/* subtle entrance/exit when Sonner toggles visibility */
+.toaster .sn-toast[data-show="false"],
+.toaster .sn-toast[data-state="closed"] {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.995);
+}
+.toaster .sn-toast[data-show="true"],
+.toaster .sn-toast[data-state="open"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Preset visual themes (can be applied per-toast via `className`) */
+.toaster .sn-toast.variant-solid {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(17, 24, 39, 0.95));
+    color: white;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+.toaster .sn-toast.variant-outline {
+    background: transparent;
+    border-style: dashed;
+    border-color: rgba(148, 163, 184, 0.12);
+}
+.toaster .sn-toast.variant-subtle {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+    border-color: rgba(148, 163, 184, 0.06);
+}

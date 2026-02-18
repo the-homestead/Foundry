@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { db } from "@foundry/database";
 import { projects } from "@foundry/database/schemas/projects/tables";
-import { auth } from "@foundry/web/lib/auth";
+import { getServerSession } from "@foundry/web/lib/get-server-session";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -23,9 +23,7 @@ interface CreateProjectData {
 export async function createProject(data: CreateProjectData) {
     try {
         // Check if user is authenticated
-        const session = await auth.api.getSession({
-            headers: await headers(),
-        });
+        const session = (await getServerSession(await headers())) as { user?: { id?: string } } | null;
 
         if (!session?.user) {
             return { success: false, error: "You must be logged in to create a project" };

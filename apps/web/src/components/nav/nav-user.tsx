@@ -11,10 +11,13 @@ import {
     DropdownMenuTrigger,
 } from "@foundry/ui/primitives/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@foundry/ui/primitives/sidebar";
+import { ThemeSheet } from "@foundry/web/components/theme/theme-sheet";
 import { signOut } from "@foundry/web/lib/auth-client";
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles, User, UserPlus } from "lucide-react";
 import Link from "next/link";
+import type { Locale } from "next-intl";
 import { useTranslations } from "next-intl";
+import LocaleSwitcher from "../locale-switcher";
 
 const getInitials = (name: string, fallback: string) => {
     const trimmed = name.trim();
@@ -32,12 +35,16 @@ const getInitials = (name: string, fallback: string) => {
 
 export function NavUser({
     user,
+    locale,
+    changeLocaleAction,
 }: {
     user: {
         name?: string | null;
         email?: string | null;
         avatar?: string | null;
     };
+    locale?: Locale | null;
+    changeLocaleAction?: (locale: Locale) => Promise<void>;
 }) {
     const { isMobile } = useSidebar();
     const t = useTranslations("UserMenu");
@@ -70,6 +77,22 @@ export function NavUser({
                             side={isMobile ? "bottom" : "right"}
                             sideOffset={4}
                         >
+                            <DropdownMenuGroup>
+                                <div className="flex items-center gap-2 px-3 py-2">
+                                    <ThemeSheet triggerClassName="h-8 w-8" />
+                                    <div className="flex-1">
+                                        {changeLocaleAction ? (
+                                            <LocaleSwitcher
+                                                changeLocaleAction={changeLocaleAction}
+                                                locale={(locale ?? "en") as Locale}
+                                                triggerClassName="h-8 w-full min-w-0"
+                                                variant="navbar"
+                                            />
+                                        ) : null}
+                                    </div>
+                                </div>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
                             <DropdownMenuGroup>
                                 <DropdownMenuItem asChild>
                                     <Link href="/auth/login">
@@ -121,14 +144,36 @@ export function NavUser({
                                 </div>
                             </div>
                         </DropdownMenuLabel>
+
                         <DropdownMenuSeparator />
+
+                        <DropdownMenuGroup>
+                            <div className="flex items-center gap-2 px-3 py-2">
+                                <ThemeSheet triggerClassName="h-8 w-8" />
+                                <div className="flex-1">
+                                    {changeLocaleAction ? (
+                                        <LocaleSwitcher
+                                            changeLocaleAction={changeLocaleAction}
+                                            locale={(locale ?? "en") as Locale}
+                                            triggerClassName="h-8 w-full min-w-0"
+                                            variant="navbar"
+                                        />
+                                    ) : null}
+                                </div>
+                            </div>
+                        </DropdownMenuGroup>
+
+                        <DropdownMenuSeparator />
+
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
                                 <Sparkles />
                                 {t("upgrade")}
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
+
                         <DropdownMenuSeparator />
+
                         <DropdownMenuGroup>
                             <DropdownMenuItem asChild>
                                 <Link href="/account">
@@ -145,7 +190,9 @@ export function NavUser({
                                 {t("notifications")}
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
+
                         <DropdownMenuSeparator />
+
                         <DropdownMenuItem
                             onSelect={(event) => {
                                 event.preventDefault();

@@ -1,6 +1,6 @@
 "use client";
 import { passkeyClient } from "@better-auth/passkey/client";
-import { ssoClient } from "@better-auth/sso/client";
+import { SYSTEM_CONFIG } from "@foundry/configs";
 import {
     adminClient,
     apiKeyClient,
@@ -14,25 +14,24 @@ import {
 import { createAuthClient } from "better-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { SYSTEM_CONFIG } from "../constants";
-import type auth from "./auth";
+import type auth from "../../../iam/src/lib/auth";
 import { ac, adminRole, devRole, userRole } from "./permissions";
 
 // reuse a single regex instance at module scope to avoid recreating it on every call
 const TRAILING_SLASH_RE = /\/$/;
 
+const publicAppUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+const publicAuthUrl = process.env.NEXT_PUBLIC_AUTH_URL ?? "https://auth.homestead.systems";
+const defaultCallbackUrl = `${publicAppUrl}${SYSTEM_CONFIG.redirectAfterSignIn}`;
+
 // Create and export the auth client
-// Use the frontend proxy by default so cookies set for the public host are sent by the browser.
+// Auth requests should go to the IAM domain, not the web domain.
 export const authClient = createAuthClient({
-    baseURL: process.env.NEXT_PUBLIC_APP_URL,
+    baseURL: publicAuthUrl,
     fetchOptions: {
         credentials: "include",
     },
     plugins: [
-        // enable domain verification client-side when requested via env
-        ssoClient({
-            domainVerification: { enabled: process.env.NEXT_PUBLIC_SSO_DOMAIN_VERIFICATION === "true" },
-        }),
         apiKeyClient(),
         lastLoginMethodClient(),
         passkeyClient(),
@@ -63,19 +62,26 @@ export const authClient = createAuthClient({
 export const { signIn, signOut, signUp, useSession } = authClient;
 
 /**
- * Helper to start a provider OAuth flow by redirecting to the local auth endpoint.
- * Uses same-origin `/api/auth/oauth/:provider` so cookies set by the auth handler are sent by the browser.
+ * Start provider OAuth flow via the frontend proxy so the browser talks
+ * same-origin (`/api/auth/...`) and receives Set-Cookie headers forwarded
+ * from the IAM service.
  */
 export function signInWithProvider(provider: string) {
-    // Redirect to the frontend proxy so the browser sends cookies for the public host
-    const callback = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}${SYSTEM_CONFIG.redirectAfterSignIn}`;
-    const target = `/api/auth/oauth/${provider}?callbackURL=${encodeURIComponent(callback)}`;
+    // Redirect directly to the IAM domain so the OAuth flow and callback
+    // URLs are consistent with the auth server's configuration.
+    const publicAuthUrl = process.env.NEXT_PUBLIC_AUTH_URL ?? "https://auth.homestead.systems";
+    // preserve the current locale in the redirect so IAM's localized routes
+    // (next-intl) receive the correct locale segment (e.g. /en/api/auth/...)
+    const segments = window.location.pathname.split("/").filter(Boolean);
+    const locale = segments.length ? segments[0] : "";
+    const base = publicAuthUrl.replace(/\/$/, "");
+    const target = `${base}${locale ? `/${locale}` : ""}/api/auth/oauth/${provider}?callbackURL=${encodeURIComponent(defaultCallbackUrl)}`;
     window.location.href = target.replace(TRAILING_SLASH_RE, "");
 }
 
 // Helper to initiate SSO sign-in flows. Keeps web code simple and centralizes callbackURL logic.
 export function signInWithSSO(opts: { providerId?: string; domain?: string; callbackURL?: string; loginHint?: string } = {}) {
-    const callback = opts.callbackURL ?? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}${SYSTEM_CONFIG.redirectAfterSignIn}`;
+    const callback = opts.callbackURL ?? defaultCallbackUrl;
     const body: Record<string, string> = {
         callbackURL: callback,
     };
@@ -89,7 +95,14 @@ export function signInWithSSO(opts: { providerId?: string; domain?: string; call
         body.loginHint = opts.loginHint;
     }
 
-    return authClient.signIn.sso(body as unknown as Parameters<typeof authClient.signIn.sso>[0]);
+    // `sso` is provided by the better-auth client at runtime; cast to `any`
+    // to satisfy TypeScript where the plugin-augmented type isn't inferred.
+    return (authClient.signIn as any).sso({
+        ...(body as Record<string, unknown>),
+        fetchOptions: {
+            credentials: "include",
+        },
+    });
 }
 
 export function signUpWithProvider(provider: string) {

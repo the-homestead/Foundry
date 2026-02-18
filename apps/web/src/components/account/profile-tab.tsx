@@ -150,7 +150,10 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                                                     className="w-full"
                                                                     id={field.name}
                                                                     name={field.name}
-                                                                    onBlur={field.handleBlur}
+                                                                    onBlur={() => {
+                                                                        field.handleBlur();
+                                                                        form.handleSubmit();
+                                                                    }}
                                                                     onChange={(event) => {
                                                                         field.handleChange(event.target.value);
                                                                         clearFieldError(field.name);
@@ -187,7 +190,10 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                                             className="w-full"
                                                             id={field.name}
                                                             name={field.name}
-                                                            onBlur={field.handleBlur}
+                                                            onBlur={() => {
+                                                                field.handleBlur();
+                                                                form.handleSubmit();
+                                                            }}
                                                             onChange={(event) => {
                                                                 field.handleChange(event.target.value);
                                                                 clearFieldError(field.name);
@@ -215,7 +221,13 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                                     <form.Field name="firstNamePublic">
                                                         {(field) => (
                                                             <div className="flex cursor-pointer items-center gap-2 text-muted-foreground text-xs">
-                                                                <Checkbox checked={field.state.value} onCheckedChange={(checked) => field.handleChange(Boolean(checked))} />
+                                                                <Checkbox
+                                                                    checked={field.state.value}
+                                                                    onCheckedChange={(checked) => {
+                                                                        field.handleChange(Boolean(checked));
+                                                                        form.handleSubmit();
+                                                                    }}
+                                                                />
                                                                 <span>Public</span>
                                                             </div>
                                                         )}
@@ -226,7 +238,10 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                                         <Input
                                                             id={field.name}
                                                             name={field.name}
-                                                            onBlur={field.handleBlur}
+                                                            onBlur={() => {
+                                                                field.handleBlur();
+                                                                form.handleSubmit();
+                                                            }}
                                                             onChange={(event) => field.handleChange(event.target.value)}
                                                             placeholder="Jane"
                                                             value={field.state.value}
@@ -241,7 +256,13 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                                     <form.Field name="lastNamePublic">
                                                         {(field) => (
                                                             <div className="flex cursor-pointer items-center gap-2 text-muted-foreground text-xs">
-                                                                <Checkbox checked={field.state.value} onCheckedChange={(checked) => field.handleChange(Boolean(checked))} />
+                                                                <Checkbox
+                                                                    checked={field.state.value}
+                                                                    onCheckedChange={(checked) => {
+                                                                        field.handleChange(Boolean(checked));
+                                                                        form.handleSubmit();
+                                                                    }}
+                                                                />
                                                                 <span>Public</span>
                                                             </div>
                                                         )}
@@ -252,7 +273,10 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                                         <Input
                                                             id={field.name}
                                                             name={field.name}
-                                                            onBlur={field.handleBlur}
+                                                            onBlur={() => {
+                                                                field.handleBlur();
+                                                                form.handleSubmit();
+                                                            }}
                                                             onChange={(event) => field.handleChange(event.target.value)}
                                                             placeholder="Doe"
                                                             value={field.state.value}
@@ -267,7 +291,13 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                                     <form.Field name="agePublic">
                                                         {(field) => (
                                                             <div className="flex cursor-pointer items-center gap-2 text-muted-foreground text-xs">
-                                                                <Checkbox checked={field.state.value} onCheckedChange={(checked) => field.handleChange(Boolean(checked))} />
+                                                                <Checkbox
+                                                                    checked={field.state.value}
+                                                                    onCheckedChange={(checked) => {
+                                                                        field.handleChange(Boolean(checked));
+                                                                        form.handleSubmit();
+                                                                    }}
+                                                                />
                                                                 <span>Public</span>
                                                             </div>
                                                         )}
@@ -280,7 +310,10 @@ export function ProfileTab({ form, avatarFallback, avatarUrl, fieldErrors, formM
                                                             id={field.name}
                                                             inputMode="numeric"
                                                             name={field.name}
-                                                            onBlur={field.handleBlur}
+                                                            onBlur={() => {
+                                                                field.handleBlur();
+                                                                form.handleSubmit();
+                                                            }}
                                                             onChange={(event) => {
                                                                 field.handleChange(event.target.value);
                                                                 clearFieldError(field.name);
