@@ -5,7 +5,7 @@ export const games = pgTable("games", {
     slug: varchar("slug", { length: 64 }).notNull().unique(),
     name: text("name").notNull(),
     description: text("description").notNull(),
-    images: jsonb("images").notNull(), // { cover: string, icon: string, background: string }
+    images: jsonb("images").notNull(), // { cover: string, icon: string, background: string, banner: string }
     capabilities: jsonb("capabilities").notNull(), // { versions: [], modloaders: [] }
     stats: jsonb("stats").notNull(), // { project_count: 0, download_count: 0, modpack_count: 0 }
 });

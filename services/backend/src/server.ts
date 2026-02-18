@@ -1,13 +1,10 @@
 /** biome-ignore-all lint/performance/noNamespaceImport: <Def> */
 
 import createApp from "@foundry/backend/lib/create-app.js";
-import apiKeys from "@foundry/backend/routes/api-keys.js";
-import auth from "@foundry/backend/routes/auth.js";
 import main from "@foundry/backend/routes/main.js";
 import { serve } from "@hono/node-server";
 import { swaggerUI } from "@hono/swagger-ui";
 import * as Sentry from "@sentry/node";
-import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { openAPIRouteHandler } from "hono-openapi";
@@ -52,35 +49,7 @@ app.use(
         space: 4,
     })
 );
-app.use(
-    "/v0/api/auth/*",
-    cors({
-        origin: [`${process.env.NEXT_PUBLIC_APP_URL}`, "http://localhost:3000", `${process.env.NEXT_PUBLIC_SERVER_APP_URL}/`],
-        allowHeaders: ["Content-Type", "Authorization"],
-        allowMethods: ["POST", "GET", "OPTIONS"],
-        exposeHeaders: ["Content-Length"],
-        maxAge: 600,
-        credentials: true,
-    })
-);
-
-app.use(
-    "/v0/api/keys/*",
-    cors({
-        origin: [`${process.env.NEXT_PUBLIC_APP_URL}`, "http://localhost:3000", `${process.env.NEXT_PUBLIC_SERVER_APP_URL}/`],
-        allowHeaders: ["Content-Type", "Authorization"],
-        allowMethods: ["POST", "GET", "OPTIONS"],
-        exposeHeaders: ["Content-Length"],
-        maxAge: 600,
-        credentials: true,
-    })
-);
-
-const routes = [
-    { prefix: "/v0", router: main },
-    { prefix: "/v0/api/keys", router: apiKeys },
-    { prefix: "/v0/api/auth", router: auth },
-];
+const routes = [{ prefix: "/v0", router: main }];
 
 app.basePath("/");
 for (const route of routes) {
